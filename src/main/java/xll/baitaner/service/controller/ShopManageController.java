@@ -23,12 +23,12 @@ public class ShopManageController {
     private ShopManageService shopManageService;
 
     /**
-     * 店铺管理店铺数据提交接口,接收除图片以外的Shop数据
+     * 店铺管理店铺数据提交接口
      * @param shop
      * @return
      */
     @RequestMapping("/shopmanage/submitshop")
-    public ResponseResult addShop(Shop shop, MultipartHttpServletRequest multReq){
+    public ResponseResult addShop(Shop shop){
         System.out.print(shop.getClientId());
         String result = shopManageService.addShop(shop);
         if(result == null){
@@ -38,27 +38,6 @@ public class ShopManageController {
             return ResponseResult.result(1, "failed" , result);
         }
     }
-
-
-
-    /**
-     * 店铺数据及图片提交接口,多张图片递归提交不好处理
-     * @param multReq
-     * @return
-     */
-    @RequestMapping("/shopmanage/submitshopandpic")
-    public ResponseResult uploadPic(@RequestParam("file") MultipartFile multipartFile, Shop shop){
-       System.out.print(multipartFile + "---" + shop);
-        try {
-            FileInputStream inputStream = (FileInputStream)multipartFile.getInputStream();
-            System.out.print("---------");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
 
     /**
      * 获取店铺数据

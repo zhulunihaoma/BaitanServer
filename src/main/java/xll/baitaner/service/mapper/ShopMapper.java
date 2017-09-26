@@ -22,7 +22,7 @@ public interface ShopMapper {
      */
     @Insert("INSERT INTO shop (ClientId,Name,Introduction,Contacts,Sex,Phone,Address) " +
             "VALUES (#{shop.clientId},#{shop.name},#{shop.introduction},#{shop.contacts}," +
-            "#{shop.sex},#{shop.phone},#{shop.address})")
+            "#{shop.sex},#{shop.phone},#{shop.address},#{shop.picUrl1},#{shop.picUrl2},#{shop.picUrl3})")
     int insertShop(@Param("shop") Shop shop);
 
     /**
