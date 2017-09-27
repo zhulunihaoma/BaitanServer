@@ -1,0 +1,163 @@
+接口说明
+
+///////////////////////////////////
+
+接口Host：
+本地局域网：http://192.168.1.105:8885/
+公网：http://pb18457555.imwork.net/
+
+接口返回数据result：
+int code; //请求返回结果 0：成功 1：失败
+String msg; //请求返回信息，类似 "successs" "fail" "失败原因..."
+var data; //请求返回具体data
+实例： {code: 0, msg: "sucess", data: "http://192.168.1.105:8885/upload/"}
+
+小程序请求实例：
+wx.request({
+      url: ,//接口URL
+      method: ,//请求方法 'GET','POST'
+      data: {
+        //请求参数
+      },
+      header: { "content-type": "application/x-www-form-urlencoded" },  //全部请求都要使用这种内容类型
+      header: {'content-type': 'application/json'}, //这是默认内容类型,不要使用，后台接收不到参数
+      success: function (res) {
+        //返回结果
+      }
+    })
+
+///////////////////////////////////
+
+上传图片接口：
+url："/picupload"
+result: 图片名称
+
+请求实例：
+wx.uploadFile({
+      url: 'http://192.168.1.105:8885/picupload',
+      filePath: filePath[0], //图片文件，参考小程序API  wx.chooseImage获取
+      name: 'file',          //文件KEY，后台取文件用； 必须使用 'file'
+      formData: {
+                             //其他附带上传的参数，可不写
+      },
+      success: function (res) {
+        console.log(res.data.data)； //返回图片name
+                                     //res.data 为封装的result格式
+                                     //res.data.data 为具体的图片名
+      }
+    })
+
+获取图片路径接口：
+url: "/picpath"
+result：图片路径  http://192.168.1.105:8885/upload/  或者 http://pb18457555.imwork.net/upload/
+
+备注：路径可以直接写死也可以调接口读取，预先写个图片路径的接口，以防止后期变更太过于频繁； 图片读取格式 picPath+picName
+
+实例：
+wx.request({
+     url: 'http://192.168.1.105:8885/picpath',
+     data: {
+     },
+     header: { "content-type": "application/x-www-form-urlencoded" },
+     success: function (res) {
+       console.log(res.data.data)
+     }
+   })
+
+
+///////////////////////////////////
+店铺管理
+
+///////////////
+店铺实体类：
+shop:{
+   int clientId: ,            //当前用户ID，建议使用微信授权读取用户的 OpenId
+   String name:,              //店铺名称
+   String introduction: ,     //店铺简介
+   String contacts: ,         //店铺联系人名称
+   int sex: ,                 //店铺联系人性别 0:男士 1:女士
+   String phone: ,            //联系电话
+   String address: ,          //店铺地址
+   String picUrl1: ,          //轮播图1文件名
+   String picUrl2: ,          //轮播图2文件名
+   String picUrl3: ,          //轮播图3文件名
+}
+
+///////////////
+新增店铺接口：
+url："/shopmanage/submitshop"
+method：POST
+data: 店铺实体类shop
+result
+
+实例：
+wx.request({
+      url: 'http://192.168.1.105:8885/shopmanage/submitshop',
+      method: 'POST',
+      data: {
+        clientId: '00001',
+        name: '烘焙店',
+        introduction: '一家牛逼的蛋糕烘焙店',
+        contacts: 'Mr xie',
+        sex: 0,
+        phone: '18705155605',
+        address: '小行地铁站',
+        picUrl1: 'xxxxxxxxxxxxxxx',
+        picUrl2: 'xxxxxxxxxxxxxxx',
+        picUrl3: 'xxxxxxxxxxxxxxx',
+      },
+      header: { "content-type": "application/x-www-form-urlencoded" },
+      success: function (res) {
+        console.log(res.data)
+      }
+    })
+
+
+获取店铺信息接口：
+url："/shopmanage/getshop"
+method：GET
+data: int clientId            //当前用户ID，建议使用微信授权读取用户的 OpenId
+result：shop实体类
+
+实例：
+wx.request({
+      url: 'http://192.168.1.105:8885/shopmanage/getshop',
+      data: {
+        clientId: '00001'
+      },
+      header: { "content-type": "application/x-www-form-urlencoded" },
+      success: function (res) {
+        console.log(res.data)
+      }
+    })
+
+
+修改店铺信息接口：
+url："/shopmanage/editshop"
+method：POST
+data: 店铺实体类shop
+result
+
+实例：
+wx.request({
+      url: 'http://192.168.1.105:8885/shopmanage/editshop',
+      method: 'POST',
+      data: {
+        clientId: '00001',
+        name: '烘焙店',
+        introduction: '一家牛逼的蛋糕烘焙店',
+        contacts: 'Mr xie',
+        sex: 0,
+        phone: '18705155605',
+        address: '小行地铁站',
+        picUrl1: 'xxxxxxxxxxxxxxx',
+        picUrl2: 'xxxxxxxxxxxxxxx',
+        picUrl3: 'xxxxxxxxxxxxxxx',
+      },
+      header: { "content-type": "application/x-www-form-urlencoded" },
+      success: function (res) {
+        console.log(res.data)
+      }
+    })
+
+///////////////////////////////////

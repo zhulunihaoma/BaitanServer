@@ -1,7 +1,9 @@
 package xll.baitaner.service.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import xll.baitaner.service.utils.PathUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,18 +19,36 @@ import java.io.IOException;
 public class PicUploadService {
 
     /**
-     * 文件上传写入路径
+     * 是否在正式环境
+     */
+    @Value("${baitaner.runtime}")
+    private boolean runtimeOrDev;
+
+    /**
+     * 图片上传
      * @param multReq
      * @return
+     */
+    public String picupload(MultipartHttpServletRequest multReq){
+        String fileName = java.util.UUID.randomUUID().toString();
+        String result = upload(multReq,fileName);
+        if(result == null){
+            return fileName;
+        }else {
+            return null;
+        }
+    }
+
+    /**
+     * 文件上传写入路径
+     * @param multReq
+     * @return 文件名
      */
     public String upload(MultipartHttpServletRequest multReq, String fileName){
         FileInputStream inputStream = null;
         try {
             inputStream = (FileInputStream)(multReq.getFile("file").getInputStream());
-            if(fileName == null || fileName == ""){
-                fileName = java.util.UUID.randomUUID().toString();
-            }
-            FileOutputStream fileOut = new FileOutputStream("");
+            FileOutputStream fileOut = new FileOutputStream(PathUtil.getUploadPath(fileName,runtimeOrDev));
             byte[] buffer = new byte[1024];
             int read;
             while(true){
