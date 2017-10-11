@@ -2,10 +2,7 @@ package xll.baitaner.service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import xll.baitaner.service.entity.Shop;
@@ -34,7 +31,7 @@ public class PicUploadController {
      * @param multipartFile
      * @return
      */
-    @RequestMapping("/picupload")
+    @PostMapping("/picupload")
     public ResponseResult uploadPic(MultipartHttpServletRequest multReq){
         System.out.print(multReq);
         String res = picUploadService.picupload(multReq);

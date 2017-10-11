@@ -45,6 +45,7 @@ public class CommodityController {
      * @param commodityId
      * @return
      */
+    @GetMapping("commoditymanage/getcommodity")
     public ResponseResult getCommodity(int commodityId){
         return ResponseResult.result(0, "success", commodityService.getCommodity(commodityId));
     }

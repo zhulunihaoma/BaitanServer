@@ -182,3 +182,70 @@ wx.request({
     })
 
 ///////////////////////////////////
+///////////////////////////////////
+商品实体管理
+
+///////////////
+商品实体类：
+Commodity:{
+   int id: ,                  //商品ID，唯一标识
+   int shopId: ,              //商品所在店铺ID
+   String name:,              //商品名
+   String introduction: ,     //商品描述
+   float price: ,             //商品单价
+   int monthlySales: ,        //月销售数目
+   String praise: ,           //好评率
+   String pictUrl: ,          //商品图片
+   boolean state: ,           //上下架状态 上架（true） 下架（false）
+}
+
+///////////////
+获取店铺中所有商品列表接口，上下架管理界面：
+url："/commoditymanage/getallcolist"
+method：GET
+data: int shopId        //店铺ID
+result： List<Commodity>
+
+
+获取店铺已上架商品列表接口，店铺首页显示：
+url："/commoditymanage/getcolist"
+method：GET
+data: int shopId        //店铺ID
+result: List<Commodity>
+
+
+获取单个商品的详情数据接口：
+url："/commoditymanage/getcommodity"
+method：GET
+data: int commodityId        //商品ID
+result: Commodity
+
+
+新增商品接口：
+url："/commoditymanage/addcommodity"
+method：POST
+data: Commodity实体类
+result:
+
+
+修改商品接口：
+url："/commoditymanage/editcommodity"
+method：POST
+data: Commodity实体类
+result:
+
+
+删除商品接口：
+url："/commoditymanage/addcommodity"
+method：GET
+data: int commodityId        //商品ID
+result:
+
+
+修改商品上下架状态接口：
+url："/commoditymanage/updatecostate"
+method：GET
+data: int commodityId        //商品ID
+result:
+
+///////////////////////////////////
