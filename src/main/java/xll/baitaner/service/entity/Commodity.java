@@ -49,8 +49,8 @@ public class Commodity {
 
     /**
      *  上下架状态
-     *  0：上架（true）
-     *  1：下架（false）
+     *  上架（true）
+     *  下架（false）
      */
     private boolean state;
 }
