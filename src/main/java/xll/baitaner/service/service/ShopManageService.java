@@ -51,4 +51,11 @@ public class ShopManageService {
     public boolean updateShop(Shop shop){
         return shopMapper.updateShop(shop) > 0;
     }
+
+    /**
+     * 删除对应店铺
+     * @param id
+     * @return
+     */
+    public boolean deleteShop(int id){return shopMapper.deleteShop(id) > 0;}
 }

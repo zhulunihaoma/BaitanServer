@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import xll.baitaner.service.utils.ResponseResult;
 
 /**
- * 店铺首页controller
+ * 店铺列表展示首页controller
  */
 @RestController
 public class ShopHomeController {

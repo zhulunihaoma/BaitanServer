@@ -32,10 +32,10 @@ public class ShopManageController {
         System.out.print(shop.getClientId());
         String result = shopManageService.addShop(shop);
         if(result == null){
-            return ResponseResult.result(0, "sucess" , result);
+            return ResponseResult.result(0, "success" , result);
         }
         else {
-            return ResponseResult.result(1, "failed" , result);
+            return ResponseResult.result(1, "fail" , result);
         }
     }
 
@@ -44,8 +44,8 @@ public class ShopManageController {
      * @return
      */
     @GetMapping("/shopmanage/getshop")
-    public ResponseResult test(String clientId){
-        return ResponseResult.result(0, "sucess" , shopManageService.getShop(clientId));
+    public ResponseResult getShop(String clientId){
+        return ResponseResult.result(0, "success" , shopManageService.getShop(clientId));
     }
 
     /**
@@ -57,6 +57,17 @@ public class ShopManageController {
     public ResponseResult editShop(Shop shop){
         System.out.print(shop.getClientId());
         boolean result = shopManageService.updateShop(shop);
-        return ResponseResult.result(result ? 0 : 1, result ? "sucess" : "failure", null);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    }
+
+    /**
+     * 删除店铺
+     * @param id
+     * @return
+     */
+    @GetMapping("/shopmanage/deleteshop")
+    public ResponseResult deleteShop(int id){
+        boolean result = shopManageService.deleteShop(id);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
     }
 }

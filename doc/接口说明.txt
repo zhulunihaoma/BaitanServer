@@ -160,4 +160,25 @@ wx.request({
       }
     })
 
+
+
+删除店铺接口：
+url："/shopmanage/deleteshop"
+method：GET
+data: id  //店铺ID
+result
+
+实例：
+wx.request({
+      url: 'http://192.168.1.105:8885/shopmanage/deleteshop',
+      method: 'GET',
+      data: {
+        id: 5
+      },
+      header: { "content-type": "application/x-www-form-urlencoded" },
+      success: function (res) {
+        console.log(res.data)
+      }
+    })
+
 ///////////////////////////////////

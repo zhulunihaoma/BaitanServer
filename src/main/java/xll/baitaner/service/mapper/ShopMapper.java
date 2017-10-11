@@ -1,9 +1,6 @@
 package xll.baitaner.service.mapper;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 import xll.baitaner.service.entity.Shop;
 
@@ -20,7 +17,7 @@ public interface ShopMapper {
      * @param shop
      * @return
      */
-    @Insert("INSERT INTO shop (ClientId,Name,Introduction,Contacts,Sex,Phone,Address) " +
+    @Insert("INSERT INTO shop (ClientId,Name,Introduction,Contacts,Sex,Phone,Address,PicUrl1,PicUrl2,PicUrl3) " +
             "VALUES (#{shop.clientId},#{shop.name},#{shop.introduction},#{shop.contacts}," +
             "#{shop.sex},#{shop.phone},#{shop.address},#{shop.picUrl1},#{shop.picUrl2},#{shop.picUrl3})")
     int insertShop(@Param("shop") Shop shop);
@@ -40,6 +37,14 @@ public interface ShopMapper {
      */
     @Update("UPDATE shop SET Name = #{shop.name}, Introduction = #{shop.introduction}, Contacts = #{shop.contacts}, " +
             "Sex = #{shop.sex}, Phone = #{shop.phone} " +
-            "WHERE ClientId  = #{clientId}")
+            "WHERE ClientId  = #{shop.clientId}")
     int updateShop(@Param("shop") Shop shop);
+
+    /**
+     * 删除店铺
+     * @param id
+     * @return
+     */
+    @Delete("DELETE FROM shop WHERE Id = #{id}")
+    int deleteShop(@Param("id") int id);
 }
