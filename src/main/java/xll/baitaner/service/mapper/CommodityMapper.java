@@ -54,7 +54,7 @@ public interface CommodityMapper {
      * @param shop
      * @return
      */
-    @Update("UPDATE commodity SET Name = #{co.name}, Price = #{co.price}, MonthlySales = #{shop.monthlySales}, " +
+    @Update("UPDATE commodity SET Name = #{co.name}, Price = #{co.price}, MonthlySales = #{co.monthlySales}, " +
             "Praise = #{co.praise}, PictUrl = #{co.pictUrl}, Introduction = #{co.introduction}, State = #{co.state} " +
             "WHERE Id  = #{co.id}")
     int updateCommodity(@Param("co") Commodity co);

@@ -15,7 +15,7 @@ import java.util.List;
 public interface ProfileMapper {
     /**
      * 查询用户所有收货地址列表
-     * @param shopId
+     * @param clientId
      * @return
      */
     @Select("SELECT * FROM receiveraddress WHERE ClientId = #{clientId}")
@@ -36,16 +36,16 @@ public interface ProfileMapper {
      */
     @Insert("INSERT INTO receiveraddress (ClientId,Name,Sex,Address,Phone,IsDefault) " +
             "VALUES (#{ad.clientId},#{ad.name},#{ad.sex},#{ad.address},#{ad.phone},#{ad.isDefault})")
-    int insertCommodity(@Param("ad") ReceiverAddress ad);
+    int insertAddress(@Param("ad") ReceiverAddress ad);
 
     /**
      * 更新收货地址信息
-     * @param shop
+     * @param ad)
      * @return
      */
     @Update("UPDATE receiveraddress SET Name = #{ad.name}, Sex = #{ad.sex}, Address = #{ad.address}, " +
             "Phone = #{ad.phone}, IsDefault = #{ad.isDefault} WHERE Id  = #{ad.id}")
-    int updateCommodity(@Param("ad") ReceiverAddress ad);
+    int updateAddress(@Param("ad") ReceiverAddress ad);
 
     /**
      * 删除收货地址
@@ -53,7 +53,7 @@ public interface ProfileMapper {
      * @return
      */
     @Delete("DELETE FROM receiveraddress WHERE Id = #{id}")
-    int deleteCommodity(@Param("id") int id);
+    int deleteAddress(@Param("id") int id);
 
     /**
      * 收货地址设为默认地址
@@ -62,5 +62,5 @@ public interface ProfileMapper {
      * @return
      */
     @Update("UPDATE receiveraddress SET IsDefault = IF(Id=#{id},1,0) WHERE ClientId = #{clientId}")
-    int updateCoState(@Param("id") int id, @Param("clientId") int clientId);
+    int updateAddressState(@Param("id") int id, @Param("clientId") String clientId);
 }

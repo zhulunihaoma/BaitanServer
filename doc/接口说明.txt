@@ -236,7 +236,7 @@ result:
 
 
 删除商品接口：
-url："/commoditymanage/addcommodity"
+url："/commoditymanage/deletecommodity"
 method：GET
 data: int commodityId        //商品ID
 result:
@@ -249,3 +249,83 @@ data: int commodityId        //商品ID
 result:
 
 ///////////////////////////////////
+///////////////////////////////////
+收货地址管理
+
+///////////////
+收货地址实体类：
+ReceiverAddress:{
+   int id: ,                  //收货地址ID，唯一标识,数据库自动生成
+   String clientId: ,         //用户ID
+   String name:,              //联系人姓名
+   int sex: ,                 //联系人性别 0:男士 1:女士
+   String address: ,          //送餐地址
+   String phone: ,            //联系人电话
+   boolean isDefault: ,       //是否默认地址
+}
+
+///////////////
+获取用户所有收货地址列表：
+url："/profilemanage/getaddresslist"
+method：GET
+data: String clientId        //用户ID
+result： List<ReceiverAddress>
+
+
+获取单个收货地址数据：
+url："/profilemanage/getaddress"
+method：GET
+data: int addressId        //收货地址ID
+result: ReceiverAddress
+
+
+新增收货地址接口：
+url："/profilemanage/addaddress"
+method：POST
+data: ReceiverAddress实体类
+result:
+
+
+修改收货地址接口：
+url："/profilemanage/editaddress"
+method：POST
+data: ReceiverAddress实体类
+result:
+
+
+删除收货地址：
+url："/profilemanage/deleteaddress"
+method：GET
+data: int addressId        //收货地址ID
+result:
+
+
+修改收货地址默认状态：
+url："/profilemanage/updatadstate"
+method：GET
+data: {
+        int addressId          //收货地址ID
+        String clientId        //用户ID
+      }
+result:
+
+///////////////////////////////////
+///////////////////////////////////
+店铺销售统计数据实体类：
+ShopStatistics:{
+   int shopId: ,               //店铺ID
+   float todaySales: ,         //今日营业额
+   float totalSales:,          //总营业额
+   int receivedOrder: ,        //已接订单数
+}
+
+
+店铺管理页面获取店铺销售统计数据接口：
+url："/profilemanage/getstatistics"
+method：GET
+data: int shopId        //店铺ID
+result:  ShopStatistics实体类
+
+
+///////////////////////////////////
+

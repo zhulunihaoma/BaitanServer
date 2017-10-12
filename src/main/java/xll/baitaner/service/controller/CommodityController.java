@@ -1,12 +1,12 @@
 package xll.baitaner.service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import xll.baitaner.service.entity.Commodity;
 import xll.baitaner.service.service.CommodityService;
 import xll.baitaner.service.utils.ResponseResult;
+
+import java.util.Map;
 
 /**
  * 描述：商品管理controller

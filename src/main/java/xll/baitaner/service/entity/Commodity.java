@@ -8,6 +8,9 @@ import lombok.Setter;
  * 创建者：xie
  * 日期：2017/10/10
  **/
+
+@Getter
+@Setter
 public class Commodity {
 
     private int id;

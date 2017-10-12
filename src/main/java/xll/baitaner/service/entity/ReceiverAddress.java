@@ -8,6 +8,9 @@ import lombok.Setter;
  * 创建者：xie
  * 日期：2017/10/11
  **/
+
+@Getter
+@Setter
 public class ReceiverAddress {
 
     private int id;
