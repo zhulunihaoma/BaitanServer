@@ -2,6 +2,7 @@ package xll.baitaner.service.mapper;
 
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PostMapping;
 import xll.baitaner.service.entity.ReceiverAddress;
 
 import java.util.List;

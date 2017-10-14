@@ -203,15 +203,35 @@ Commodity:{
 获取店铺中所有商品列表接口，上下架管理界面：
 url："/commoditymanage/getallcolist"
 method：GET
-data: int shopId        //店铺ID
-result： List<Commodity>
+data:{
+    int shopId        //店铺ID
+    int page          //请求页码，从0开始
+    int size          //请求每页数据的个数
+}
+
+result;{
+    content: List<Commodity>   //请求数据的所在字段
+    size                       //每页个数
+    totalElements              //总个数
+    totalPages                 //总页数
+}
 
 
 获取店铺已上架商品列表接口，店铺首页显示：
 url："/commoditymanage/getcolist"
 method：GET
-data: int shopId        //店铺ID
-result: List<Commodity>
+data:{
+    int shopId        //店铺ID
+    int page          //请求页码，从0开始
+    int size          //请求每页数据的个数
+}
+
+result;{
+    content: List<Commodity>   //请求数据的所在字段
+    size                       //每页个数
+    totalElements              //总个数
+    totalPages                 //总页数
+}
 
 
 获取单个商品的详情数据接口：

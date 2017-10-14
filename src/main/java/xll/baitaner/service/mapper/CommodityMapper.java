@@ -1,6 +1,7 @@
 package xll.baitaner.service.mapper;
 
 import org.apache.ibatis.annotations.*;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import xll.baitaner.service.entity.Commodity;
 
@@ -20,16 +21,32 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId}")
-    List<Commodity> selectAllCoList(@Param("shopId") int shopId);
+    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} LIMIT #{page.offset},#{page.size}")
+    List<Commodity> selectAllCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
+
+    /**
+     * 查询店铺中所有商品总数
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT COUNT(*) FROM commodity WHERE ShopId = #{shopId}")
+    int countAllCoList(@Param("shopId") int shopId);
 
     /**
      * 查询店铺中所有上架商品列表
      * @param shopId
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND State = 0")
-    List<Commodity> selectCoList(@Param("shopId") int shopId);
+    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND State = 0 LIMIT #{page.offset},#{page.size}")
+    List<Commodity> selectCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
+
+    /**
+     * 查询店铺中所有上架商品列表总数
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT COUNT(*) FROM commodity WHERE ShopId = #{shopId} AND State = 0")
+    int countCoList(@Param("shopId") int shopId);
 
     /**
      * 获取单个商品详情数据

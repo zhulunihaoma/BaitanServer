@@ -43,6 +43,10 @@ public class ProfileService {
      * @return
      */
     public boolean addAddress(ReceiverAddress address){
+        List<ReceiverAddress> list = getAddressList(address.getClientId());
+        if(list.size() == 0){
+            address.setDefault(true);
+        }
         return profileMapper.insertAddress(address) > 0;
     }
 

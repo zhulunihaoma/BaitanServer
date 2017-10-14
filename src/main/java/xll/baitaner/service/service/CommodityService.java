@@ -1,6 +1,8 @@
 package xll.baitaner.service.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import xll.baitaner.service.entity.Commodity;
 import xll.baitaner.service.mapper.CommodityMapper;
@@ -24,8 +26,10 @@ public class CommodityService {
      * @param shopId
      * @return
      */
-    public List<Commodity> getAllCoList(int shopId){
-        return commodityMapper.selectAllCoList(shopId);
+    public PageImpl<Commodity> getAllCoList(int shopId, Pageable pageable){
+        List<Commodity> commodityList = commodityMapper.selectAllCoList(shopId, pageable);
+        int count = commodityMapper.countAllCoList(shopId);
+        return new PageImpl<Commodity>(commodityList, pageable, count);
     }
 
     /**
@@ -33,8 +37,10 @@ public class CommodityService {
      * @param shopId
      * @return
      */
-    public List<Commodity> getCoList(int shopId){
-        return commodityMapper.selectCoList(shopId);
+    public PageImpl<Commodity> getCoList(int shopId, Pageable pageable){
+        List<Commodity> commodityList = commodityMapper.selectCoList(shopId, pageable);
+        int count = commodityMapper.countCoList(shopId);
+        return new PageImpl<Commodity>(commodityList, pageable, count);
     }
 
     /**

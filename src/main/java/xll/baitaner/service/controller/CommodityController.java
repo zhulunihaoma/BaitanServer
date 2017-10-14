@@ -1,6 +1,7 @@
 package xll.baitaner.service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import xll.baitaner.service.entity.Commodity;
 import xll.baitaner.service.service.CommodityService;
@@ -26,8 +27,8 @@ public class CommodityController {
      * @return
      */
     @GetMapping("commoditymanage/getallcolist")
-    public ResponseResult getAllCoList(int shopId){
-        return ResponseResult.result(0, "success", commodityService.getAllCoList(shopId));
+    public ResponseResult getAllCoList(int shopId, Pageable pageable){
+        return ResponseResult.result(0, "success", commodityService.getAllCoList(shopId, pageable));
     }
 
     /**
@@ -36,8 +37,8 @@ public class CommodityController {
      * @return
      */
     @GetMapping("commoditymanage/getcolist")
-    public ResponseResult geCoList(int shopId){
-        return ResponseResult.result(0, "success", commodityService.getCoList(shopId));
+    public ResponseResult geCoList(int shopId, Pageable pageable){
+        return ResponseResult.result(0, "success", commodityService.getCoList(shopId, pageable));
     }
 
     /**
