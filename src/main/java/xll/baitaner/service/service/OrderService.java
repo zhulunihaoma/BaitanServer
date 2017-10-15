@@ -1,6 +1,8 @@
 package xll.baitaner.service.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xll.baitaner.service.entity.Order;
@@ -72,13 +74,30 @@ public class OrderService {
      * @param clientId
      * @return
      */
-    public List<Order> getOrderListByClient(String clientId){
-        List<Order> orderList = orderMapper.seleceOrderListByClientId(clientId);
+    public PageImpl<Order> getOrderListByClient(String clientId, Pageable pageable){
+        List<Order> orderList = orderMapper.seleceOrdersByClientId(clientId, pageable);
 
         for(Order order : orderList){
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
         }
+        int count = orderMapper.countOrdersByClientId(clientId);
+        return new PageImpl<Order>(orderList, pageable, count);
+    }
 
-        return orderList;
+    /**
+     * 获取店铺的订单列表
+     * @param shopId
+     * @param state 1:待送达  2：已完成
+     * @param pageable
+     * @return
+     */
+    public PageImpl<Order> getOrderListByShop(int shopId, int state, Pageable pageable){
+        List<Order> orderList = orderMapper.selectOrdersByShop(shopId, state, pageable);
+
+        for(Order order : orderList){
+            order.setOrderCoList(getOrderCoList(order.getOrderId()));
+        }
+        int count = orderMapper.countOrdersByShop(shopId, state);
+        return new PageImpl<Order>(orderList, pageable, count);
     }
 }

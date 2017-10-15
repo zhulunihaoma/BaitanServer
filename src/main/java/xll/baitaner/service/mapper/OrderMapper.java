@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import xll.baitaner.service.entity.Order;
 import xll.baitaner.service.entity.OrderCommodity;
@@ -53,8 +54,16 @@ public interface OrderMapper {
      * @param clientId
      * @return
      */
-    @Select("SELECT * FROM `order` WHERE ClientId = #{clientId}")
-    List<Order> seleceOrderListByClientId(@Param("clientId") String clientId);
+    @Select("SELECT * FROM `order` WHERE ClientId = #{clientId} LIMIT #{page.offset},#{page.size}")
+    List<Order> seleceOrdersByClientId(@Param("clientId") String clientId, @Param("page") Pageable page);
+
+    /**
+     *查询对应用户的订单列表总个数
+     * @param clientId
+     * @return
+     */
+    @Select("SELECT COUNT(*) FROM `order` WHERE ClientId = #{clientId}")
+    int countOrdersByClientId(@Param("clientId") String clientId);
 
     /**
      * 根据订单编号获取订单商品详情
@@ -63,4 +72,22 @@ public interface OrderMapper {
      */
     @Select("SELECT * FROM orderlist WHERE OrderId = #{orderId}")
     List<OrderCommodity> selectOrderCoListByOrderId(@Param("orderId") String orderId);
+
+    /**
+     * 查询店铺对应状态的订单列表
+     * @param shopId
+     * @param state
+     * @return
+     */
+    @Select("SELECT * FROM `order` WHERE ShopId = #{shopId} AND State = state LIMIT #{page.offset},#{page.size}")
+    List<Order> selectOrdersByShop(@Param("shopId") int shopId, @Param("state") int state, @Param("page") Pageable page);
+
+    /**
+     * 查询店铺对应状态的订单列表总个数
+     * @param shopId
+     * @param state
+     * @return
+     */
+    @Select("SELECT COUNT(*) FROM `order` WHERE ShopId = #{shopId} AND State = state")
+    int countOrdersByShop(@Param("shopId") int shopId, @Param("state") int state);
 }

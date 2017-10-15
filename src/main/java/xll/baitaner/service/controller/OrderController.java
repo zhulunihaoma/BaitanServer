@@ -5,6 +5,7 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import xll.baitaner.service.entity.Commodity;
 import xll.baitaner.service.entity.Order;
@@ -65,22 +66,34 @@ public class OrderController {
     }
 
     /**
-     * 获取用户订单列表接口
-     * @param clientId
-     * @return
-     */
-    @GetMapping("ordermanage/getclientorders")
-    public ResponseResult getOrderListClient(String clientId){
-        return ResponseResult.result(0, "success", orderService.getOrderListByClient(clientId));
-    }
-
-    /**
-     * 获取订单详情接口
+     * 获取单个订单详情接口
      * @param orderId
      * @return
      */
     @GetMapping("ordermanage/getorder")
     public ResponseResult getOrder(String orderId){
         return ResponseResult.result(0, "success", orderService.getOrder(orderId));
+    }
+
+    /**
+     * 获取用户订单列表接口
+     * @param clientId
+     * @return
+     */
+    @GetMapping("ordermanage/getclientorders")
+    public ResponseResult getOrderListClient(String clientId, Pageable pageable){
+        return ResponseResult.result(0, "success", orderService.getOrderListByClient(clientId, pageable));
+    }
+
+    /**
+     * 获取店铺的订单列表
+     * @param shopId
+     * @param state   订单状态 1:待送达（已接订单）  2：已完成（历史）
+     * @param pageable
+     * @return
+     */
+    @GetMapping("ordermanage/getshoporders")
+    public ResponseResult getOrderListShop(int shopId, int state, Pageable pageable){
+        return ResponseResult.result(0, "success", orderService.getOrderListByShop(shopId, state, pageable));
     }
 }

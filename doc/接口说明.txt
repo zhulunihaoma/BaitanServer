@@ -415,17 +415,42 @@ orderCoListStr = JSON.stringify(that.data.orderCoList); //需要转化成字符�
     })
 
 ///////////////
-
-用户订单列表获取接口：
-url："/ordermanage/getclientorders"
-method：GET
-data: String clientId        //用户ID
-result:  List<Order>订单实体类List
-
-订单详情获取接口：
+单个订单详情获取接口：
 url："/ordermanage/getorder"
 method：GET
 data: String orderId        //订单编号
 result:  Order订单实体类
+
+
+用户端订单列表获取接口：
+url："/ordermanage/getclientorders"
+method：GET
+data: {
+      String clientId        //用户ID
+      int page               //请求页码，从0开始
+      int size               //请求每页数据的个数
+}
+result;{
+    content:List<Order>订单实体类List    //请求数据的所在字段
+    size                                //每页个数
+    totalElements                       //总个数
+    totalPages                          //总页数
+}
+
+店铺端订单列表获取接口（按订单分类）：
+url："/ordermanage/getshoporders"
+method：GET
+data: {
+      int shopId             //店铺ID
+      int state              //订单状态 1:待送达（已接订单）  2：已完成（历史）
+      int page               //请求页码，从0开始
+      int size               //请求每页数据的个数
+}
+result;{
+    content:List<Order>订单实体类List    //请求数据的所在字段
+    size                                //每页个数
+    totalElements                       //总个数
+    totalPages                          //总页数
+}
 
 
