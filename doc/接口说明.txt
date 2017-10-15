@@ -348,4 +348,84 @@ result:  ShopStatistics实体类
 
 
 ///////////////////////////////////
+///////////////////////////////////
+订单功能
+
+订单实体类：
+Order: {
+    String orderId;         //订单编号 （前端下单时不用提交，后台随机生成唯一标识）
+    String clientId;        //用户Id
+    int receiverAddressId;  //收货地址Id
+    int shopId;             //店铺Id
+    Date date;              //下单时间  (前端下单时不用提交，后台生成)
+    Date arriveDate;        //用户要求送达时间 (非必要)
+    String remarks;         //订单备注
+    float totalMoney;       //订单总金额  (前端展示时可自己计算，下单时不必提交，后台计算金额值)
+    int state;              //订单状态 0：待支付; 1：待送达; 2：已完成  (下单时不必提交)
+
+    List<OrderCommodity> OrderCoList;       //订单中商品详情，封装订单中的商品和数量  特殊字段，下单时不用处理
+}
+
+订单中商品详情实体类： (基本以数组形式操作)
+OrderCommodity：{
+    int commodityId;        //商品Id
+    int count;              //商品个数
+}
+
+
+///////////////
+用户下单接口：
+url："/ordermanage/submit"
+method：POST
+data: {
+     clientId: ,                        //用户Id
+     receiverAddressId:,                //收货地址Id
+     shopId:,                           //店铺Id
+     arriveDate: ,                      //用户要求送达时间 (非必要)
+     remarks:,                          //订单备注
+     orderCoListStr:                    //订单中的商品详情 （见下文）
+}
+result:
+
+orderCoListStr字段说明：
+订单中商品的个数详情，数组
+orderCoList:[
+      { commodityId: 1, count: 2},
+      { commodityId: 3, count: 1 },
+      { commodityId: 4, count: 4 },
+]
+orderCoListStr = JSON.stringify(that.data.orderCoList); //需要转化成字符串提交服务器
+
+接口实例：
+ var orderCoListStr = JSON.stringify(that.data.orderCoList);
+    wx.request({
+      url: 'http://192.168.1.105:8885/ordermanage/submit',
+      method: 'POST',
+      data: {
+       clientId: '222',
+       receiverAddressId:3,
+       shopId: 16,
+       remarks: 'xxxxxxxxxxxxxxxx',
+       orderCoListStr: orderCoListStr
+      },
+      header: { "content-type": "application/x-www-form-urlencoded" },
+      success: function (res) {
+        console.log(res.data)
+      }
+    })
+
+///////////////
+
+用户订单列表获取接口：
+url："/ordermanage/getclientorders"
+method：GET
+data: String clientId        //用户ID
+result:  List<Order>订单实体类List
+
+订单详情获取接口：
+url："/ordermanage/getorder"
+method：GET
+data: String orderId        //订单编号
+result:  Order订单实体类
+
 

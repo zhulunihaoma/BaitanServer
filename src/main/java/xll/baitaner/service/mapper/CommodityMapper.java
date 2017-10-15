@@ -8,7 +8,7 @@ import xll.baitaner.service.entity.Commodity;
 import java.util.List;
 
 /**
- * 描述：
+ * 描述：商品管理mapper
  * 创建者：xie
  * 日期：2017/10/10
  **/
@@ -37,7 +37,7 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND State = 0 LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND State = 1 LIMIT #{page.offset},#{page.size}")
     List<Commodity> selectCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
 
     /**
