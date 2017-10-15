@@ -385,7 +385,7 @@ data: {
      remarks:,                          //订单备注
      orderCoListStr:                    //订单中的商品详情 （见下文）
 }
-result:
+result: String orderId 生成的订单编号
 
 orderCoListStr字段说明：
 订单中商品的个数详情，数组

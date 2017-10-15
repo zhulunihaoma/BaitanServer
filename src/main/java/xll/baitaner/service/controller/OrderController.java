@@ -43,8 +43,9 @@ public class OrderController {
     public ResponseResult submitOrder(Order order, String orderCoListStr){
         List<OrderCommodity> orderCoList = (List<OrderCommodity>) JSONArray.toList(JSONArray.fromObject(orderCoListStr), OrderCommodity.class);
 
+        String id = SerialUtils.getSerialId();
         //生成订单编号
-        order.setOrderId(SerialUtils.getSerialId());
+        order.setOrderId(id);
 
         //生成下单时间
         order.setDate(new Date(System.currentTimeMillis()));
@@ -62,7 +63,7 @@ public class OrderController {
         order.setState(0);
 
         boolean result = orderService.addOrder(order, orderCoList);
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", result ? id : null);
     }
 
     /**
