@@ -46,7 +46,7 @@ public class Order {
     /**
      * 用户要求送达时间
      */
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
     private Date arriveDate;
 
     /**

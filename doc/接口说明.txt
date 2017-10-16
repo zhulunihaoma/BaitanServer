@@ -330,7 +330,7 @@ data: {
 result:
 
 
-获取收货地址默认状态：
+获取默认收货地址：
 url："/profilemanage/getdefaultaddress"
 method：GET
 data: {
