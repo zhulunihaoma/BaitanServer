@@ -329,6 +329,15 @@ data: {
       }
 result:
 
+
+修改收货地址默认状态：
+url："/profilemanage/getdefaultaddress"
+method：GET
+data: {
+        String clientId        //用户ID
+      }
+result:  ReceiverAddress
+
 ///////////////////////////////////
 ///////////////////////////////////
 店铺销售统计数据实体类：
@@ -369,6 +378,7 @@ Order: {
 订单中商品详情实体类： (基本以数组形式操作)
 OrderCommodity：{
     int commodityId;        //商品Id
+    String commodityName;   //商品名
     int count;              //商品个数
 }
 

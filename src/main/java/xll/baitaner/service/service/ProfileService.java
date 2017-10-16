@@ -79,6 +79,15 @@ public class ProfileService {
     }
 
     /**
+     * 获取用户默认地址
+     * @param clientId
+     * @return
+     */
+    public ReceiverAddress getDefaultAddress(String clientId){
+        return profileMapper.selectDefaultAddress(clientId);
+    }
+
+    /**
      * 获取当前店铺销售统计数据 //todo 按实际订单计算所得
      * @param shopId
      * @return

@@ -19,6 +19,11 @@ public class OrderCommodity {
     private int commodityId;
 
     /**
+     * 商品名
+     */
+    private String commodityName;
+
+    /**
      * 商品个数
      */
     private int count;

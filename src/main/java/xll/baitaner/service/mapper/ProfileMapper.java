@@ -64,4 +64,12 @@ public interface ProfileMapper {
      */
     @Update("UPDATE receiveraddress SET IsDefault = IF(Id=#{id},1,0) WHERE ClientId = #{clientId}")
     int updateAddressState(@Param("id") int id, @Param("clientId") String clientId);
+
+    /**
+     * 查询用户默认地址
+     * @param clientId
+     * @return
+     */
+    @Select("SELECT * FROM receiveraddress WHERE ClientId = #{clientId} AND IsDefault = 1")
+    ReceiverAddress selectDefaultAddress(@Param("clientId") String clientId);
 }

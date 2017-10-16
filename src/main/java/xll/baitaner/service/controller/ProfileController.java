@@ -85,6 +85,16 @@ public class ProfileController {
     }
 
     /**
+     * 获取用户默认收货地址接口
+     * @param clientId
+     * @return
+     */
+    @GetMapping("profilemanage/getdefaultaddress")
+    public ResponseResult getDefaultAddress(String clientId){
+        return ResponseResult.result(0, "success", profileService.getDefaultAddress(clientId));
+    }
+
+    /**
      * 获取当前店铺销售统计数据
      * @param shopId
      * @return

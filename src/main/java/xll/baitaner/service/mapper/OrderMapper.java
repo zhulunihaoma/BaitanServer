@@ -70,7 +70,9 @@ public interface OrderMapper {
      * @param orderId
      * @return
      */
-    @Select("SELECT * FROM orderlist WHERE OrderId = #{orderId}")
+    @Select("SELECT o.* ,co.`Name` AS commodityName FROM orderlist o " +
+            "JOIN commodity co ON co.Id = o.CommodityId " +
+            "WHERE OrderId = #{orderId}")
     List<OrderCommodity> selectOrderCoListByOrderId(@Param("orderId") String orderId);
 
     /**
