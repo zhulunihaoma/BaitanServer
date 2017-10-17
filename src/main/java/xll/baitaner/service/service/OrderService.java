@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import xll.baitaner.service.entity.Order;
 import xll.baitaner.service.entity.OrderCommodity;
 import xll.baitaner.service.mapper.OrderMapper;
+import xll.baitaner.service.mapper.ProfileMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,9 @@ public class OrderService {
 
     @Autowired
     private OrderMapper orderMapper;
+
+    @Autowired
+    private ProfileMapper profileMapper;
 
     /**
      * 下单处理，新增订单及订单商品数据
@@ -79,25 +83,26 @@ public class OrderService {
 
         for(Order order : orderList){
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
+            order.setAddress(profileMapper.selectAddress(order.getReceiverAddressId()));
         }
         int count = orderMapper.countOrdersByClientId(clientId);
         return new PageImpl<Order>(orderList, pageable, count);
     }
 
     /**
-     * 获取店铺的订单列表
+     * 获取店铺的已接订单列表(按订单分类)
      * @param shopId
-     * @param state 1:待送达  2：已完成
      * @param pageable
      * @return
      */
-    public PageImpl<Order> getOrderListByShop(int shopId, int state, Pageable pageable){
-        List<Order> orderList = orderMapper.selectOrdersByShop(shopId, state, pageable);
+    public PageImpl<Order> getOrderListByShop(int shopId, Pageable pageable){
+        List<Order> orderList = orderMapper.selectOrdersByShop(shopId, 1, pageable);
 
         for(Order order : orderList){
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
+            order.setAddress(profileMapper.selectAddress(order.getReceiverAddressId()));
         }
-        int count = orderMapper.countOrdersByShop(shopId, state);
+        int count = orderMapper.countOrdersByShop(shopId, 1);
         return new PageImpl<Order>(orderList, pageable, count);
     }
 }

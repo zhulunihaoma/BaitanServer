@@ -81,7 +81,7 @@ public interface OrderMapper {
      * @param state
      * @return
      */
-    @Select("SELECT * FROM `order` WHERE ShopId = #{shopId} AND State = state LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT * FROM `order` WHERE ShopId = #{shopId} AND State = #{state} LIMIT #{page.offset},#{page.size}")
     List<Order> selectOrdersByShop(@Param("shopId") int shopId, @Param("state") int state, @Param("page") Pageable page);
 
     /**
@@ -90,6 +90,6 @@ public interface OrderMapper {
      * @param state
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `order` WHERE ShopId = #{shopId} AND State = state")
+    @Select("SELECT COUNT(*) FROM `order` WHERE ShopId = #{shopId} AND State = #{state}")
     int countOrdersByShop(@Param("shopId") int shopId, @Param("state") int state);
 }

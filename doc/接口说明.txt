@@ -373,6 +373,7 @@ Order: {
     int state;              //订单状态 0：待支付; 1：待送达; 2：已完成  (下单时不必提交)
 
     List<OrderCommodity> OrderCoList;       //订单中商品详情，封装订单中的商品和数量  特殊字段，下单时不用处理
+    ReceiverAddress address:                //订单中收货地址实体类，获取店铺订单时封装数据进去
 }
 
 订单中商品详情实体类： (基本以数组形式操作)
@@ -447,12 +448,11 @@ result;{
     totalPages                          //总页数
 }
 
-店铺端订单列表获取接口（按订单分类）：
+店铺端已接订单列表获取接口（按订单分类）：
 url："/ordermanage/getshoporders"
 method：GET
 data: {
       int shopId             //店铺ID
-      int state              //订单状态 1:待送达（已接订单）  2：已完成（历史）
       int page               //请求页码，从0开始
       int size               //请求每页数据的个数
 }

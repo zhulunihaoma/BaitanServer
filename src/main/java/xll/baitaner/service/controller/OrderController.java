@@ -87,14 +87,13 @@ public class OrderController {
     }
 
     /**
-     * 获取店铺的订单列表
+     * 获取店铺的已结订单列表（按订单分类）
      * @param shopId
-     * @param state   订单状态 1:待送达（已接订单）  2：已完成（历史）
      * @param pageable
      * @return
      */
     @GetMapping("ordermanage/getshoporders")
-    public ResponseResult getOrderListShop(int shopId, int state, Pageable pageable){
-        return ResponseResult.result(0, "success", orderService.getOrderListByShop(shopId, state, pageable));
+    public ResponseResult getOrderListShop(int shopId, Pageable pageable){
+        return ResponseResult.result(0, "success", orderService.getOrderListByShop(shopId, pageable));
     }
 }

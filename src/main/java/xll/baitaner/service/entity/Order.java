@@ -42,12 +42,14 @@ public class Order {
      */
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date date;
+//
+//    /**
+//     * 用户要求送达时间
+//     */
+//    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
+//    private Date arriveDate;
 
-    /**
-     * 用户要求送达时间
-     */
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
-    private Date arriveDate;
+    private String arriveDate;
 
     /**
      * 订单备注
@@ -71,4 +73,9 @@ public class Order {
      * 订单中商品详情
      */
     private List<OrderCommodity> OrderCoList;
+
+    /**
+     * 订单收货地址
+     */
+    private ReceiverAddress address;
 }
