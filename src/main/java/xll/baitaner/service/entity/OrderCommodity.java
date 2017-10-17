@@ -27,4 +27,26 @@ public class OrderCommodity {
      * 商品个数
      */
     private int count;
+
+    /**
+     * 订单编号
+     */
+    private String orderId;
+
+    //新增字段，出参时使用
+
+    /**
+     * 订单实体类
+     */
+    private Order order;
+
+    /**
+     * 订单中收货人名字
+     */
+    private String ClientName;
+
+    /**
+     * 订单备注
+     */
+    private String orderRemarks;
 }

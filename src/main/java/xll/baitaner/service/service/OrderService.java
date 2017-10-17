@@ -5,11 +5,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import xll.baitaner.service.entity.CommodityOrder;
 import xll.baitaner.service.entity.Order;
 import xll.baitaner.service.entity.OrderCommodity;
+import xll.baitaner.service.mapper.CommodityMapper;
 import xll.baitaner.service.mapper.OrderMapper;
 import xll.baitaner.service.mapper.ProfileMapper;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +31,9 @@ public class OrderService {
 
     @Autowired
     private ProfileMapper profileMapper;
+
+    @Autowired
+    private CommodityMapper commodityMapper;
 
     /**
      * 下单处理，新增订单及订单商品数据
@@ -62,6 +69,16 @@ public class OrderService {
             order.setOrderCoList(orderCoList);
         }
         return order;
+    }
+
+    /**
+     * 更新订单状态
+     * @param orderId
+     * @param state
+     * @return
+     */
+    public boolean updateOrderState(String orderId, int state){
+        return orderMapper.updateOrderState(orderId, state) > 0;
     }
 
     /**
@@ -104,5 +121,59 @@ public class OrderService {
         }
         int count = orderMapper.countOrdersByShop(shopId, 1);
         return new PageImpl<Order>(orderList, pageable, count);
+    }
+
+    /**
+     * 获取店铺全部的商品订单关系数据列表，并插入订单实体类
+     * @return
+     */
+    public List<OrderCommodity> getAllOrderCoList(int shopId){
+        List<OrderCommodity> orderCommodityList = orderMapper.selectAllOrderCoList(shopId);
+        for (OrderCommodity orderCommodity : orderCommodityList){
+            Order order = orderMapper.selectOrder(orderCommodity.getOrderId());
+            orderCommodity.setOrder(order);
+            orderCommodity.setOrderRemarks(order.getRemarks());
+            orderCommodity.setClientName(profileMapper.selectAddress(order.getReceiverAddressId()).getName());
+        }
+        return orderCommodityList;
+    }
+
+    /**
+     * 获取店铺的已接订单列表(按商品分类)
+     * @param shopId
+     * @param pageable
+     * @return
+     */
+    @Transactional
+    public List<CommodityOrder> getCommdityListByShop(int shopId){
+        List<OrderCommodity> orderCommodityList = getAllOrderCoList(shopId);
+        if(orderCommodityList.size() > 0){
+            Map<Integer, CommodityOrder> map = new HashMap<>();
+            for (OrderCommodity orderCommodity : orderCommodityList){
+                int coId = orderCommodity.getCommodityId();
+                if(!map.containsKey(coId)){
+                    CommodityOrder commodityOrder = new CommodityOrder();
+                    commodityOrder.setCommodityId(coId);
+                    commodityOrder.setCommodity(commodityMapper.selectCommodity(coId));
+                    commodityOrder.setTotalNum(orderMapper.sumCoCount(coId));
+
+                    List<OrderCommodity> list = new ArrayList<>();
+                    list.add(orderCommodity);
+                    commodityOrder.setOrderCommodityList(list);
+
+                    map.put(coId, commodityOrder);
+                }
+                else {
+                    List<OrderCommodity> list = map.get(coId).getOrderCommodityList();
+                    list.add(orderCommodity);
+                    map.get(coId).setOrderCommodityList(list);
+                }
+            }
+
+            return new ArrayList<CommodityOrder>(map.values());
+        }
+        else {
+            return null;
+        }
     }
 }

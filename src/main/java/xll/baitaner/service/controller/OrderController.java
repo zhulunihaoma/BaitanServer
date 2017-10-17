@@ -77,6 +77,18 @@ public class OrderController {
     }
 
     /**
+     * 更新订单状态
+     * @param orderId
+     * @param state
+     * @return
+     */
+    @GetMapping("ordermanage/updateorderstate")
+    public ResponseResult updateOrderState(String orderId, int state){
+        boolean result = orderService.updateOrderState(orderId,state);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail",null);
+    }
+
+    /**
      * 获取用户订单列表接口
      * @param clientId
      * @return
@@ -95,5 +107,15 @@ public class OrderController {
     @GetMapping("ordermanage/getshoporders")
     public ResponseResult getOrderListShop(int shopId, Pageable pageable){
         return ResponseResult.result(0, "success", orderService.getOrderListByShop(shopId, pageable));
+    }
+
+    /**
+     * 获取店铺的已接订单列表(按商品分类)
+     * @param shopId
+     * @return
+     */
+    @GetMapping("ordermanage/getshoporders2")
+    public ResponseResult getCoListShop(int shopId){
+        return ResponseResult.result(0, "success", orderService.getCommdityListByShop(shopId));
     }
 }

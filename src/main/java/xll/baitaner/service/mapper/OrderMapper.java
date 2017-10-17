@@ -1,9 +1,7 @@
 package xll.baitaner.service.mapper;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import xll.baitaner.service.entity.Order;
@@ -50,6 +48,15 @@ public interface OrderMapper {
     Order selectOrder(@Param("orderId") String orderId);
 
     /**
+     * 更新订单状态
+     * @param orderId
+     * @param state
+     * @return
+     */
+    @Update("UPDATE `order` SET State = #{state} WHERE OrderId = #{orderId}")
+    int updateOrderState(@Param("orderId") String orderId, @Param("state") int state);
+
+    /**
      * 查询对应用户的订单列表
      * @param clientId
      * @return
@@ -74,6 +81,27 @@ public interface OrderMapper {
             "JOIN commodity co ON co.Id = o.CommodityId " +
             "WHERE OrderId = #{orderId}")
     List<OrderCommodity> selectOrderCoListByOrderId(@Param("orderId") String orderId);
+
+    /**
+     * 获取店铺全部已接订单的商品详情
+     * @param orderId
+     * @return
+     */
+    @Select("SELECT o.* ,co.`Name` AS commodityName FROM orderlist o " +
+            "JOIN commodity co ON co.Id = o.CommodityId " +
+            "JOIN `order` od ON od.OrderId = o.OrderId " +
+            "WHERE od.State = 1 AND od.ShopId = #{shopId}")
+    List<OrderCommodity> selectAllOrderCoList(@Param("shopId") int shopId);
+
+    /**
+     * 查询商品在所有已接订单中的总个数
+     * @param coId
+     * @return
+     */
+    @Select("SELECT SUM(o.Count) FROM orderlist o " +
+            "JOIN `order` od ON od.OrderId = o.OrderId  " +
+            "WHERE CommodityId = #{coId} AND od.State = 1")
+    int sumCoCount(@Param("coId") int coId);
 
     /**
      * 查询店铺对应状态的订单列表

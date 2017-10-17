@@ -377,11 +377,26 @@ Order: {
 }
 
 订单中商品详情实体类： (基本以数组形式操作)
-OrderCommodity：{
-    int commodityId;        //商品Id
-    String commodityName;   //商品名
-    int count;              //商品个数
-}
+ OrderCommodity：{
+     int commodityId;        //商品Id
+     String commodityName;   //商品名 （入参时不需要赋值，只在出参时使用）
+     int count;              //商品个数
+
+     //出参时才有值，在获取店铺订单列表（按商品分类）时，订单详情中展示
+     Order order;            //订单实体类
+     String ClientName;      //订单中收货人名字
+     String orderRemarks;    //订单备注
+ }
+
+ 订单按商品分类所展示的实体类：
+ CommodityOrder：{
+     int commodityId;        //商品Id
+     Commodity commodity;    //商品实体类
+     int totalNum;           //该商品在所有已接订单中的总数
+
+     //在获取店铺订单列表（按商品分类）时，订单详情中展示
+     List<OrderCommodity> orderCommodityList;            //商品所在所有的已接订单列表
+ }
 
 
 ///////////////
@@ -432,6 +447,13 @@ method：GET
 data: String orderId        //订单编号
 result:  Order订单实体类
 
+单个订单详情获取接口：
+url："/ordermanage/updateorderstate"
+method：GET
+data: String orderId        //订单编号
+      int state             //订单状态 0：待支付; 1：待送达; 2：已完成
+result:
+
 
 用户端订单列表获取接口：
 url："/ordermanage/getclientorders"
@@ -448,6 +470,7 @@ result;{
     totalPages                          //总页数
 }
 
+
 店铺端已接订单列表获取接口（按订单分类）：
 url："/ordermanage/getshoporders"
 method：GET
@@ -462,5 +485,14 @@ result;{
     totalElements                       //总个数
     totalPages                          //总页数
 }
+
+
+店铺端已接订单列表获取接口（按商品分类）：
+url："/ordermanage/getshoporders2"
+method：GET
+data: {
+      int shopId             //店铺ID
+}
+result; List<CommodityOrder>
 
 
