@@ -1,6 +1,9 @@
 ﻿接口说明
 
 ///////////////////////////////////
+小程序登录信息
+2814307921@qq.com
+zhu7798768
 
 接口Host：
 本地局域网：http://192.168.1.105:8885/
@@ -514,7 +517,7 @@ data: {
 result; List<CommodityOrder>
 
 
-店铺端已接订单列表获取接口（按商品分类）：
+获取店铺历史订单列表接口 ：
 url："/ordermanage/gethistoryorders"
 method：GET
 data: {
