@@ -1,4 +1,4 @@
-接口说明
+﻿接口说明
 
 ///////////////////////////////////
 
@@ -454,7 +454,7 @@ method：GET
 data: String orderId        //订单编号
 result:  Order订单实体类
 
-单个订单详情获取接口：
+更新订单状态接口：
 url："/ordermanage/updateorderstate"
 method：GET
 data: String orderId        //订单编号
