@@ -58,4 +58,12 @@ public class ShopManageService {
      * @return
      */
     public boolean deleteShop(int id){return shopMapper.deleteShop(id) > 0;}
+
+    /**
+     * 更新店铺营业状态
+     * @param shopId
+     * @param state
+     * @return
+     */
+    public boolean updateShopState(int shopId, int state){return shopMapper.updateShopState(shopId, state) > 0;}
 }

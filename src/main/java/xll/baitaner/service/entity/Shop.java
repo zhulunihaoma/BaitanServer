@@ -68,4 +68,9 @@ public class Shop {
      * 轮播图3地址
      */
     private String picUrl3;
+
+    /**
+     *  店铺状态 1:营业  0;歇业
+     */
+    private int state;
 }

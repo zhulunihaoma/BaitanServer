@@ -47,4 +47,13 @@ public interface ShopMapper {
      */
     @Delete("DELETE FROM shop WHERE Id = #{id}")
     int deleteShop(@Param("id") int id);
+
+    /**
+     * 更新店铺状态
+     * @param id
+     * @param state
+     * @return
+     */
+    @Update("UPDATE shop SET State = #{state} WHERE Id = #{id}")
+    int updateShopState(@Param("id") int id, @Param("state") int state);
 }

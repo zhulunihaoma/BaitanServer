@@ -81,6 +81,7 @@ shop:{
    String picUrl1: ,          //轮播图1文件名
    String picUrl2: ,          //轮播图2文件名
    String picUrl3: ,          //轮播图3文件名
+   int state: ,               //店铺状态 1:营业  0;歇业
 }
 
 ///////////////
@@ -180,6 +181,16 @@ wx.request({
         console.log(res.data)
       }
     })
+
+
+更新店铺营业状态接口：
+url："/shopmanage/updateshopstate"
+method：GET
+data: {
+      int shopId        //店铺id
+      int state         //店铺状态  1:营业  0;歇业
+}
+result
 
 ///////////////////////////////////
 ///////////////////////////////////

@@ -70,4 +70,16 @@ public class ShopManageController {
         boolean result = shopManageService.deleteShop(id);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
     }
+
+    /**
+     * 更新店铺状态
+     * @param shopId
+     * @param state
+     * @return
+     */
+    @GetMapping("/shopmanage/updateshopstate")
+    public ResponseResult updateShopState(int shopId, int state){
+        boolean result = shopManageService.updateShopState(shopId, state);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    }
 }
