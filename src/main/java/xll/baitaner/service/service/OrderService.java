@@ -1,21 +1,20 @@
 package xll.baitaner.service.service;
 
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xll.baitaner.service.entity.CommodityOrder;
+import xll.baitaner.service.entity.HistoryOrder;
 import xll.baitaner.service.entity.Order;
 import xll.baitaner.service.entity.OrderCommodity;
 import xll.baitaner.service.mapper.CommodityMapper;
 import xll.baitaner.service.mapper.OrderMapper;
 import xll.baitaner.service.mapper.ProfileMapper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 描述：订单管理service
@@ -69,16 +68,6 @@ public class OrderService {
             order.setOrderCoList(orderCoList);
         }
         return order;
-    }
-
-    /**
-     * 更新订单状态
-     * @param orderId
-     * @param state
-     * @return
-     */
-    public boolean updateOrderState(String orderId, int state){
-        return orderMapper.updateOrderState(orderId, state) > 0;
     }
 
     /**
@@ -175,5 +164,76 @@ public class OrderService {
         else {
             return null;
         }
+    }
+
+    /**
+     * 更新订单状态
+     * @param orderId
+     * @param state
+     * @return
+     */
+    @Transactional
+    public boolean updateOrderState(String orderId, int state){
+        boolean result = orderMapper.updateOrderState(orderId, state) > 0;
+        if(state == 2){
+            if(result){
+                if(creatHistoryOrder(orderId)){
+                    return true;
+                }
+                else throw new RuntimeException();
+            }
+            else throw new RuntimeException();
+        }
+        return result;
+    }
+
+    /**
+     * 生成历史订单流程
+     * @param orderId
+     * @return
+     */
+    @Transactional
+    public boolean creatHistoryOrder(String orderId){
+        Order order = getOrder(orderId);
+        int shopId = order.getShopId();
+        Date historyDate = order.getDate();
+        HistoryOrder ho = orderMapper.selectShopHistory(shopId, historyDate);
+        if(ho != null){
+            //已存在该日期,直接插订单
+            return orderMapper.insertHistoryOrder(ho.getId(), orderId) > 0;
+        }
+        else {
+            ho.setShopId(shopId);
+            ho.setHistoryDate(historyDate);
+            if(orderMapper.insertShopHistory(ho) > 0){
+                return orderMapper.insertHistoryOrder(ho.getId(), orderId) > 0;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * 获取历史订单列表
+     * @param shopId
+     * @param pageable
+     * @return
+     */
+    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, Pageable pageable){
+        List<HistoryOrder> list = orderMapper.selectHistoryOrderList(shopId, pageable);
+        if(list.size() > 0){
+            for (HistoryOrder ho : list){
+                List<Order> orderList = orderMapper.selectDateOrderList(ho.getId());
+                for(Order order : orderList){
+                    order.setOrderCoList(getOrderCoList(order.getOrderId()));
+                    order.setAddress(profileMapper.selectAddress(order.getReceiverAddressId()));
+                }
+                ho.setOrderList(orderList);
+            }
+        }
+
+        int count = orderMapper.countHistoryOrderList(shopId);
+        return new PageImpl<HistoryOrder>(list, pageable, count);
     }
 }

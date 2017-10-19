@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import xll.baitaner.service.entity.HistoryOrder;
 import xll.baitaner.service.entity.Order;
 import xll.baitaner.service.entity.OrderCommodity;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -120,4 +122,60 @@ public interface OrderMapper {
      */
     @Select("SELECT COUNT(*) FROM `order` WHERE ShopId = #{shopId} AND State = #{state}")
     int countOrdersByShop(@Param("shopId") int shopId, @Param("state") int state);
+
+
+
+    /**
+     * 插入店铺及历史日期
+     * @param shopId
+     * @param date
+     * @return
+     */
+    @Insert("INSERT INTO shophistory (ShopId,HistoryDate) VALUES (#{ho.shopId},#{ho.date})")
+    @Options(useGeneratedKeys = true, keyProperty = "ho.id")
+    int insertShopHistory(@Param("HistoryOrder") HistoryOrder ho);
+
+    /**
+     * 查询shophistory是否已存在店铺对应的日期条目
+     * @param shopId
+     * @param date
+     * @return
+     */
+    @Select("SELECT * FROM shophistory WHERE ShopId = #{shopId} AND HistoryDate = #{date}")
+    HistoryOrder selectShopHistory(@Param("shopId") int shopId, @Param("date") Date date);
+
+    /**
+     * 查询店铺的历史订单实体类列表
+     * @param shopId
+     * @param page
+     * @return
+     */
+    @Select("SELECT * FROM shophistory WHERE ShopId = #{shopId} LIMIT #{page.offset},#{page.size}")
+    List<HistoryOrder> selectHistoryOrderList(@Param("shopId") int shopId, @Param("page") Pageable page);
+
+    /**
+     * 查询店铺的历史订单实体类列表总个数
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT COUNT(*) FROM shophistory WHERE ShopId = #{shopId}")
+    int countHistoryOrderList(@Param("shopId") int shopId);
+
+    /**
+     * 以shophistoryID为基准插入订单
+     * @param historyId
+     * @param orderId
+     * @return
+     */
+    @Select("INSERT INTO historyorder (ShopHistoryId,OrderId) VALUES (#{historyId},#{orderId})")
+    int insertHistoryOrder(@Param("historyId") int historyId, @Param("orderId") String orderId);
+
+    /**
+     * 从historyorder查询具体日期的历史订单列表
+     * @param historyId
+     * @return
+     */
+    @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.OrderId = ho.OrderId " +
+            "WHERE ho.ShopHistoryId = #{historyId}")
+    List<Order> selectDateOrderList(@Param("historyId") int historyId);
 }

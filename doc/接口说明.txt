@@ -398,6 +398,13 @@ Order: {
      List<OrderCommodity> orderCommodityList;            //商品所在所有的已接订单列表
  }
 
+ 店铺历史订单实体类：
+ HistoryOrder：{
+     int id;                    //自动生成ID
+     String historyDate;        //历史日期  "yyyy-MM-dd"
+     List<Order> orderList;     //订单列表
+ }
+
 
 ///////////////
 用户下单接口：
@@ -494,5 +501,16 @@ data: {
       int shopId             //店铺ID
 }
 result; List<CommodityOrder>
+
+
+店铺端已接订单列表获取接口（按商品分类）：
+url："/ordermanage/gethistoryorders"
+method：GET
+data: {
+      int shopId             //店铺ID
+      int page               //请求页码，从0开始
+      int size               //请求每页数据的个数
+}
+result; List<HistoryOrder>   //历史订单实体列表，结构见上文
 
 

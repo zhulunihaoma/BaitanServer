@@ -118,4 +118,15 @@ public class OrderController {
     public ResponseResult getCoListShop(int shopId){
         return ResponseResult.result(0, "success", orderService.getCommdityListByShop(shopId));
     }
+
+    /**
+     * 获取店铺历史订单列表
+     * @param shopId
+     * @param pageable
+     * @return
+     */
+    @GetMapping("ordermanage/gethistoryorders")
+    public ResponseResult getHistoryOrderList(int shopId, Pageable pageable){
+        return ResponseResult.result(0, "success", orderService.getHistoryOrderList(shopId, pageable));
+    }
 }
