@@ -131,9 +131,9 @@ public interface OrderMapper {
      * @param date
      * @return
      */
-    @Insert("INSERT INTO shophistory (ShopId,HistoryDate) VALUES (#{ho.shopId},#{ho.date})")
+    @Insert("INSERT INTO shophistory (ShopId,HistoryDate) VALUES (#{ho.shopId},#{ho.historyDate})")
     @Options(useGeneratedKeys = true, keyProperty = "ho.id")
-    int insertShopHistory(@Param("HistoryOrder") HistoryOrder ho);
+    int insertShopHistory(@Param("ho") HistoryOrder ho);
 
     /**
      * 查询shophistory是否已存在店铺对应的日期条目
@@ -167,7 +167,7 @@ public interface OrderMapper {
      * @param orderId
      * @return
      */
-    @Select("INSERT INTO historyorder (ShopHistoryId,OrderId) VALUES (#{historyId},#{orderId})")
+    @Insert("INSERT INTO historyorder (ShopHistoryId,OrderId) VALUES (#{historyId},#{orderId})")
     int insertHistoryOrder(@Param("historyId") int historyId, @Param("orderId") String orderId);
 
     /**

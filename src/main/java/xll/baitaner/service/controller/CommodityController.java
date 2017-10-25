@@ -69,7 +69,7 @@ public class CommodityController {
      */
     @RequestMapping("commoditymanage/editcommodity")
     public ResponseResult editCommodity(Commodity commodity){
-        boolean result = commodityService.updateCommodity(commodity);
+        boolean result = commodityService.editCommodity(commodity);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
     }
 

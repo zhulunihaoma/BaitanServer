@@ -19,7 +19,7 @@ public interface ProfileMapper {
      * @param clientId
      * @return
      */
-    @Select("SELECT * FROM receiveraddress WHERE ClientId = #{clientId}")
+    @Select("SELECT * FROM receiveraddress WHERE ClientId = #{clientId} AND Disable = 1")
     List<ReceiverAddress> selectAddressList(@Param("clientId") String clientId);
 
     /**
@@ -27,7 +27,7 @@ public interface ProfileMapper {
      * @param id
      * @return
      */
-    @Select("SELECT * FROM receiveraddress WHERE Id = #{id}")
+    @Select("SELECT * FROM receiveraddress WHERE Id = #{id} AND Disable = 1")
     ReceiverAddress selectAddress(@Param("id") int id);
 
     /**
@@ -55,6 +55,14 @@ public interface ProfileMapper {
      */
     @Delete("DELETE FROM receiveraddress WHERE Id = #{id}")
     int deleteAddress(@Param("id") int id);
+
+    /**
+     * 更新收货地址的disable状态，替代删除方法
+     * @param id
+     * @return
+     */
+    @Update("UPDATE receiveraddress SET Disable = 0 WHERE Id  = #{id}")
+    int updateAdrDisabel(@Param("id") int id);
 
     /**
      * 收货地址设为默认地址

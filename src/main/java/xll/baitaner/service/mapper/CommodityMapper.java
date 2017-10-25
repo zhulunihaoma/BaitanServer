@@ -21,7 +21,7 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND Disable = 1 LIMIT #{page.offset},#{page.size}")
     List<Commodity> selectAllCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
 
     /**
@@ -29,7 +29,7 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM commodity WHERE ShopId = #{shopId}")
+    @Select("SELECT COUNT(*) FROM commodity WHERE ShopId = #{shopId} AND Disable = 1")
     int countAllCoList(@Param("shopId") int shopId);
 
     /**
@@ -37,7 +37,8 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND State = 1 LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND State = 1 AND Disable = 1 " +
+            "LIMIT #{page.offset},#{page.size}")
     List<Commodity> selectCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
 
     /**
@@ -45,7 +46,7 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM commodity WHERE ShopId = #{shopId} AND State = 0")
+    @Select("SELECT COUNT(*) FROM commodity WHERE ShopId = #{shopId} AND State = 1 AND Disable = 1")
     int countCoList(@Param("shopId") int shopId);
 
     /**
@@ -53,7 +54,7 @@ public interface CommodityMapper {
      * @param id
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE Id = #{id}")
+    @Select("SELECT * FROM commodity WHERE Id = #{id} AND Disable = 1")
     Commodity selectCommodity(@Param("id") int id);
 
     /**
@@ -83,6 +84,14 @@ public interface CommodityMapper {
      */
     @Delete("DELETE FROM commodity WHERE Id = #{id}")
     int deleteCommodity(@Param("id") int id);
+
+    /**
+     * 更新商品的disable状态，替代删除方法
+     * @param id
+     * @return
+     */
+    @Update("UPDATE commodity SET Disable = 0 WHERE Id  = #{id}")
+    int updateCoDisabel(@Param("id") int id);
 
     /**
      * 更新上下架状态

@@ -2,6 +2,7 @@ package xll.baitaner.service.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import xll.baitaner.service.entity.ReceiverAddress;
 import xll.baitaner.service.entity.ShopStatistics;
 import xll.baitaner.service.mapper.ProfileMapper;
@@ -51,11 +52,24 @@ public class ProfileService {
     }
 
     /**
+     * 更新收货地址信息（原收货地址disable改为false，添加新收货地址）
+     * @param address
+     * @return
+     */
+    @Transactional
+    public boolean editAddress(ReceiverAddress address){
+        int id = address.getId();
+        boolean re1 = deleteAddress(id);
+        boolean re2 = addAddress(address);
+        return re1 && re2;
+    }
+
+    /**
      * 更新收货地址信息
      * @param address
      * @return
      */
-    public boolean editAddress(ReceiverAddress address){
+    public boolean updateAddress(ReceiverAddress address){
         return profileMapper.updateAddress(address) > 0;
     }
 
@@ -65,7 +79,8 @@ public class ProfileService {
      * @return
      */
     public boolean deleteAddress(int addressId){
-        return profileMapper.deleteAddress(addressId) > 0;
+//        return profileMapper.deleteAddress(addressId) > 0;
+        return profileMapper.updateAdrDisabel(addressId) > 0;
     }
 
     /**

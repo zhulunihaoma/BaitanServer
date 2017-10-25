@@ -14,6 +14,8 @@ import xll.baitaner.service.mapper.CommodityMapper;
 import xll.baitaner.service.mapper.OrderMapper;
 import xll.baitaner.service.mapper.ProfileMapper;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -197,16 +199,25 @@ public class OrderService {
         Order order = getOrder(orderId);
         int shopId = order.getShopId();
         Date historyDate = order.getDate();
-        HistoryOrder ho = orderMapper.selectShopHistory(shopId, historyDate);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String datetostr = formatter.format(historyDate);
+        ParsePosition pos = new ParsePosition(0);
+        Date date = formatter.parse(datetostr, pos);
+
+        HistoryOrder ho = orderMapper.selectShopHistory(shopId, date);
         if(ho != null){
             //已存在该日期,直接插订单
             return orderMapper.insertHistoryOrder(ho.getId(), orderId) > 0;
         }
         else {
-            ho.setShopId(shopId);
-            ho.setHistoryDate(historyDate);
-            if(orderMapper.insertShopHistory(ho) > 0){
-                return orderMapper.insertHistoryOrder(ho.getId(), orderId) > 0;
+            HistoryOrder hon = new HistoryOrder();
+            hon.setShopId(shopId);
+            hon.setHistoryDate(date);
+            int result = orderMapper.insertShopHistory(hon);
+            if(result > 0){
+                int id = hon.getId();
+                return orderMapper.insertHistoryOrder(id, orderId) > 0;
             }
             else {
                 return false;
@@ -220,6 +231,7 @@ public class OrderService {
      * @param pageable
      * @return
      */
+    @Transactional
     public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, Pageable pageable){
         List<HistoryOrder> list = orderMapper.selectHistoryOrderList(shopId, pageable);
         if(list.size() > 0){
