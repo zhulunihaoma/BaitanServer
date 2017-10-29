@@ -36,7 +36,8 @@ public interface ShopMapper {
      * @return
      */
     @Update("UPDATE shop SET Name = #{shop.name}, Introduction = #{shop.introduction}, Contacts = #{shop.contacts}, " +
-            "Sex = #{shop.sex}, Phone = #{shop.phone} " +
+            "Sex = #{shop.sex}, Phone = #{shop.phone}, Address = #{shop.address}, PicUrl1 = #{shop.picUrl1}, " +
+            "PicUrl2 = #{shop.picUrl2}, PicUrl3 = #{shop.picUrl3} " +
             "WHERE ClientId  = #{shop.clientId}")
     int updateShop(@Param("shop") Shop shop);
 

@@ -78,6 +78,6 @@ public interface ProfileMapper {
      * @param clientId
      * @return
      */
-    @Select("SELECT * FROM receiveraddress WHERE ClientId = #{clientId} AND IsDefault = 1")
+    @Select("SELECT * FROM receiveraddress WHERE ClientId = #{clientId} AND IsDefault = 1 AND Disable = 1")
     ReceiverAddress selectDefaultAddress(@Param("clientId") String clientId);
 }
