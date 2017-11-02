@@ -86,7 +86,7 @@ public class CommodityService {
 
     /**
      * 删除商品(更改为修改可用状态)
-     * @param id
+     * @param commodityId
      * @return
      */
     public boolean deleteCommodity(int commodityId){
