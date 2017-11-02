@@ -54,7 +54,7 @@ public interface CommodityMapper {
      * @param id
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE Id = #{id} AND Disable = 1")
+    @Select("SELECT * FROM commodity WHERE Id = #{id}")
     Commodity selectCommodity(@Param("id") int id);
 
     /**

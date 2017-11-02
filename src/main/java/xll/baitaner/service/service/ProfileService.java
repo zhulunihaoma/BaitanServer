@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xll.baitaner.service.entity.ReceiverAddress;
 import xll.baitaner.service.entity.ShopStatistics;
+import xll.baitaner.service.mapper.OrderMapper;
 import xll.baitaner.service.mapper.ProfileMapper;
 
 import java.util.List;
@@ -19,6 +20,9 @@ public class ProfileService {
 
     @Autowired
     private ProfileMapper profileMapper;
+
+    @Autowired
+    private OrderMapper orderMapper;
 
     /**
      * 查询用户所有收货地址列表
@@ -108,11 +112,12 @@ public class ProfileService {
      * @return
      */
     public ShopStatistics getStatistics(int shopId){
+        int orderCount = orderMapper.countOrdersByShop(shopId, 1);
         ShopStatistics statistics = new ShopStatistics();
         statistics.setShopId(shopId);
         statistics.setTodaySales(1000);
         statistics.setTotalSales(100);
-        statistics.setTotalSales(10000);
+        statistics.setReceivedOrder(orderCount);
 
         return statistics;
     }

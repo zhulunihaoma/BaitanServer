@@ -63,7 +63,7 @@ public interface OrderMapper {
      * @param clientId
      * @return
      */
-    @Select("SELECT * FROM `order` WHERE ClientId = #{clientId} LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT * FROM `order` WHERE ClientId = #{clientId} ORDER BY Date DESC LIMIT #{page.offset},#{page.size}")
     List<Order> seleceOrdersByClientId(@Param("clientId") String clientId, @Param("page") Pageable page);
 
     /**
@@ -111,7 +111,8 @@ public interface OrderMapper {
      * @param state
      * @return
      */
-    @Select("SELECT * FROM `order` WHERE ShopId = #{shopId} AND State = #{state} LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT * FROM `order` WHERE ShopId = #{shopId} AND State = #{state} ORDER BY Date DESC " +
+            "LIMIT #{page.offset},#{page.size}")
     List<Order> selectOrdersByShop(@Param("shopId") int shopId, @Param("state") int state, @Param("page") Pageable page);
 
     /**
@@ -150,7 +151,7 @@ public interface OrderMapper {
      * @param page
      * @return
      */
-    @Select("SELECT * FROM shophistory WHERE ShopId = #{shopId} LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT * FROM shophistory WHERE ShopId = #{shopId} ORDER BY HistoryDate DESC LIMIT #{page.offset},#{page.size}")
     List<HistoryOrder> selectHistoryOrderList(@Param("shopId") int shopId, @Param("page") Pageable page);
 
     /**
