@@ -8,8 +8,8 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
-@MapperScan("xll.baitaner.service")
-@PropertySource("application.properties")
+@MapperScan("xll.baitaner.service.mapper")
+@PropertySource(value={"application.properties","WEB-INF/classes/application.properties"},ignoreResourceNotFound = true)
 public class Application extends SpringBootServletInitializer {
 
     /**
