@@ -41,7 +41,7 @@ public class OrderController {
      */
     @RequestMapping("ordermanage/submit")
     public ResponseResult submitOrder(Order order, String orderCoListStr){
-        List<OrderCommodity> orderCoList = (List<OrderCommodity>) JSONArray.toList(JSONArray.fromObject(orderCoListStr), OrderCommodity.class);
+        List<OrderCommodity> orderCoList = (List<OrderCommodity>) JSONArray.toCollection(JSONArray.fromObject(orderCoListStr), OrderCommodity.class);
 
         String id = SerialUtils.getSerialId();
         //生成订单编号

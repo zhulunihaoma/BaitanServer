@@ -75,7 +75,7 @@ public class CommodityController {
 
     /**
      * 删除商品接口
-     * @param commodity
+     * @param commodityId
      * @return
      */
     @RequestMapping("commoditymanage/deletecommodity")
@@ -86,7 +86,7 @@ public class CommodityController {
 
     /**
      * 修改商品上下架状态接口
-     * @param commodity
+     * @param commodityId
      * @return
      */
     @RequestMapping("commoditymanage/updatecostate")

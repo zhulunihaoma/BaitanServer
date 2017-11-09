@@ -23,7 +23,7 @@ public class PathUtil {
             if(runtimeOrDev){
                 //TODO 待验证部署后，路径是否正确
                 uploadPath = ClassUtils.getDefaultClassLoader().getResource("").getPath()
-                        + "../../../../8885/webapps/Baitaner/WEB-INF/classes/static/upload/";
+                        + "../../../../webapps/service/WEB-INF/classes/static/upload/";
             }else {
                 uploadPath = ClassUtils.getDefaultClassLoader().
                         getResource("").getPath() + "../../../../Baitaner/src/main/resources/static/upload/";
