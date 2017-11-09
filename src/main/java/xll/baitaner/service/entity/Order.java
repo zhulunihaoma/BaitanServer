@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 描述：
+ * 描述：订单实体类 TODO 新增收货地址数据字段
  * 创建者：xie
  * 日期：2017/10/14
  **/
@@ -42,12 +42,6 @@ public class Order {
      */
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date date;
-//
-//    /**
-//     * 用户要求送达时间
-//     */
-//    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
-//    private Date arriveDate;
 
     /**
      * 用户要求送达时间

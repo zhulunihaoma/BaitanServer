@@ -57,7 +57,7 @@ public class ProfileController {
      */
     @RequestMapping("profilemanage/editaddress")
     public ResponseResult editAddress(ReceiverAddress address){
-        boolean result = profileService.editAddress(address);
+        boolean result = profileService.updateAddress(address);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
     }
 
