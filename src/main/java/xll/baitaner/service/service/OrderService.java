@@ -6,10 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import xll.baitaner.service.entity.CommodityOrder;
-import xll.baitaner.service.entity.HistoryOrder;
-import xll.baitaner.service.entity.Order;
-import xll.baitaner.service.entity.OrderCommodity;
+import xll.baitaner.service.entity.*;
 import xll.baitaner.service.mapper.CommodityMapper;
 import xll.baitaner.service.mapper.OrderMapper;
 import xll.baitaner.service.mapper.ProfileMapper;
@@ -44,13 +41,15 @@ public class OrderService {
      */
     @Transactional
     public boolean addOrder(Order order, List<OrderCommodity> list){
-        int re = orderMapper.insertOrder(order);
+        ReceiverAddress address = profileMapper.selectAddress(order.getReceiverAddressId());
+        int re = orderMapper.insertOrder(order, address);
 
         if(re > 0 ){
             String orderId = order.getOrderId();
             boolean result = true;
             for (OrderCommodity oc : list){
-                result = orderMapper.insertOrderList(oc.getCommodityId(), oc.getCount(), orderId) > 0;
+                Commodity commodity = commodityMapper.selectCommodity(oc.getCommodityId());
+                result = orderMapper.insertOrderList(oc.getCommodityId(), oc.getCount(), orderId, commodity) > 0;
             }
 
             return result;
@@ -59,7 +58,7 @@ public class OrderService {
 
     /**
      * 获取单个订单数据,包含订单中商品详情
-     * @param clientId
+     * @param orderId
      * @return
      */
     @Transactional
@@ -91,7 +90,6 @@ public class OrderService {
 
         for(Order order : orderList){
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
-            order.setAddress(profileMapper.selectAddress(order.getReceiverAddressId()));
         }
         int count = orderMapper.countOrdersByClientId(clientId);
         return new PageImpl<Order>(orderList, pageable, count);
@@ -108,7 +106,6 @@ public class OrderService {
 
         for(Order order : orderList){
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
-            order.setAddress(profileMapper.selectAddress(order.getReceiverAddressId()));
         }
         int count = orderMapper.countOrdersByShop(shopId, 1);
         return new PageImpl<Order>(orderList, pageable, count);
@@ -123,8 +120,6 @@ public class OrderService {
         for (OrderCommodity orderCommodity : orderCommodityList){
             Order order = orderMapper.selectOrder(orderCommodity.getOrderId());
             orderCommodity.setOrder(order);
-            orderCommodity.setOrderRemarks(order.getRemarks());
-            orderCommodity.setClientName(profileMapper.selectAddress(order.getReceiverAddressId()).getName());
         }
         return orderCommodityList;
     }
@@ -132,7 +127,6 @@ public class OrderService {
     /**
      * 获取店铺的已接订单列表(按商品分类)
      * @param shopId
-     * @param pageable
      * @return
      */
     @Transactional
@@ -161,7 +155,7 @@ public class OrderService {
                 }
             }
 
-            return new ArrayList<CommodityOrder>(map.values());
+            return new ArrayList<>(map.values());
         }
         else {
             return null;
@@ -239,7 +233,6 @@ public class OrderService {
                 List<Order> orderList = orderMapper.selectDateOrderList(ho.getId());
                 for(Order order : orderList){
                     order.setOrderCoList(getOrderCoList(order.getOrderId()));
-                    order.setAddress(profileMapper.selectAddress(order.getReceiverAddressId()));
                 }
                 ho.setOrderList(orderList);
             }

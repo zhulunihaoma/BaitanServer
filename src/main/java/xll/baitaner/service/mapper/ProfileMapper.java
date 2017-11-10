@@ -80,4 +80,22 @@ public interface ProfileMapper {
      */
     @Select("SELECT * FROM receiveraddress WHERE ClientId = #{clientId} AND IsDefault = 1 AND Disable = 1")
     ReceiverAddress selectDefaultAddress(@Param("clientId") String clientId);
+
+
+    /**
+     * 查询店铺今日总营业额
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT SUM(TotalMoney) FROM `order` WHERE ShopId = #{shopId} AND State > 0 AND DATE(Date) = DATE(NOW())")
+    float selectTodaySalesByShop(@Param("shopId") int shopId);
+
+
+    /**
+     * 查询店铺总营业额
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT SUM(TotalMoney) FROM `order` WHERE ShopId = #{shopId} AND State > 0")
+    float selectTotalSalesByShop(@Param("shopId") int shopId);
 }

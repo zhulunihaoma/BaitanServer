@@ -69,7 +69,7 @@ public interface CommodityMapper {
 
     /**
      * 更新商品信息
-     * @param shop
+     * @param co
      * @return
      */
     @Update("UPDATE commodity SET Name = #{co.name}, Price = #{co.price}, MonthlySales = #{co.monthlySales}, " +

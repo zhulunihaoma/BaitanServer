@@ -83,8 +83,8 @@ public class ProfileService {
      * @return
      */
     public boolean deleteAddress(int addressId){
-//        return profileMapper.deleteAddress(addressId) > 0;
-        return profileMapper.updateAdrDisabel(addressId) > 0;
+        return profileMapper.deleteAddress(addressId) > 0;
+//        return profileMapper.updateAdrDisabel(addressId) > 0;
     }
 
     /**
@@ -107,16 +107,18 @@ public class ProfileService {
     }
 
     /**
-     * 获取当前店铺销售统计数据 //todo 按实际订单计算所得
+     * 获取当前店铺销售统计数据
      * @param shopId
      * @return
      */
     public ShopStatistics getStatistics(int shopId){
         int orderCount = orderMapper.countOrdersByShop(shopId, 1);
+        float todySales = profileMapper.selectTodaySalesByShop(shopId);
+        float totalSales = profileMapper.selectTotalSalesByShop(shopId);
         ShopStatistics statistics = new ShopStatistics();
         statistics.setShopId(shopId);
-        statistics.setTodaySales(1000);
-        statistics.setTotalSales(100);
+        statistics.setTodaySales(todySales);
+        statistics.setTotalSales(totalSales);
         statistics.setReceivedOrder(orderCount);
 
         return statistics;

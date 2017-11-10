@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import xll.baitaner.service.entity.HistoryOrder;
-import xll.baitaner.service.entity.Order;
-import xll.baitaner.service.entity.OrderCommodity;
+import xll.baitaner.service.entity.*;
 
 import java.util.Date;
 import java.util.List;
@@ -25,10 +23,12 @@ public interface OrderMapper {
      * @param order
      * @return
      */
-    @Insert("INSERT INTO `order` (OrderId,ClientId,ReceiverAddressId,ShopId,Date,ArriveDate,Remarks,TotalMoney,State) " +
+    @Insert("INSERT INTO `order` (OrderId,ClientId,ReceiverAddressId,ShopId,Date,ArriveDate,Remarks,TotalMoney,State," +
+            "Name,Sex,Address,Phone) " +
             "VALUES (#{order.orderId},#{order.clientId},#{order.receiverAddressId},#{order.shopId},#{order.date}," +
-            "#{order.arriveDate},#{order.remarks},#{order.totalMoney},#{order.state})")
-    int insertOrder(@Param("order") Order order);
+            "#{order.arriveDate},#{order.remarks},#{order.totalMoney},#{order.state},#{re.name},#{re.sex}," +
+            "#{re.address},#{re.phone})")
+    int insertOrder(@Param("order") Order order, @Param("ra") ReceiverAddress re);
 
     /**
      * 插入订单商品列表
@@ -37,8 +37,11 @@ public interface OrderMapper {
      * @param orderId
      * @return
      */
-    @Insert("INSERT INTO orderlist (CommodityId,Count,OrderId) VALUES (#{commodityId},#{count},#{orderId})")
-    int insertOrderList(@Param("commodityId") int commodityId, @Param("count") int count, @Param("orderId") String orderId);
+    @Insert("INSERT INTO orderlist (CommodityId,Count,OrderId,Name,Price,MonthlySales,Praise,PictUrl,Introduction) " +
+            "VALUES (#{commodityId},#{count},#{orderId},#{co.name},#{co.price},#{co.monthlySales},#{co.praise}," +
+            "#{co.pictUrl},#{co.introduction})")
+    int insertOrderList(@Param("commodityId") int commodityId, @Param("count") int count,
+                        @Param("orderId") String orderId, @Param("co") Commodity co);
 
 
     /**
@@ -79,18 +82,15 @@ public interface OrderMapper {
      * @param orderId
      * @return
      */
-    @Select("SELECT o.* ,co.`Name` AS commodityName FROM orderlist o " +
-            "JOIN commodity co ON co.Id = o.CommodityId " +
-            "WHERE OrderId = #{orderId}")
+    @Select("SELECT * FROM orderlist WHERE OrderId = #{orderId}")
     List<OrderCommodity> selectOrderCoListByOrderId(@Param("orderId") String orderId);
 
     /**
      * 获取店铺全部已接订单的商品详情
-     * @param orderId
+     * @param shopId
      * @return
      */
-    @Select("SELECT o.* ,co.`Name` AS commodityName FROM orderlist o " +
-            "JOIN commodity co ON co.Id = o.CommodityId " +
+    @Select("SELECT o*, od.Name AS clientName, od.Remarks AS orderRemarks FROM orderlist o " +
             "JOIN `order` od ON od.OrderId = o.OrderId " +
             "WHERE od.State = 1 AND od.ShopId = #{shopId}")
     List<OrderCommodity> selectAllOrderCoList(@Param("shopId") int shopId);
@@ -118,7 +118,7 @@ public interface OrderMapper {
     /**
      * 查询店铺对应状态的订单列表总个数
      * @param shopId
-     * @param state
+     * @param state 0：待支付 1：待送达 2：已完成
      * @return
      */
     @Select("SELECT COUNT(*) FROM `order` WHERE ShopId = #{shopId} AND State = #{state}")
@@ -128,8 +128,7 @@ public interface OrderMapper {
 
     /**
      * 插入店铺及历史日期
-     * @param shopId
-     * @param date
+     * @param ho
      * @return
      */
     @Insert("INSERT INTO shophistory (ShopId,HistoryDate) VALUES (#{ho.shopId},#{ho.historyDate})")

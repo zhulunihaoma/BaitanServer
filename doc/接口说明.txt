@@ -7,7 +7,8 @@ zhu7798768
 
 接口Host：
 本地局域网：http://192.168.1.105:8885/
-公网：http://pb18457555.imwork.net/
+公网：http://pb18457555.imwork.net/ (废弃)
+      http://111.231.114.159:8080/service/
 
 接口返回数据result：
 int code; //请求返回结果 0：成功 1：失败
@@ -387,18 +388,29 @@ Order: {
     int state;              //订单状态 0：待支付; 1：待送达; 2：已完成  (下单时不必提交)
 
     List<OrderCommodity> OrderCoList;       //订单中商品详情，封装订单中的商品和数量  特殊字段，下单时不用处理
-    ReceiverAddress address:                //订单中收货地址实体类，获取店铺订单时封装数据进去
+    //新增收货地址字段
+    String name:,              //联系人姓名
+    int sex: ,                 //联系人性别 0:男士 1:女士
+    String address: ,          //送餐地址
+    String phone: ,            //联系人电话
 }
 
 订单中商品详情实体类： (基本以数组形式操作)
  OrderCommodity：{
      int commodityId;        //商品Id
-     String commodityName;   //商品名 （入参时不需要赋值，只在出参时使用）
      int count;              //商品个数
 
-     //出参时才有值，在获取店铺订单列表（按商品分类）时，订单详情中展示
+     //新增商品详情字段
+     String name: ,             //商品名 （入参时不需要赋值，只在出参时使用）
+     String introduction: ,     //商品描述
+     float price: ,             //商品单价
+     int monthlySales: ,        //月销售数目
+     String praise: ,           //好评率
+     String pictUrl: ,          //商品图片
+
+     //在获取店铺订单列表（按商品分类）时才有值，订单详情中展示
      Order order;            //订单实体类
-     String ClientName;      //订单中收货人名字
+     String clientName;      //订单中收货人名字
      String orderRemarks;    //订单备注
  }
 
@@ -444,7 +456,7 @@ orderCoList:[
 orderCoListStr = JSON.stringify(that.data.orderCoList); //需要转化成字符串提交服务器
 
 接口实例：
- var orderCoListStr = JSON.stringify(that.data.orderCoList);
+    var orderCoListStr = JSON.stringify(that.data.orderCoList);
     wx.request({
       url: 'http://192.168.1.105:8885/ordermanage/submit',
       method: 'POST',

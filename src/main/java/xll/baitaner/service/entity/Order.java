@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 描述：订单实体类 TODO 新增收货地址数据字段
+ * 描述：订单实体类  新增收货地址数据字段
  * 创建者：xie
  * 日期：2017/10/14
  **/
@@ -71,8 +71,26 @@ public class Order {
      */
     private List<OrderCommodity> OrderCoList;
 
+    //新增订单收货地址详情
+
     /**
-     * 订单收货地址
+     * 收货人姓名
      */
-    private ReceiverAddress address;
+    private String name;
+
+    /**
+     * 收货人性别 0:男士 1:女士
+     */
+    private int sex;
+
+    /**
+     * 收货地址
+     */
+    private String address;
+
+    /**
+     * 收货人电话
+     */
+    private String phone;
+
 }

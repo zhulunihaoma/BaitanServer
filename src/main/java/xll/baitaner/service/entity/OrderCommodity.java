@@ -5,7 +5,7 @@ import lombok.Setter;
 
 /**
  * 描述：订单中商品及个数详情
- *  todo 修改为包含所有商品详情字段的实体类
+ *  新增 商品详情字段 订单详情个别字段
  * 创建者：xie
  * 日期：2017/10/15
  **/
@@ -20,11 +20,6 @@ public class OrderCommodity {
     private int commodityId;
 
     /**
-     * 商品名
-     */
-    private String commodityName;
-
-    /**
      * 商品个数
      */
     private int count;
@@ -34,20 +29,57 @@ public class OrderCommodity {
      */
     private String orderId;
 
-    //新增字段，出参时使用
+
+    //商品详情字段
+
+    /**
+     * 商品名
+     */
+    private String name;
+
+    /**
+     * 商品单价
+     */
+    private float price;
+
+    /**
+     * 月销售数目
+     */
+    private int monthlySales;
+
+    /**
+     * 好评率
+     */
+    private String praise;
+
+    /**
+     * 商品图片
+     */
+    private String pictUrl;
+
+    /**
+     * 商品描述
+     */
+    private String introduction;
+
+
+
+    //订单详情字段, 不在数据库中
+
+    /**
+     * 订单中收货人名字
+     */
+    private String clientName;
+
+    /**
+     * 订单备注
+     */
+    private String orderRemarks;
+
 
     /**
      * 订单实体类
      */
     private Order order;
 
-    /**
-     * 订单中收货人名字
-     */
-    private String ClientName;
-
-    /**
-     * 订单备注
-     */
-    private String orderRemarks;
 }
