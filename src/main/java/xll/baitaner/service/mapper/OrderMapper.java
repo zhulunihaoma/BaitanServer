@@ -28,7 +28,7 @@ public interface OrderMapper {
             "VALUES (#{order.orderId},#{order.clientId},#{order.receiverAddressId},#{order.shopId},#{order.date}," +
             "#{order.arriveDate},#{order.remarks},#{order.totalMoney},#{order.state},#{re.name},#{re.sex}," +
             "#{re.address},#{re.phone})")
-    int insertOrder(@Param("order") Order order, @Param("ra") ReceiverAddress re);
+    int insertOrder(@Param("order") Order order, @Param("re") ReceiverAddress re);
 
     /**
      * 插入订单商品列表
