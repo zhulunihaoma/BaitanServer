@@ -72,8 +72,11 @@ public class WXPayController {
             data.put("trade_type", "JSAPI");//交易类型 JSAP:公众号支付
             data.put("openid", openId);//用户标识,微信用户ID 暂时使用我的openid
 
+            System.out.print("WXPay unifiedOrder data: " + data.toString());
+
             //返回预支付订单信息，发送给前端
             Map<String, String> result = wxPay.unifiedOrder(data);
+            System.out.print("WXPay unifiedOrder result: " + result.toString());
 
             String prepay_id = result.get("prepay_id");//预支付交易会话标识
             //出错跳转错误页面
