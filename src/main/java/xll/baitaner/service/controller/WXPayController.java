@@ -77,6 +77,9 @@ public class WXPayController {
             //返回预支付订单信息，发送给前端
             Map<String, String> result = wxPay.unifiedOrder(data);
             System.out.print("WXPay unifiedOrder result: " + result.toString());
+            if(result.get("return_code").equals("FAIL")){
+                return ResponseResult.result(1, result.get("return_msg"),null);
+            }
 
             String prepay_id = result.get("prepay_id");//预支付交易会话标识
             //出错跳转错误页面

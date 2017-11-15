@@ -90,7 +90,7 @@ public interface OrderMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT o*, od.Name AS clientName, od.Remarks AS orderRemarks FROM orderlist o " +
+    @Select("SELECT o.*, od.Name AS clientName, od.Remarks AS orderRemarks FROM orderlist o " +
             "JOIN `order` od ON od.OrderId = o.OrderId " +
             "WHERE od.State = 1 AND od.ShopId = #{shopId}")
     List<OrderCommodity> selectAllOrderCoList(@Param("shopId") int shopId);
