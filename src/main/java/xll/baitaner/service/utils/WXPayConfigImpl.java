@@ -33,6 +33,8 @@ public class WXPayConfigImpl implements WXPayConfig {
         return "wxa2093db3cd2a5828";
     }
 
+    public String getAppSecret(){return "fc19d202cf86fb5ea0150c0a4847a6db";}
+
     /**
      * 商户号
      * @return

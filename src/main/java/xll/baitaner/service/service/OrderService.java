@@ -139,7 +139,19 @@ public class OrderService {
                 if(!map.containsKey(coId)){
                     CommodityOrder commodityOrder = new CommodityOrder();
                     commodityOrder.setCommodityId(coId);
-                    commodityOrder.setCommodity(commodityMapper.selectCommodity(coId));
+
+                    //todo 商品详情数据直接从OrderCommodity中获取，防止商品被删除后无数据
+                    Commodity commodity = new Commodity();
+                    commodity.setId(coId);
+                    commodity.setName(orderCommodity.getName());
+                    commodity.setPrice(orderCommodity.getPrice());
+                    commodity.setMonthlySales(orderCommodity.getMonthlySales());
+                    commodity.setPraise(orderCommodity.getPraise());
+                    commodity.setPictUrl(orderCommodity.getPictUrl());
+                    commodity.setIntroduction(orderCommodity.getIntroduction());
+                    commodityOrder.setCommodity(commodity);
+
+//                    commodityOrder.setCommodity(commodityMapper.selectCommodity(coId));
                     commodityOrder.setTotalNum(orderMapper.sumCoCount(coId));
 
                     List<OrderCommodity> list = new ArrayList<>();

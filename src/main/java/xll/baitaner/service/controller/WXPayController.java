@@ -9,15 +9,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xll.baitaner.service.entity.Order;
 import xll.baitaner.service.service.OrderService;
+import xll.baitaner.service.utils.HttpRequest;
 import xll.baitaner.service.utils.ResponseResult;
 import xll.baitaner.service.utils.WXPayConfigImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +37,49 @@ public class WXPayController {
 
     private WXPayConfigImpl config;
     private WXPay wxPay;
+
+
+    /**
+     * 微信小程序登录流程 todo 登录状态储存，每次后台请求做校验
+     * @param code
+     * @param session
+     * @return
+     */
+    @GetMapping("wxlogin")
+    public ResponseResult wxlogin(String code){
+        if(code == null || "".equals(code)){
+            return ResponseResult.result(1, "code值为空",null);
+        }
+
+        try {
+            config = WXPayConfigImpl.getInstance();
+
+            String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + config.getAppID()
+                    + "&secret=" + config.getAppSecret() + "&js_code=" + code + "&grant_type=authorization_code";
+            System.out.print("微信登录，请求url：" + url);
+
+            String res = HttpRequest.sendGetRequest(url);
+            if (res == null || "".equals(res)) {
+                System.out.print("微信登录，请求接口返回值为空或null");
+                return ResponseResult.result(1, "请求微信失败：" + res + "--",null);
+            }
+            System.out.print("微信登录，请求接口返回值：" + res);
+
+            JSONObject obj = JSONObject.fromObject(res);
+            if (obj.containsKey("errcode")) {
+                String errcode = obj.get("errcode").toString();
+                System.out.print("微信登录，微信返回的错误码：" + errcode);
+                return ResponseResult.result(1, "微信返回的错误码：" + errcode,null);
+            } else if (obj.containsKey("session_key")) {
+                String openId = obj.get("openid").toString();
+                return ResponseResult.result(0, "success",openId);
+            }
+            return ResponseResult.result(0, "请求微信失败：" + res,null);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseResult.result(1, e.toString(),null);
+        }
+    }
 
     /**
      * 发起微信支付
@@ -57,7 +103,8 @@ public class WXPayController {
             wxPay = new WXPay(config);
 
             //支付金额
-            String total_fee = String.valueOf(order.getTotalMoney() * 100);
+            DecimalFormat decimalFormat = new DecimalFormat("0");
+            String total_fee = decimalFormat.format((order.getTotalMoney() * 100));
 
             //商户订单号
             String out_trade_no = order.getOrderId();
@@ -66,7 +113,7 @@ public class WXPayController {
             data.put("body","小仙女烘焙-支付" + total_fee);//商品描述
             data.put("out_trade_no",out_trade_no);//商户订单号
             data.put("fee_type", "CNY");//货币
-            data.put("total_fee", "1");//标价金额 单位为分 不能有小数点 todo 测试用1分钱
+            data.put("total_fee", total_fee);//标价金额 单位为分 不能有小数点 todo 测试用1分钱
             data.put("spbill_create_ip", "192.168.1.1");//终端IP
             data.put("notify_url", "https://www.eastzebra.cn/service/wxpay/notify");//异步接收微信支付结果通知的回调地址,外网可访问地址
             data.put("trade_type", "JSAPI");//交易类型 JSAP:公众号支付
@@ -162,8 +209,16 @@ public class WXPayController {
                 String total_fee = resultMap.get("total_fee"); //支付金额
 
                 Order order = orderService.getOrder(out_trade_no);
-                if(total_fee.equals(String.valueOf(order.getTotalMoney() * 100))){
-                    orderService.updateOrderState(out_trade_no, 1);
+
+                DecimalFormat decimalFormat = new DecimalFormat("0");
+                String money = decimalFormat.format((order.getTotalMoney() * 100));
+
+                System.out.print("\n out_trade_no: " + out_trade_no + "\ntotal_fee : " + total_fee + "\nMoney: "
+                        + money);
+
+                if(total_fee.equals(money)){
+                    boolean res = orderService.updateOrderState(out_trade_no, 1);
+                    System.out.print("updateOrderState: " + res);
                 }
 
             }
