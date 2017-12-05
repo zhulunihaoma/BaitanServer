@@ -4,6 +4,7 @@ import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,11 @@ public class WXPayController {
     private WXPayConfigImpl config;
     private WXPay wxPay;
 
+    /**
+     * 是否在正式环境
+     */
+    @Value("${baitaner.runtime}")
+    private boolean runtimeOrDev;
 
     /**
      * 微信小程序登录流程 todo 登录状态储存，每次后台请求做校验
@@ -109,13 +115,16 @@ public class WXPayController {
             //商户订单号
             String out_trade_no = order.getOrderId();
 
+            String notify_url = runtimeOrDev ? "https://www.eastzebra.cn/service/wxpay/notify" :
+                                               "https://www.eastzebra.cn/service_test/wxpay/notify";
+
             HashMap<String, String> data = new HashMap<>();
             data.put("body","小仙女烘焙-支付" + total_fee);//商品描述
             data.put("out_trade_no",out_trade_no);//商户订单号
             data.put("fee_type", "CNY");//货币
             data.put("total_fee", total_fee);//标价金额 单位为分 不能有小数点 todo 测试用1分钱
             data.put("spbill_create_ip", "192.168.1.1");//终端IP
-            data.put("notify_url", "https://www.eastzebra.cn/service/wxpay/notify");//异步接收微信支付结果通知的回调地址,外网可访问地址
+            data.put("notify_url", notify_url);//异步接收微信支付结果通知的回调地址,外网可访问地址
             data.put("trade_type", "JSAPI");//交易类型 JSAP:公众号支付
             data.put("openid", openId);//用户标识,微信用户ID 暂时使用我的openid
 
@@ -213,7 +222,7 @@ public class WXPayController {
                 DecimalFormat decimalFormat = new DecimalFormat("0");
                 String money = decimalFormat.format((order.getTotalMoney() * 100));
 
-                System.out.print("\n out_trade_no: " + out_trade_no + "\ntotal_fee : " + total_fee + "\nMoney: "
+                System.out.print("\nout_trade_no: " + out_trade_no + "\ntotal_fee : " + total_fee + "\nMoney: "
                         + money);
 
                 if(total_fee.equals(money)){
