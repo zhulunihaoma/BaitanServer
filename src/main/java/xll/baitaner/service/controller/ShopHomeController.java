@@ -1,5 +1,6 @@
 package xll.baitaner.service.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,13 +13,14 @@ import xll.baitaner.service.utils.ResponseResult;
 @RestController
 public class ShopHomeController {
 
+    /**
+     * 是否在正式环境
+     */
+    @Value("${baitaner.runtime}")
+    private boolean runtimeOrDev;
+
     @GetMapping("/")
     public ResponseResult testhome(){
-        return ResponseResult.result(0, "success", "HelloworldTest");
-    }
-
-    @GetMapping("/test")
-    public ModelAndView test(){
-        return new ModelAndView("/test");
+        return ResponseResult.result(0, runtimeOrDev ? "online" : "test", runtimeOrDev ? "正式环境" : "测试环境");
     }
 }

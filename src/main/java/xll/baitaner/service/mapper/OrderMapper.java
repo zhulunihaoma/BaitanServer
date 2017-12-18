@@ -176,6 +176,6 @@ public interface OrderMapper {
      * @return
      */
     @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.OrderId = ho.OrderId " +
-            "WHERE ho.ShopHistoryId = #{historyId}")
+            "WHERE ho.ShopHistoryId = #{historyId} ORDER BY o.Date DESC")
     List<Order> selectDateOrderList(@Param("historyId") int historyId);
 }

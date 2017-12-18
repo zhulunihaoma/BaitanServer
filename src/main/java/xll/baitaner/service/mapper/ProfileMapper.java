@@ -87,7 +87,8 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COALESCE(SUM(TotalMoney),0) FROM `order` WHERE ShopId = #{shopId} AND State > 0 AND DATE(Date) = DATE(NOW())")
+    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `order` " +
+            "WHERE ShopId = #{shopId} AND State > 0 AND DATE(Date) = DATE(NOW())")
     float selectTodaySalesByShop(@Param("shopId") int shopId);
 
 
@@ -96,6 +97,7 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COALESCE(SUM(TotalMoney),0) FROM `order` WHERE ShopId = #{shopId} AND State > 0")
+    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `order` " +
+            "WHERE ShopId = #{shopId} AND State > 0")
     float selectTotalSalesByShop(@Param("shopId") int shopId);
 }
