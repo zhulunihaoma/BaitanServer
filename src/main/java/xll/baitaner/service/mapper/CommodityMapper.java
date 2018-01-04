@@ -21,7 +21,7 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND Disable = 1 LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND Disable = 1 ORDER BY Id DESC LIMIT #{page.offset},#{page.size}")
     List<Commodity> selectAllCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
 
     /**
@@ -37,7 +37,7 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND State = 1 AND Disable = 1 " +
+    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND State = 1 AND Disable = 1 ORDER BY Id DESC " +
             "LIMIT #{page.offset},#{page.size}")
     List<Commodity> selectCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
 

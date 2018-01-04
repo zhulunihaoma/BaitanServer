@@ -214,8 +214,13 @@ public class OrderService {
         HistoryOrder ho = orderMapper.selectShopHistory(shopId, date);
         if(ho != null){
             //已存在该日期,直接插订单
-            //todo 先判断是否有此历史订单，在插入
-            return orderMapper.insertHistoryOrder(ho.getId(), orderId) > 0;
+
+            //先判断是否有此历史订单，再插入
+            if(orderMapper.selectCountHistoryOrder(ho.getId(), orderId) > 0){
+                return false;
+            }else {
+                return orderMapper.insertHistoryOrder(ho.getId(), orderId) > 0;
+            }
         }
         else {
             HistoryOrder hon = new HistoryOrder();
@@ -224,8 +229,12 @@ public class OrderService {
             int result = orderMapper.insertShopHistory(hon);
             if(result > 0){
                 int id = hon.getId();
-                //todo 先判断是否有此历史订单，在插入
-                return orderMapper.insertHistoryOrder(id, orderId) > 0;
+                //先判断是否有此历史订单，再插入
+                if(orderMapper.selectCountHistoryOrder(id, orderId) > 0){
+                    return false;
+                }else {
+                    return orderMapper.insertHistoryOrder(id, orderId) > 0;
+                }
             }
             else {
                 return false;

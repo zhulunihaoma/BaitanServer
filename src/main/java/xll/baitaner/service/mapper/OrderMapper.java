@@ -162,6 +162,15 @@ public interface OrderMapper {
     int countHistoryOrderList(@Param("shopId") int shopId);
 
     /**
+     * 判断历史订单是否已存在
+     * @param historyId
+     * @param orderId
+     * @return
+     */
+    @Select("SELECT COUNT(*) FROM historyorder WHERE ShopHistoryId = #{historyId} AND OrderId = #{orderId}")
+    int selectCountHistoryOrder(@Param("historyId") int historyId, @Param("orderId") String orderId);
+
+    /**
      * 以shophistoryID为基准插入订单
      * @param historyId
      * @param orderId
