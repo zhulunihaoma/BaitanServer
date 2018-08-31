@@ -10,17 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xll.baitaner.service.entity.Order;
 import xll.baitaner.service.service.OrderService;
-import xll.baitaner.service.utils.HttpRequest;
-import xll.baitaner.service.utils.ResponseResult;
-import xll.baitaner.service.utils.WXPayConfigImpl;
+import xll.baitaner.service.utils.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +36,8 @@ public class WXPayController {
     private WXPayConfigImpl config;
     private WXPay wxPay;
 
+    private String TAG = "Baitaner-WXPayController";
+
     /**
      * 是否在正式环境
      */
@@ -48,7 +47,6 @@ public class WXPayController {
     /**
      * 微信小程序登录流程 todo 登录状态储存，每次后台请求做校验
      * @param code
-     * @param session
      * @return
      */
     @GetMapping("wxlogin")
@@ -249,4 +247,109 @@ public class WXPayController {
             }
         }
     }
+
+
+    /***************好近钱方支付测试******************/
+    /**
+     * 好近钱方支付测试
+     * @param fee
+     * @param openId
+     * @return
+     */
+    @GetMapping("qfpay")
+    public ResponseResult qfpay(String fee, String openId){
+
+        String payUrl = "https://openapi-test.qfpay.com/trade/v1/payment";
+        String out_trade_no = SerialUtils.getSerialId();
+        String txdtm = DateUtils.getCurrentDate();
+
+        String code = "2DAB13A0AF4D4031820149BCD58188D0";
+        String key = "12EBB96FE0C24B4DA987424812685922";
+        String mchid = "8w5pdhDJkm";
+
+        try{
+            //发起支付数据
+            HashMap<String, String> data = new HashMap<>();
+            data.put("txamt",fee); //订单支付金额，单位分
+            data.put("txcurrcd", "CNY");//货币
+            data.put("pay_type", "800213");//支付类型    微信小程序支付:800213
+            data.put("out_trade_no", out_trade_no);//外部订单号
+            data.put("txdtm", txdtm);//请求交易时间  格式为：YYYY-MM-MM HH:MM:SS
+            data.put("sub_openid", WXPayConfigImpl.getInstance().getAppID());//微信小程序的openid
+            data.put("goods_name", "钱方支付测试商品");//商品名称标示
+            data.put("mchid", mchid);
+            //MD5签名
+            String sign = WXPayUtil.generateSignature(data, key);
+
+            String UTF8 = "UTF-8";
+            URL httpUrl = new URL(payUrl);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) httpUrl.openConnection();
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setUseCaches(false);
+            httpURLConnection.connect();
+            //http头添加验证属性
+            httpURLConnection.setRequestProperty("X-QF-APPCODE", code);
+            httpURLConnection.setRequestProperty("X-QF-SIGN", sign);
+
+            JSONObject jsonObject = JSONObject.fromObject(data);
+            LogUtils.info(TAG, "qfpay reqBody：" + jsonObject.toString());
+
+            OutputStream outputStream = httpURLConnection.getOutputStream();
+            // 注意编码格式
+            outputStream.write(jsonObject.toString().getBytes(UTF8));
+            outputStream.close();
+
+            //获取返回内容
+            InputStream inputStream = httpURLConnection.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF8));
+            final StringBuffer stringBuffer = new StringBuffer();
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuffer.append(line);
+            }
+
+            String resp = stringBuffer.toString();
+            if (stringBuffer!=null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (inputStream!=null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //获取数据发送前端
+            LogUtils.info(TAG, "支付返回 resp: " + resp);
+            JSONObject payObj = (JSONObject)JSONObject.fromObject(resp).get("pay_params");
+            LogUtils.info(TAG, "获取返回数据中的pay_params: " + payObj);
+
+            //生成信息签名
+            HashMap<String, String> finalpackage = new HashMap<>();
+            finalpackage.put("appId", payObj.get("appId").toString());
+            finalpackage.put("timeStamp", payObj.get("timeStamp").toString());
+            finalpackage.put("nonceStr", payObj.get("nonceStr").toString());
+            finalpackage.put("package", payObj.get("package").toString());
+            finalpackage.put("signType", payObj.get("signType").toString());
+            String paySign = WXPayUtil.generateSignature(finalpackage, key);
+
+            //直接打包JSON格式发送到前端
+            payObj.put("paySign", paySign);
+
+            LogUtils.info(TAG, "发送给前端小程序JSONp: " + payObj);
+            return ResponseResult.result(0, "成功",payObj);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseResult.result(1, "支付接口出错",null);
+        }
+    }
+
 }

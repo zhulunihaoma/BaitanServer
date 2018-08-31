@@ -17,7 +17,7 @@ public class HttpRequest {
 
     /**
      * get请求
-     * @param httpUrl
+     * @param strUrl
      * @return
      */
     public static String sendGetRequest(String strUrl) throws Exception {
