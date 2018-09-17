@@ -257,7 +257,7 @@ public class WXPayController {
      * @return
      */
     @GetMapping("qfpay")
-    public ResponseResult qfpay(String fee){
+    public ResponseResult qfpay(String fee, String openId){
 
         String payUrl = "https://openapi-test.qfpay.com/trade/v1/payment";
         String out_trade_no = SerialUtils.getSerialId();
@@ -275,14 +275,14 @@ public class WXPayController {
             data.put("pay_type", "800213");//支付类型    微信小程序支付:800213
             data.put("out_trade_no", out_trade_no);//外部订单号
             data.put("txdtm", txdtm);//请求交易时间  格式为：YYYY-MM-MM HH:MM:SS
-            data.put("sub_openid", WXPayConfigImpl.getInstance().getAppID());//微信小程序的openid
+            data.put("sub_openid", openId);//微信小程序的openid
             data.put("goods_name", "qfTest");//商品名称标示
             data.put("mchid", mchid);
 
             //MD5签名
             String sign = WXPayUtil.generateSignature(data, key);
             String sign2 = WXPayUtil.MD5("goods_name=qfTest&mchid=" + mchid + "&out_trade_no=" + out_trade_no +
-                    "&pay_type=800213&sub_openid=wxa2093db3cd2a5828&txamt=1&txcurrcd=CNY&txdtm="+txdtm+"key=0910E30FD78648BE913F167F9594932E").toUpperCase();
+                    "&pay_type=800213&sub_openid="+openId+"&txamt=1&txcurrcd=CNY&txdtm="+txdtm+"key=0910E30FD78648BE913F167F9594932E").toUpperCase();
             LogUtils.info(TAG, "发起支付的data: " + data + "\n 签名sign: " + sign + "\n sing2: " + sign2);
 
             String UTF8 = "UTF-8";
@@ -295,7 +295,7 @@ public class WXPayController {
 
             //http头添加验证属性
             httpURLConnection.setRequestProperty("X-QF-APPCODE", code);
-            httpURLConnection.setRequestProperty("X-QF-SIGN", sign);
+            httpURLConnection.setRequestProperty("X-QF-SIGN", sign2);
 
             httpURLConnection.connect();
 
