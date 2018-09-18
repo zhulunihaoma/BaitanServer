@@ -259,7 +259,7 @@ public class WXPayController {
     @GetMapping("qfpay")
     public ResponseResult qfpay(String fee, String openId){
 
-        String payUrl = "https://openapi-test.qfpay.com/trade/v1/payment";
+        String payUrl = "https://openapi.qfpay.com/trade/v1/payment";
         String out_trade_no = SerialUtils.getSerialId();
         String txdtm = DateUtils.getCurrentDate();
 
@@ -282,7 +282,7 @@ public class WXPayController {
             //MD5签名
             String sign = WXPayUtil.generateSignature(data, key);
             String sign2 = WXPayUtil.MD5("goods_name=qfTest&mchid=" + mchid + "&out_trade_no=" + out_trade_no +
-                    "&pay_type=800213&sub_openid="+openId+"&txamt=1&txcurrcd=CNY&txdtm="+txdtm+"key=0910E30FD78648BE913F167F9594932E").toUpperCase();
+                    "&pay_type=800213&sub_openid="+openId+"&txamt=1&txcurrcd=CNY&txdtm="+txdtm + key).toUpperCase();
             LogUtils.info(TAG, "发起支付的data: " + data + "\n 签名sign: " + sign + "\n sing2: " + sign2);
 
             String UTF8 = "UTF-8";
@@ -353,13 +353,25 @@ public class WXPayController {
             //直接打包JSON格式发送到前端
             payObj.put("paySign", paySign);
 
-            LogUtils.info(TAG, "发送给前端小程序JSONp: " + payObj);
+            LogUtils.info(TAG, "发送给前端小程序JSON: " + payObj);
             return ResponseResult.result(0, "成功",payObj);
         }
         catch (Exception e){
             e.printStackTrace();
             return ResponseResult.result(1, "支付接口出错",null);
         }
+    }
+
+
+    @GetMapping("qfwxpay")
+    public ResponseResult qfwxpay(String fee, String openId){
+
+        String out_trade_no = SerialUtils.getSerialId();
+        String txdtm = DateUtils.getCurrentDate();
+
+        JSONObject payObj = QfWxPay.QfPayMent(fee, out_trade_no, txdtm, openId);
+        LogUtils.info(TAG, "qfwxpay 返回数据中的pay_params: " + payObj);
+        return ResponseResult.result(0, "成功",payObj);
     }
 
 }
