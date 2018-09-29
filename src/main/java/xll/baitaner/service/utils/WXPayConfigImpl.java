@@ -1,7 +1,11 @@
 package xll.baitaner.service.utils;
 
 import com.github.wxpay.sdk.WXPayConfig;
+import org.springframework.util.ClassUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 /**
@@ -26,14 +30,25 @@ public class WXPayConfigImpl implements WXPayConfig {
     }
 
     /**
-     * 小程序AppID
+     * 小程序AppID --小仙女
+     * @return
+     */
+//    public String getAppID() {
+//        return "wxa2093db3cd2a5828";
+//    }
+//
+//    public String getAppSecret(){return "fc19d202cf86fb5ea0150c0a4847a6db";}
+
+
+    /**
+     * 小程序AppID --新摆摊小程序
      * @return
      */
     public String getAppID() {
-        return "wxa2093db3cd2a5828";
+        return "wxdea72e3ef1d40e45";
     }
 
-    public String getAppSecret(){return "fc19d202cf86fb5ea0150c0a4847a6db";}
+    public String getAppSecret(){return "381b235396907b0519127e13370918ad";}
 
     /**
      * 商户号
@@ -52,13 +67,26 @@ public class WXPayConfigImpl implements WXPayConfig {
     }
 
 
+    private byte[] certData;
+
+    public WXPayConfigImpl() throws Exception {
+        String certPath = ClassUtils.getDefaultClassLoader().getResource("").getPath()
+                + "../../../../webapps/cert/apiclient_cert.p12";
+        File file = new File(certPath);
+        InputStream certStream = new FileInputStream(file);
+        this.certData = new byte[(int) file.length()];
+        certStream.read(this.certData);
+        certStream.close();
+    }
+
     /**
      * 证书内容
      * @return
      */
     @Override
     public InputStream getCertStream() {
-        return null;
+        ByteArrayInputStream certBis = new ByteArrayInputStream(this.certData);
+        return certBis;
     }
 
 

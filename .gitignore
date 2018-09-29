@@ -17,3 +17,4 @@ settings.gradle
 upload/
 src/main/webapp/
 src/main/resources/static/upload/
+classes/

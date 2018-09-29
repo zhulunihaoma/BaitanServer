@@ -280,10 +280,9 @@ public class WXPayController {
             data.put("mchid", mchid);
 
             //MD5签名
-            String sign = WXPayUtil.generateSignature(data, key);
-            String sign2 = WXPayUtil.MD5("goods_name=qfTest&mchid=" + mchid + "&out_trade_no=" + out_trade_no +
+            String sign = WXPayUtil.MD5("goods_name=qfTest&mchid=" + mchid + "&out_trade_no=" + out_trade_no +
                     "&pay_type=800213&sub_openid="+openId+"&txamt=1&txcurrcd=CNY&txdtm="+txdtm + key).toUpperCase();
-            LogUtils.info(TAG, "发起支付的data: " + data + "\n 签名sign: " + sign + "\n sing2: " + sign2);
+            LogUtils.info(TAG, "发起支付的data: " + data + "\n 签名sign: " + sign + "\n sing2: " + sign);
 
             String UTF8 = "UTF-8";
             URL httpUrl = new URL(payUrl);
@@ -295,7 +294,7 @@ public class WXPayController {
 
             //http头添加验证属性
             httpURLConnection.setRequestProperty("X-QF-APPCODE", code);
-            httpURLConnection.setRequestProperty("X-QF-SIGN", sign2);
+            httpURLConnection.setRequestProperty("X-QF-SIGN", sign);
 
             httpURLConnection.connect();
 
@@ -363,6 +362,12 @@ public class WXPayController {
     }
 
 
+    /**
+     * 好近钱方支付测试,使用工具类
+     * @param fee
+     * @param openId
+     * @return
+     */
     @GetMapping("qfwxpay")
     public ResponseResult qfwxpay(String fee, String openId){
 
@@ -374,4 +379,57 @@ public class WXPayController {
         return ResponseResult.result(0, "成功",payObj);
     }
 
+
+    /************************微信提现测试******************************/
+
+    /**
+     * 微信企业付款 提现到个人
+     * @param openId
+     * @param fee
+     * @return
+     */
+    @GetMapping("wxpayforper")
+    public ResponseResult wxpayforper(String appId, String openId, String fee){
+        String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
+        try {
+            config = WXPayConfigImpl.getInstance();
+            wxPay = new WXPay(config);
+
+//            String mch_appid = config.getAppID();
+            String mch_appid = appId;
+            String mchid = config.getMchID();
+            String nonce_str = WXPayUtil.generateNonceStr();//随机串
+            String partner_trade_no = SerialUtils.getSerialId();
+            String check_name = "NO_CHECK";
+            String amount = fee;
+            String desc = "提现测试";
+            String spbill_create_ip = "111.231.114.159";
+
+
+            HashMap<String, String> data = new HashMap<>();
+            data.put("mch_appid", mch_appid);
+            data.put("mchid", mchid);
+            data.put("nonce_str", mch_appid);
+            data.put("partner_trade_no", partner_trade_no);
+            data.put("openid", openId);
+            data.put("check_name", check_name);
+            data.put("amount", amount);
+            data.put("desc", desc);
+            data.put("spbill_create_ip", spbill_create_ip);
+
+            //MD5签名
+            String sign = WXPayUtil.generateSignature(data, config.getKey());
+            data.put("sign", sign);
+
+            String respXml = wxPay.requestWithCert(url, data, config.getHttpConnectTimeoutMs(), config.getHttpReadTimeoutMs());
+
+            LogUtils.info(TAG, "wxpayforper 返回XML: " + respXml);
+
+            return ResponseResult.result(0, "返回数据",respXml);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseResult.result(1, "企业付款接口出错",null);
+        }
+    }
 }
