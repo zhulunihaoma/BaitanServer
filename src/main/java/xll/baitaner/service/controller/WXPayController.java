@@ -405,7 +405,6 @@ public class WXPayController {
             String desc = "提现测试";
             String spbill_create_ip = "111.231.114.159";
 
-
             HashMap<String, String> data = new HashMap<>();
             data.put("mch_appid", mch_appid);
             data.put("mchid", mchid);
