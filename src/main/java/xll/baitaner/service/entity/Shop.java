@@ -9,7 +9,6 @@ import lombok.Setter;
  * 创建者：xie
  * 日期：2017/9/19
  **/
-
 @Getter
 @Setter
 public class Shop {
