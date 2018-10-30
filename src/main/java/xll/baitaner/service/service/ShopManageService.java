@@ -13,8 +13,6 @@ import java.io.IOException;
 
 /**
  * 描述：店铺管理模块service
- * 创建者：xie
- * 日期：2017/9/19
  **/
 @Service
 public class ShopManageService {
@@ -28,7 +26,7 @@ public class ShopManageService {
      * @return
      */
     public String addShop(Shop shop){
-        if(shopMapper.selectShop(shop.getClientId()) != null){
+        if(shopMapper.selectShop(shop.getOpenId()) != null){
             return "用户已拥有店铺了！";
         }
         return shopMapper.insertShop(shop) > 0 ? null : "新增失败";

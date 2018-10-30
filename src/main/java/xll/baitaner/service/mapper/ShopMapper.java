@@ -5,9 +5,7 @@ import org.springframework.stereotype.Repository;
 import xll.baitaner.service.entity.Shop;
 
 /**
- * 描述：店铺管理数据操作类
- * 创建者：xie
- * 日期：2017/9/19
+ * 店铺管理数据操作类
  **/
 @Repository
 public interface ShopMapper {

@@ -45,47 +45,6 @@ public class WXPayController {
     private boolean runtimeOrDev;
 
     /**
-     * 微信小程序登录流程 todo 登录状态储存，每次后台请求做校验
-     * @param code
-     * @return
-     */
-    @GetMapping("wxlogin")
-    public ResponseResult wxlogin(String code){
-        if(code == null || "".equals(code)){
-            return ResponseResult.result(1, "code值为空",null);
-        }
-
-        try {
-            config = WXPayConfigImpl.getInstance();
-
-            String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + config.getAppID()
-                    + "&secret=" + config.getAppSecret() + "&js_code=" + code + "&grant_type=authorization_code";
-            System.out.print("微信登录，请求url：" + url);
-
-            String res = HttpRequest.sendGetRequest(url);
-            if (res == null || "".equals(res)) {
-                System.out.print("微信登录，请求接口返回值为空或null");
-                return ResponseResult.result(1, "请求微信失败：" + res + "--",null);
-            }
-            System.out.print("微信登录，请求接口返回值：" + res);
-
-            JSONObject obj = JSONObject.fromObject(res);
-            if (obj.containsKey("errcode")) {
-                String errcode = obj.get("errcode").toString();
-                System.out.print("微信登录，微信返回的错误码：" + errcode);
-                return ResponseResult.result(1, "微信返回的错误码：" + errcode,null);
-            } else if (obj.containsKey("session_key")) {
-                String openId = obj.get("openid").toString();
-                return ResponseResult.result(0, "success",openId);
-            }
-            return ResponseResult.result(0, "请求微信失败：" + res,null);
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResponseResult.result(1, e.toString(),null);
-        }
-    }
-
-    /**
      * 发起微信支付
      * @param orderId
      * @param openId

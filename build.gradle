@@ -3,6 +3,7 @@ buildscript {
         springBootVersion = '1.5.9.RELEASE'
     }
     repositories {
+        maven {url 'http://maven.aliyun.com/nexus/content/groups/public/'}
         mavenCentral()
     }
     dependencies {
@@ -38,8 +39,10 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
     compile('org.springframework.boot:spring-boot-devtools')
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '1.5.6.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '1.5.9.RELEASE'
+
 //    compile('org.springframework.boot:spring-boot-starter-security')
+
     compile('mysql:mysql-connector-java:5.1.43')
     compile('org.projectlombok:lombok:1.16.18')
     compile 'org.apache.httpcomponents:httpclient:4.5.3'
