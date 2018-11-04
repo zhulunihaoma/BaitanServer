@@ -11,7 +11,7 @@ import lombok.Setter;
  **/
 @Getter
 @Setter
-@ApiModel(value = "店铺实体类", description = "店铺实体类，包括创建店铺需要的各类字段以及店铺首页的轮播图路径")
+@ApiModel(value = "店铺实体类", description = "店铺实体类，包括创建店铺需要的各类字段")
 public class Shop {
 
     /**
@@ -68,24 +68,6 @@ public class Shop {
     private String shopLogoUrl;
 
     /**
-     * 店铺轮播图1地址
-     */
-    @ApiModelProperty(value="店铺轮播图1地址",name="shopPicUrl1")
-    private String shopPicUrl1;
-
-    /**
-     * 店铺轮播图2地址
-     */
-    @ApiModelProperty(value="店铺轮播图2地址",name="shopPicUrl2")
-    private String shopPicUrl2;
-
-    /**
-     * 店铺轮播图3地址
-     */
-    @ApiModelProperty(value="店铺轮播图3地址",name="shopPicUrl3")
-    private String shopPicUrl3;
-
-    /**
      * 小程序内部支付开启状态  1:true   0:false
      */
     @ApiModelProperty(value="小程序内部支付开启状态，默认false",name="payPlatform")
@@ -106,6 +88,12 @@ public class Shop {
     /**
      *  店铺状态 1:营业  0;歇业
      */
-    @ApiModelProperty(value="店铺名称",name="shopState")
+    @ApiModelProperty(value="店铺状态 (默认true，创建店铺时可不传值)",name="shopState")
     private boolean shopState;
+
+    /**
+     * 店铺访问人次
+     */
+    @ApiModelProperty(value="店铺访问人数，自动累加  可手动更新，也有",name="number")
+    private int number;
 }
