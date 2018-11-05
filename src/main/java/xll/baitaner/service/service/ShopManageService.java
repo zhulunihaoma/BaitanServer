@@ -174,6 +174,15 @@ public class ShopManageService {
     }
 
     /**
+     * 获取用户浏览过的店铺
+     * @param openId
+     * @return
+     */
+    public List<Shop> getShopListForUser(String openId){
+        return shopMapper.selectShopListForUser(openId);
+    }
+
+    /**
      * 获取店铺首页数据
      * @param openId
      * @return
@@ -184,9 +193,9 @@ public class ShopManageService {
         Shop ownerShop = shopMapper.selectShopByUser(openId);
         if(ownerShop != null){
             shopList.add(ownerShop);
-            shopList.addAll(1, shopMapper.selectUserShopId(openId));
+            shopList.addAll(1, shopMapper.selectShopListForUser(openId));
         }else {
-            shopList = shopMapper.selectUserShopId(openId);
+            shopList = shopMapper.selectShopListForUser(openId);
         }
 
         return shopList;

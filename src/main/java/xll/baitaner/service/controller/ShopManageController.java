@@ -17,7 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
- * 描述：店铺模块管理controller
+ * 描述：店铺模块controller
  * 创建者：xie
  **/
 @Api(value = "店铺模块管理controller", description = "店铺模块管理接口，包括店铺创建更新")
@@ -152,8 +152,8 @@ public class ShopManageController {
     })
     @RequestMapping("updatepayqrcodeurl")
     public ResponseResult updateShopPayQrcodeUrl(int shopId,String openId, String url){
-        boolean result = shopManageService.updateShopPayQrcodeUrl(shopId, openId, url) == null;
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", result);
+        String result = shopManageService.updateShopPayQrcodeUrl(shopId, openId, url);
+        return ResponseResult.result(result == null ? 0 : 1, result == null ? "success" : "fail", result);
     }
 
     /**
@@ -182,8 +182,8 @@ public class ShopManageController {
     })
     @GetMapping("updatepayqrcode")
     public ResponseResult updateShopPayQrcode(int shopId, int state){
-        boolean result = shopManageService.updateShopPayQrcode(shopId, state) == null;
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", result);
+        String result = shopManageService.updateShopPayQrcode(shopId, state);
+        return ResponseResult.result(result  == null ? 0 : 1, result == null ? "success" : "fail", result);
     }
 
     /**
@@ -207,7 +207,7 @@ public class ShopManageController {
 
     /**
      * 增加店铺访问人数
-     * @param id
+     * @param shopId
      * @return
      */
     @ApiOperation(
@@ -233,5 +233,36 @@ public class ShopManageController {
     public ResponseResult deleteShop(int shopId){
         boolean result = shopManageService.deleteShop(shopId);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    }
+
+    /**
+     * 用户浏览店铺记录接口
+     * @param shopId
+     * @return
+     */
+    @ApiOperation(
+            value = "用户浏览店铺记录接口",
+            notes = "用户浏览店铺记录接口，用户访问店铺时调用，记录到用户浏览过店铺数据中")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int")
+    })
+    @GetMapping("useraccessshop")
+    public ResponseResult addShopForUser(String openId, int shopId){
+        String result = shopManageService.addShopUser(openId, shopId);
+        return ResponseResult.result(result == null ? 0 : 1, result == null ? "success" : "fail", null);
+    }
+
+    /**
+     * 获取用户用户浏览过的店铺
+     * @return
+     */
+    @ApiOperation(
+            value = "获取用户用户浏览过的店铺",
+            notes = "获取用户用户浏览过的店铺，用于首页展示")
+    @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String")
+    @GetMapping("getshoplistforuser")
+    public ResponseResult getShopListForUser(String openId){
+        return ResponseResult.result(0, "success" , shopManageService.getShopListForUser(openId));
     }
 }

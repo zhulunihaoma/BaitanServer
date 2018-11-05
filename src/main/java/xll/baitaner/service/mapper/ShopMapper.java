@@ -160,5 +160,5 @@ public interface ShopMapper {
      * @return
      */
     @Select("SELECT s.* FROM shopuser su JOIN shop s ON s.id = su.shopId WHERE su.openId = #{openId}")
-    List<Shop> selectUserShopId(@Param("openId") String openId);
+    List<Shop> selectShopListForUser(@Param("openId") String openId);
 }
