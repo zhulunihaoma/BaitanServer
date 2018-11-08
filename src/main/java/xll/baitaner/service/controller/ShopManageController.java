@@ -20,7 +20,7 @@ import java.io.IOException;
  * 描述：店铺模块controller
  * 创建者：xie
  **/
-@Api(value = "店铺模块管理controller", description = "店铺模块管理接口，包括店铺创建更新")
+@Api(value = "店铺模块controller", description = "店铺模块接口，包括店铺创建更新以及店铺首页数据")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class ShopManageController {

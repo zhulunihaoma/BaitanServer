@@ -7,7 +7,6 @@ import java.io.File;
 /**
  * 描述：路径工具类
  * 创建者：luoyw
- * 日期：2017/8/22 0022.
  **/
 public class PathUtil {
     private static String uploadPath;
@@ -21,14 +20,12 @@ public class PathUtil {
     public static synchronized String getUploadPath(boolean runtimeOrDev){
         if(uploadPath==null){
             if(runtimeOrDev){
-                //TODO 待验证部署后，路径是否正确
                 uploadPath = ClassUtils.getDefaultClassLoader().getResource("").getPath()
-                        + "../../../../webapps/upload/";
+                        + "../../../../webapps/servicepicture/";
             }else {
                 uploadPath = ClassUtils.getDefaultClassLoader().
                         getResource("").getPath() + "../../../../Baitaner/src/main/resources/static/upload/";
             }
-            System.out.println("PathUtil.getUploadPath:"+uploadPath);
             File f = new File(uploadPath);
             if(!f.isDirectory()&&!f.exists()){
                 f.mkdir();

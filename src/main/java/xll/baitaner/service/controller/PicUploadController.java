@@ -1,5 +1,8 @@
 package xll.baitaner.service.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,7 @@ import java.io.IOException;
  * 创建者：xie
  * 日期：2017/9/27
  **/
+@Api(value = "图片上传controller", description = "图片上传模块接口")
 @RestController
 public class PicUploadController {
 
@@ -28,9 +32,13 @@ public class PicUploadController {
 
     /**
      * 图片上传接口
-     * @param multipartFile
+     * @param multReq
      * @return
      */
+    @ApiOperation(
+            value = "图片上传",
+            notes = "返回图片name, 获取图片路径：http://www.eastzebra.cn/servicepicture/ + 图片name"
+    )
     @PostMapping("/picupload")
     public ResponseResult uploadPic(MultipartHttpServletRequest multReq){
         System.out.print(multReq);
@@ -38,8 +46,8 @@ public class PicUploadController {
         return ResponseResult.result(res != null ? 0 : 1,res != null ? "successs" : "fail", res);
     }
 
-    @GetMapping("/picpath")
-    public ResponseResult getPicPath(){
-        return ResponseResult.result(0, "success", imagehost);
-    }
+//    @GetMapping("/picpath")
+//    public ResponseResult getPicPath(){
+//        return ResponseResult.result(0, "success", imagehost);
+//    }
 }

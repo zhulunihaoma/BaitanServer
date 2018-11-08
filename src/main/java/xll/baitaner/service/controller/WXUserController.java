@@ -47,6 +47,7 @@ public class WXUserController {
         }
 
         try {
+            wxConfig = WXPayConfigImpl.getInstance();
             String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + wxConfig.getAppID()
                     + "&secret=" + wxConfig.getAppSecret() + "&js_code=" + code + "&grant_type=authorization_code";
             LogUtils.info(TAG, "微信登录，请求url：" + url);
