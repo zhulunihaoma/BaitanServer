@@ -105,13 +105,15 @@ public class ShopManageController {
 
 
     /**
-     * 修改店铺信息,店铺名、店铺简介、店主微信名、店主微信、联系电话、店铺地址、店铺logo、访问人次
+     * 修改店铺信息,店铺名、店铺简介、店主微信名、店主微信、联系电话、店铺地址、店铺logo、店铺平台支付开启状态、
+     * 店铺二维码支付开启状态、店铺支付二维码路径、访问人次
      * @return
      */
     @ApiOperation(
             value = "修改店铺信息",
             httpMethod = "POST",
-            notes = "只修改字段：店铺名、店铺简介、店主微信名、店主微信、联系电话、店铺地址、店铺logo、访问人次")
+            notes = "只修改字段：店铺名、店铺简介、店主微信名、店主微信、联系电话、店铺地址、店铺logo、店铺平台支付开启状态、\n" +
+                    " 店铺二维码支付开启状态、店铺支付二维码路径、访问人次")
     @ApiImplicitParam(name = "shop", value = "店铺数据类", required = true, dataType = "Shop")
     @RequestMapping("updateshopinfo")
     public ResponseResult updateShopInfo(Shop shop){
@@ -254,15 +256,28 @@ public class ShopManageController {
     }
 
     /**
-     * 获取用户用户浏览过的店铺
+     * 获取用户浏览过的店铺
      * @return
      */
     @ApiOperation(
-            value = "获取用户用户浏览过的店铺",
-            notes = "获取用户用户浏览过的店铺，用于首页展示")
+            value = "获取用户浏览过的店铺",
+            notes = "获取用户浏览过的店铺，用于首页展示")
     @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String")
     @GetMapping("getshoplistforuser")
     public ResponseResult getShopListForUser(String openId){
         return ResponseResult.result(0, "success" , shopManageService.getShopListForUser(openId));
+    }
+
+    /**
+     * 获取用户店铺首页的数据
+     * @return
+     */
+    @ApiOperation(
+            value = "获取用户店铺首页的数据",
+            notes = "获取用户店铺首页的数据用于首页展示,包括用户浏览过的店铺，拥有的店铺，如没有则为空")
+    @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String")
+    @GetMapping("geshophome")
+    public ResponseResult getShopHomeData(String openId){
+        return ResponseResult.result(0, "success" , shopManageService.getShopHomeData(openId));
     }
 }

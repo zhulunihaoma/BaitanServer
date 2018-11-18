@@ -1,5 +1,6 @@
 package xll.baitaner.service.service;
 
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -191,12 +192,11 @@ public class ShopManageService {
         //获取店铺首页数据
         List<Shop> shopList = null;
         Shop ownerShop = shopMapper.selectShopByUser(openId);
-        if(ownerShop != null){
-            shopList.add(ownerShop);
-            shopList.addAll(1, shopMapper.selectShopListForUser(openId));
-        }else {
-            shopList = shopMapper.selectShopListForUser(openId);
-        }
+        shopList = shopMapper.selectShopListForUser(openId);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("owerShop", ownerShop);
+        jsonObject.put("shopList", shopList);
 
         return shopList;
     }
