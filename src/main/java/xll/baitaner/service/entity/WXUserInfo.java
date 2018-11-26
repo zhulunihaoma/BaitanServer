@@ -24,8 +24,8 @@ public class WXUserInfo {
     /**
      * 昵称
      */
-    @ApiModelProperty(value="昵称",name="nickname")
-    private String nickname;
+    @ApiModelProperty(value="昵称",name="nickName")
+    private String nickName;
 
     /**
      * 用户头像
@@ -66,6 +66,6 @@ public class WXUserInfo {
     /**
      * 用户在开放平台的唯一标识符
      */
-    @ApiModelProperty(value="用户在开放平台的唯一标识符(公众号模板提醒时使用)",name="unionid")
-    private String unionid;
+    @ApiModelProperty(value="用户在开放平台的唯一标识符(公众号模板提醒时使用)",name="unionId")
+    private String unionId;
 }

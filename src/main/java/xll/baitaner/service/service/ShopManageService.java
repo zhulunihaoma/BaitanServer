@@ -188,7 +188,7 @@ public class ShopManageService {
      * @param openId
      * @return
      */
-    public List<Shop> getShopHomeData(String openId){
+    public JSONObject getShopHomeData(String openId){
         //获取店铺首页数据
         List<Shop> shopList = null;
         Shop ownerShop = shopMapper.selectShopByUser(openId);
@@ -198,6 +198,6 @@ public class ShopManageService {
         jsonObject.put("owerShop", ownerShop);
         jsonObject.put("shopList", shopList);
 
-        return shopList;
+        return jsonObject;
     }
 }
