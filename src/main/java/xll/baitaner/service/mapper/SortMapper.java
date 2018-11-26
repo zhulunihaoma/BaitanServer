@@ -13,7 +13,7 @@ import java.util.List;
 public interface SortMapper {
 
     /**
-     * 新增分类 //todo order为分类条目总数
+     * 新增分类
      * @param sort
      * @return
      */
@@ -21,26 +21,65 @@ public interface SortMapper {
     int addSort(@Param("sort") Sort sort);
 
     /**
-     * 更新类别 //todo order需要动态变化
-     * @param sort
+     * 获取当前分类总数
+     * @param shopId
      * @return
      */
-    @Update("UPDATE sort SET sortName = #{sort.sortName}, sortOrder = #{sort.sortOrder} WHERE id = #{sort.id}")
-    int updateSort(@Param("sort") Sort sort);
+    @Select("SELECT COUNT(*) FROM sort WHERE shopId = #{shopId}")
+    int countSortList(@Param("shopId") int shopId);
 
     /**
-     * 删除分类 //todo order需要动态变化
+     * 更新分类名称
+     * @param sordId
+     * @param name
+     * @return
+     */
+    @Update("UPDATE sort SET sortName = #{name} WHERE id = #{sordId}")
+    int updateSortName(@Param("sordId") int sordId, @Param("name") String name);
+
+    /**
+     * 更新分类位置
+     * @param sordId
+     * @param order
+     * @return
+     */
+    @Update("UPDATE sort SET sortOrder = #{order} WHERE id = #{sordId}")
+    int updateSortOrder(@Param("sordId") int sordId, @Param("order") int order);
+
+    /**
+     *  start到end间的sort的位置+1
+     * @param shopId
+     * @param start
+     * @param end
+     * @return
+     */
+    @Update("UPDATE sort SET sortOrder = sortOrder + 1 WHERE shopId = #{shopId} AND sortOrder >= start AND sortOrder <= start")
+    int addOrder(@Param("shopId") int shopId, @Param("start") int start, @Param("end") int end);
+
+    /**
+     *  start到end间的sort的位置-1
+     * @param shopId
+     * @param start
+     * @param end
+     * @return
+     */
+    @Update("UPDATE sort SET sortOrder = sortOrder  1 WHERE shopId = #{shopId} AND sortOrder >= start AND sortOrder <= end")
+    int subtractOrder(@Param("shopId") int shopId, @Param("start") int start, @Param("end") int end);
+
+    /**
+     * 删除分类 //todo order需要动态变化,对应商品也要删除
      * @param sortId
      * @return
      */
     @Delete("DELETE FROM sort WHERE id = #{sortId}")
     int deleteSort(@Param("sortId") int sortId);
 
+
     /**
      * 按顺序获取分类列表
      * @param shopId
      * @return
      */
-    @Select("SLECT * FROM sort WHERE shopId = #{shopId} ORDER BY sortOrder")
+    @Select("SELECT * FROM sort WHERE shopId = #{shopId} ORDER BY sortOrder")
     List<Sort> selectSortList(@Param("shopId") int shopId);
 }
