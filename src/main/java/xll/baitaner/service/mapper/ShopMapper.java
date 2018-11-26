@@ -152,7 +152,7 @@ public interface ShopMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT * FROM shopuser WHERE openId = #{openId} AND shopId = #{shopId}")
+    @Select("SELECT COUNT(*) FROM shopuser WHERE openId = #{openId} AND shopId = #{shopId}")
     int selectShopUser(@Param("openId") String openId, @Param("shopId") int shopId);
 
     /**
