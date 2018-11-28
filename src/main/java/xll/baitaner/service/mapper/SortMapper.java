@@ -53,7 +53,7 @@ public interface SortMapper {
      * @param end
      * @return
      */
-    @Update("UPDATE sort SET sortOrder = sortOrder + 1 WHERE shopId = #{shopId} AND sortOrder >= start AND sortOrder <= start")
+    @Update("UPDATE sort SET sortOrder = sortOrder + 1 WHERE shopId = #{shopId} AND sortOrder >= #{start} AND sortOrder <= #{end}")
     int addOrder(@Param("shopId") int shopId, @Param("start") int start, @Param("end") int end);
 
     /**
@@ -63,7 +63,7 @@ public interface SortMapper {
      * @param end
      * @return
      */
-    @Update("UPDATE sort SET sortOrder = sortOrder  1 WHERE shopId = #{shopId} AND sortOrder >= start AND sortOrder <= end")
+    @Update("UPDATE sort SET sortOrder = sortOrder - 1 WHERE shopId = #{shopId} AND sortOrder >= #{start} AND sortOrder <= #{end}")
     int subtractOrder(@Param("shopId") int shopId, @Param("start") int start, @Param("end") int end);
 
     /**
