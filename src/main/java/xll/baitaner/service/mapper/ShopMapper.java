@@ -106,6 +106,7 @@ public interface ShopMapper {
 
     /**
      * 获取店铺支付二维码
+     *
      * @param id
      * @return
      */
@@ -118,7 +119,7 @@ public interface ShopMapper {
      * @param state
      * @return
      */
-    @Update("UPDATE shop SET shopState = #{shopState} WHERE Id = #{id}")
+    @Update("UPDATE shop SET shopState = #{state} WHERE Id = #{id}")
     int updateShopState(@Param("id") int id, @Param("state") int state);
 
     /**

@@ -42,8 +42,7 @@ public class SortService {
 
     /**
      * 更新分类名称
-     * @param sordId
-     * @param name
+     * @param sort
      * @return
      */
     public String updateSortName(Sort sort){

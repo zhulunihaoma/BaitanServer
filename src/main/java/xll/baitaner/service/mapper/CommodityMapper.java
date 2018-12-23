@@ -8,9 +8,9 @@ import xll.baitaner.service.entity.Commodity;
 import java.util.List;
 
 /**
- * 描述：商品管理mapper
+ * 描述：商品信息管理mapper
  * 创建者：xie
- * 日期：2017/10/10
+ * 日期：
  **/
 @Repository
 public interface CommodityMapper {
