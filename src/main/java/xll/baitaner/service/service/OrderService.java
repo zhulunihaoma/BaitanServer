@@ -146,7 +146,7 @@ public class OrderService {
                     commodity.setName(orderCommodity.getName());
                     commodity.setPrice(orderCommodity.getPrice());
                     commodity.setMonthlySales(orderCommodity.getMonthlySales());
-                    commodity.setPraise(orderCommodity.getPraise());
+                    //commodity.setPraise(orderCommodity.getPraise());
                     commodity.setPictUrl(orderCommodity.getPictUrl());
                     commodity.setIntroduction(orderCommodity.getIntroduction());
                     commodityOrder.setCommodity(commodity);

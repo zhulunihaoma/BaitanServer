@@ -3,6 +3,7 @@ package xll.baitaner.service.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import xll.baitaner.service.entity.Activity;
 import xll.baitaner.service.entity.ReceiverAddress;
 import xll.baitaner.service.entity.ShopStatistics;
 import xll.baitaner.service.mapper.OrderMapper;
@@ -24,13 +25,14 @@ public class ProfileService {
     @Autowired
     private OrderMapper orderMapper;
 
+
     /**
      * 查询用户所有收货地址列表
-     * @param clientId
+     * @param openId
      * @return
      */
-    public List<ReceiverAddress> getAddressList(String clientId){
-        return profileMapper.selectAddressList(clientId);
+    public List<ReceiverAddress> getAddressList(String openId){
+        return profileMapper.selectAddressList(openId);
     }
 
     /**
