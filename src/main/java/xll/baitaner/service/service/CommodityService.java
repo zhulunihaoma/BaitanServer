@@ -7,19 +7,68 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xll.baitaner.service.entity.Commodity;
 import xll.baitaner.service.mapper.CommodityMapper;
+import xll.baitaner.service.utils.LogUtils;
 
 import java.util.List;
 
 /**
  * 描述：商品管理服务
  * 创建者：xie
- * 日期：2017/10/10
+ * 日期：201802/23
  **/
 @Service
 public class CommodityService {
 
+    private String TAG = "Baitaner-CommodityService";
     @Autowired
     private CommodityMapper commodityMapper;
+
+    @Autowired
+    private SpecService specService;
+
+    /**
+     * 新增商品
+     * 附带规格 将商品 id插入规格表
+     * @param commodity
+     * @param specList
+     * @return
+     */
+    public boolean addCommodity(Commodity commodity){
+        int count = commodityMapper.countAllCoList(commodity.getShopId());
+        commodity.setTurn(count);
+        boolean res = commodityMapper.insertCommodity(commodity) > 0;
+
+        if (res){
+            int coid = commodity.getId();
+            int[] specList = commodity.getSpecs();
+            if (specList.length > 0)
+            {
+                for (int i = 0; i < specList.length; i++){
+                    LogUtils.info(TAG, coid + "---" + specList[i]);
+                    boolean update = false;
+                    update = specService.updateSpecCoId(coid, specList[i]);
+                    if (!update){
+                        LogUtils.warn(TAG, "Update spec " + specList[i] + " commodity id " + coid + " failed");
+                    }
+                }
+            }
+            return true;
+        }else {
+            LogUtils.warn(TAG, "Add commodity failed");
+            return false;
+        }
+    }
+
+    /**
+     * 修改商品信息
+     * @param commodity
+     * @return
+     */
+    public boolean updateCommodity(Commodity commodity){
+        return commodityMapper.updateCommodity(commodity) > 0;
+    }
+
+
 
     /**
      * 获取店铺中所有商品列表
@@ -51,37 +100,6 @@ public class CommodityService {
      */
     public Commodity getCommodity(int commodityId){
         return commodityMapper.selectCommodity(commodityId);
-    }
-
-    /**
-     * 新增商品
-     * @param commodity
-     * @return
-     */
-    public boolean addCommodity(Commodity commodity){
-        return commodityMapper.insertCommodity(commodity) > 0;
-    }
-
-    /**
-     * 修改商品信息
-     * @param commodity
-     * @return
-     */
-    public boolean updateCommodity(Commodity commodity){
-        return commodityMapper.updateCommodity(commodity) > 0;
-    }
-
-    /**
-     * 修改商品信息（原商品disable改为false，添加新商品）
-     * @param commodity
-     * @return
-     */
-    @Transactional
-    public boolean editCommodity(Commodity commodity){
-        int id = commodity.getId();
-        boolean re1 = deleteCommodity(id);
-        boolean re2 = addCommodity(commodity);
-        return re1 && re2;
     }
 
     /**

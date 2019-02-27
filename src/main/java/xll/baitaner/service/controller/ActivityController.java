@@ -1,5 +1,6 @@
 package xll.baitaner.service.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
@@ -18,6 +19,8 @@ import java.util.Date;
  * @description xll.baitaner.service.controller
  * @date 2019/1/13
  */
+@Api(value = "活动模块controller",
+        description = "活动模块")
 @RestController
 public class ActivityController {
 
