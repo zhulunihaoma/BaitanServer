@@ -27,6 +27,14 @@ public interface CommodityMapper {
     int insertCommodity(@Param("co") Commodity co);
 
     /**
+     * 查询店铺中对应分类的所有商品总数
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT COUNT(*) FROM commodity WHERE shopId = #{shopId} AND sortId = #{sortId} AND activable = 1")
+    int countSortCoList(@Param("shopId") int shopId, @Param("sortId") int sortId);
+
+    /**
      * 更新商品信息
      * @param co
      * @return
@@ -36,12 +44,22 @@ public interface CommodityMapper {
     int updateCommodity(@Param("co") Commodity co);
 
     /**
-     * 查询店铺中所有商品列表
+     * 分页查询店铺中所有商品列表
+     * 先按分类排序，再按分类内商品排序
      * 上下架均显示
      * @param shopId
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE shopId = #{shopId} AND activable = 1 ORDER BY turn DESC LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT " +
+            " co.*  " +
+            "FROM " +
+            " commodity co " +
+            " JOIN ( SELECT * FROM sort WHERE shopId = #{shopId} ORDER BY sortOrder ) so ON co.sortId = so.id  " +
+            "WHERE " +
+            " co.activable = 1  " +
+            "ORDER BY " +
+            " so.sortOrder, " +
+            " co.turn ASC LIMIT #{page.offset},#{page.size}")
     List<Commodity> selectAllCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
 
     /**
@@ -52,15 +70,22 @@ public interface CommodityMapper {
     @Select("SELECT COUNT(*) FROM commodity WHERE shopId = #{shopId} AND activable = 1")
     int countAllCoList(@Param("shopId") int shopId);
 
-
-
     /**
      * 查询店铺中所有上架商品列表
+     * 先按分类排序，再按分类内商品排序
      * @param shopId
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND State = 1 AND Disable = 1 ORDER BY Id DESC " +
-            "LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT " +
+            " co.*  " +
+            "FROM " +
+            " commodity co " +
+            " JOIN ( SELECT * FROM sort WHERE shopId = #{shopId} ORDER BY sortOrder ) so ON co.sortId = so.id  " +
+            "WHERE " +
+            " co.activable = 1 AND state = 1 " +
+            "ORDER BY " +
+            " so.sortOrder, " +
+            " co.turn ASC LIMIT #{page.offset},#{page.size}")
     List<Commodity> selectCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
 
     /**
@@ -68,7 +93,7 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM commodity WHERE ShopId = #{shopId} AND State = 1 AND Disable = 1")
+    @Select("SELECT COUNT(*) FROM commodity WHERE shopId = #{shopId} AND state = 1 AND activable = 1")
     int countCoList(@Param("shopId") int shopId);
 
     /**
@@ -92,7 +117,7 @@ public interface CommodityMapper {
      * @param id
      * @return
      */
-    @Update("UPDATE commodity SET Disable = 0 WHERE Id  = #{id}")
+    @Update("UPDATE commodity SET activable = 0 WHERE id  = #{id}")
     int updateCoDisabel(@Param("id") int id);
 
     /**
@@ -100,6 +125,6 @@ public interface CommodityMapper {
      * @param id
      * @return
      */
-    @Update("UPDATE commodity SET State = IF(State=0,1,0) WHERE Id  = #{id}")
+    @Update("UPDATE commodity SET State = IF(state=0,1,0) WHERE id  = #{id}")
     int updateCoState(@Param("id") int id);
 }

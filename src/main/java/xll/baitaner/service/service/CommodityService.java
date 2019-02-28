@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xll.baitaner.service.entity.Commodity;
+import xll.baitaner.service.entity.Spec;
 import xll.baitaner.service.mapper.CommodityMapper;
 import xll.baitaner.service.utils.LogUtils;
 
@@ -34,7 +35,7 @@ public class CommodityService {
      * @return
      */
     public boolean addCommodity(Commodity commodity){
-        int count = commodityMapper.countAllCoList(commodity.getShopId());
+        int count = commodityMapper.countSortCoList(commodity.getShopId(), commodity.getSortId());
         commodity.setTurn(count);
         boolean res = commodityMapper.insertCommodity(commodity) > 0;
 
@@ -68,8 +69,6 @@ public class CommodityService {
         return commodityMapper.updateCommodity(commodity) > 0;
     }
 
-
-
     /**
      * 获取店铺中所有商品列表
      * 上下架均显示
@@ -78,6 +77,11 @@ public class CommodityService {
      */
     public PageImpl<Commodity> getAllCoList(int shopId, Pageable pageable){
         List<Commodity> commodityList = commodityMapper.selectAllCoList(shopId, pageable);
+        for (int i=0; i<commodityList.size(); i++) {
+            Commodity commodity = commodityList.get(i);
+            List<Spec> specList = specService.getSpecList(commodity.getId());
+            commodity.setSpecList(specList);
+        }
         int count = commodityMapper.countAllCoList(shopId);
         return new PageImpl<Commodity>(commodityList, pageable, count);
     }
@@ -89,6 +93,11 @@ public class CommodityService {
      */
     public PageImpl<Commodity> getCoList(int shopId, Pageable pageable){
         List<Commodity> commodityList = commodityMapper.selectCoList(shopId, pageable);
+        for (int i=0; i<commodityList.size(); i++) {
+            Commodity commodity = commodityList.get(i);
+            List<Spec> specList = specService.getSpecList(commodity.getId());
+            commodity.setSpecList(specList);
+        }
         int count = commodityMapper.countCoList(shopId);
         return new PageImpl<Commodity>(commodityList, pageable, count);
     }
@@ -99,7 +108,9 @@ public class CommodityService {
      * @return
      */
     public Commodity getCommodity(int commodityId){
-        return commodityMapper.selectCommodity(commodityId);
+        Commodity commodity = commodityMapper.selectCommodity(commodityId);
+        commodity.setSpecList(specService.getSpecList(commodityId));
+        return commodity;
     }
 
     /**

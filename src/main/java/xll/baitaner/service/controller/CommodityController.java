@@ -22,7 +22,7 @@ import java.util.Map;
  * 创建者：xie
  * 日期：2017/10/10
  **/
-@Api(value = "商品模块controller", description = "商品规格模块接口")
+@Api(value = "商品模块controller", description = "商品模块接口")
 @RestController
 public class CommodityController {
 
@@ -64,7 +64,6 @@ public class CommodityController {
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
     }
 
-
     /**
      * 获取店铺中所有商品列表
      * 上下架均显示
@@ -74,7 +73,7 @@ public class CommodityController {
     @ApiOperation(
             value = "获取店铺中所有商品列表, 上下架均显示",
             httpMethod = "GET",
-            notes = "获取店铺中所有商品列表, 上下架均显示")
+            notes = "获取店铺中所有商品列表, 上下架均显示，先按分类排序，再按分类内商品排序")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
             @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
@@ -89,7 +88,15 @@ public class CommodityController {
      * @param shopId
      * @return
      */
-    @GetMapping("commoditymanage/getcolist")
+    @ApiOperation(
+            value = "获取店铺已上架商品列表",
+            httpMethod = "GET",
+            notes = "获取店铺已上架商品列表，先按分类排序，再按分类内商品排序")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
+    })
+    @GetMapping("getcolist")
     public ResponseResult geCoList(int shopId, Pageable pageable){
         return ResponseResult.result(0, "success", commodityService.getCoList(shopId, pageable));
     }
@@ -99,7 +106,12 @@ public class CommodityController {
      * @param commodityId
      * @return
      */
-    @GetMapping("commoditymanage/getcommodity")
+    @ApiOperation(
+            value = "获取单个商品的详情数据",
+            httpMethod = "GET",
+            notes = "获取单个商品的详情数据")
+    @ApiImplicitParam(name = "commodityId", value = "商品id", required = true, dataType = "int")
+    @GetMapping("getcommodity")
     public ResponseResult getCommodity(int commodityId){
         return ResponseResult.result(0, "success", commodityService.getCommodity(commodityId));
     }
@@ -109,7 +121,12 @@ public class CommodityController {
      * @param commodityId
      * @return
      */
-    @RequestMapping("commoditymanage/deletecommodity")
+    @ApiOperation(
+            value = "删除商品接口",
+            httpMethod = "GET",
+            notes = "删除商品接口")
+    @ApiImplicitParam(name = "commodityId", value = "商品id", required = true, dataType = "int")
+    @RequestMapping("deletecommodity")
     public ResponseResult deleteCommodity(int commodityId){
         boolean result = commodityService.deleteCommodity(commodityId);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
@@ -120,7 +137,12 @@ public class CommodityController {
      * @param commodityId
      * @return
      */
-    @RequestMapping("commoditymanage/updatecostate")
+    @ApiOperation(
+            value = "修改商品上下架状态接口",
+            httpMethod = "GET",
+            notes = "修改商品上下架状态接口")
+    @ApiImplicitParam(name = "commodityId", value = "商品id", required = true, dataType = "int")
+    @RequestMapping("updatecostate")
     public ResponseResult updateCommodityState(int commodityId){
         boolean result = commodityService.updateCoState(commodityId);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);

@@ -89,8 +89,14 @@ public class Commodity {
     private int turn;
 
     /**
+     * 商品规格id列表
+     */
+    @ApiModelProperty(value = "商品规格id列表",name = "specs")
+    private int[] specs;
+
+    /**
      * 商品规格列表
      */
-    @ApiModelProperty(value = "商品规格列表",name = "specs")
-    private int[] specs;
+    @ApiModelProperty(value = "商品规格列表", name = "specList")
+    private List<Spec> specList;
 }
