@@ -65,15 +65,35 @@ public class CommodityController {
     }
 
     /**
+     * 分页查询店铺中对应分类的商品列表
+     * 上下架均显示
+     * @param shopId
+     * @return
+     */
+    @ApiOperation(
+            value = "分页查询店铺中对应分类的商品列表",
+            httpMethod = "GET",
+            notes = "分页查询店铺中对应分类的商品列表  按分类内商品排序")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "storId", value = "分类storId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
+    })
+    @GetMapping("getstorcolist")
+    public ResponseResult getStorColist(int shopId, int storId, Pageable pageable){
+        return ResponseResult.result(0, "success", commodityService.getStorColist(shopId, storId, pageable));
+    }
+
+    /**
      * 获取店铺中所有商品列表
      * 上下架均显示
      * @param shopId
      * @return
      */
     @ApiOperation(
-            value = "获取店铺中所有商品列表, 上下架均显示",
+            value = "分页获取店铺中所有商品列表, 上下架均显示",
             httpMethod = "GET",
-            notes = "获取店铺中所有商品列表, 上下架均显示，先按分类排序，再按分类内商品排序")
+            notes = "分页获取店铺中所有商品列表, 上下架均显示，先按分类排序，再按分类内商品排序")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
             @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
@@ -89,9 +109,9 @@ public class CommodityController {
      * @return
      */
     @ApiOperation(
-            value = "获取店铺已上架商品列表",
+            value = "分页获取店铺已上架商品列表",
             httpMethod = "GET",
-            notes = "获取店铺已上架商品列表，先按分类排序，再按分类内商品排序")
+            notes = "分页获取店铺已上架商品列表，先按分类排序，再按分类内商品排序（店铺首页）")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
             @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
@@ -99,6 +119,21 @@ public class CommodityController {
     @GetMapping("getcolist")
     public ResponseResult geCoList(int shopId, Pageable pageable){
         return ResponseResult.result(0, "success", commodityService.getCoList(shopId, pageable));
+    }
+
+    /**
+     * 获取店铺已上架商品列表
+     * @param shopId
+     * @return
+     */
+    @ApiOperation(
+            value = "查询店铺中的商品列表（上架）,分类包裹",
+            httpMethod = "GET",
+            notes = "查询店铺中的商品列表（上架）,分类包裹")
+    @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int")
+    @GetMapping("getsortco")
+    public ResponseResult getSortCo(int shopId){
+        return ResponseResult.result(0, "success", commodityService.getSortCo(shopId));
     }
 
     /**
@@ -145,6 +180,60 @@ public class CommodityController {
     @RequestMapping("updatecostate")
     public ResponseResult updateCommodityState(int commodityId){
         boolean result = commodityService.updateCoState(commodityId);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    }
+
+    /**
+     * 分类下更新商品到指定位置顺序
+     * @param co
+     * @param turn
+     * @return
+     */
+    @ApiOperation(
+            value = "分类下更新商品到指定位置顺序",
+            httpMethod = "GET",
+            notes = "分类下更新商品到指定位置顺序 自定义位置")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "co", value = "商品实体类", required = true, dataType = "Commodity"),
+            @ApiImplicitParam(name = "turn", value = "指定位置", required = true, dataType = "int")
+    })
+    @RequestMapping("updatecoturn")
+    public ResponseResult updateCoTurn(Commodity co, int turn){
+        boolean result = commodityService.updateCoTurn(co, turn);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    }
+
+    /**
+     * 分类下上移商品
+     * @param co
+     * @param turn
+     * @return
+     */
+    @ApiOperation(
+            value = "分类下上移商品",
+            httpMethod = "GET",
+            notes = "分类下上移商品")
+    @ApiImplicitParam(name = "co", value = "商品实体类", required = true, dataType = "Commodity")
+    @RequestMapping("moveupcoturn")
+    public ResponseResult moveUpCoTurn(Commodity co){
+        boolean result = commodityService.updateCoTurn(co, co.getTurn() - 1);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    }
+
+    /**
+     * 分类下置顶商品
+     * @param co
+     * @param turn
+     * @return
+     */
+    @ApiOperation(
+            value = "分类下置顶商品",
+            httpMethod = "GET",
+            notes = "分类下置顶商品")
+    @ApiImplicitParam(name = "co", value = "商品实体类", required = true, dataType = "Commodity")
+    @RequestMapping("toppingcoturn")
+    public ResponseResult toppingCoTurn(Commodity co){
+        boolean result = commodityService.updateCoTurn(co, 0);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
     }
 }
