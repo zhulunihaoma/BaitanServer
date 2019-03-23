@@ -1,8 +1,10 @@
 package xll.baitaner.service.service;
 
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xll.baitaner.service.entity.Activity;
+import xll.baitaner.service.entity.Shop;
 import xll.baitaner.service.entity.WXUserInfo;
 import xll.baitaner.service.mapper.ActivityMapper;
 
@@ -18,6 +20,9 @@ import java.util.List;
 public class ActivityService {
     @Autowired
     private ActivityMapper activityMapper;
+
+    @Autowired
+    private ShopManageService shopManageService;
 
     /**
      * 查询用户参加所有活动列表
@@ -51,8 +56,32 @@ public class ActivityService {
      * @param activity
      * @return
      */
-    public String insertActivity(Activity activity){
-        return activityMapper.insertActivity(activity) > 0 ? null : "新增活动失败";
+    public int insertActivity(Activity activity){
+
+        boolean result = activityMapper.insertActivity(activity) > 0;
+        if (result){
+            return activity.getId();
+        }
+        else {
+            return -1;
+        }
+    }
+    /**
+     * 根据活动id获取活动详情
+     * @param activityId
+     * @return
+     */
+
+    public JSONObject  getActivityById(int activityId){
+        Activity activity = activityMapper.selectActivityById(activityId);
+        Shop shopinfo = shopManageService.getShopByUser(activity.getOpenId());
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("activity",activity);
+        jsonObject.put("shopinfo",shopinfo);
+
+
+        return jsonObject;
 
     }
 }

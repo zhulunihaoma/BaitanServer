@@ -22,6 +22,7 @@ public interface ActivityMapper {
      */
     @Insert("INSERT INTO activity (openId,activityType,activityName,activityIntro,startTime,endTime,originPrice,activityPrice,stock,operateType,operateContent,requirement,sendType)" +
             "VALUES (#{activity.openId},#{activity.activityType},#{activity.activityName},#{activity.activityIntro},#{activity.startTime},#{activity.endTime},#{activity.originPrice},#{activity.activityPrice},#{activity.stock},#{activity.operateType},#{activity.operateContent},#{activity.requirement},#{activity.sendType})")
+    @Options(useGeneratedKeys = true, keyProperty = "activity.id")
     int insertActivity(@Param("activity") Activity activity);
 
     /**
@@ -49,4 +50,28 @@ public interface ActivityMapper {
     @Select("SELECT * FROM activity WHERE openId = #{openId}")
     List<Activity> selectActivityList(@Param("openId") String clientId);
 
+    /**
+     * 根据活动id查询活动详情
+     * @param id
+     * @return
+     */
+    @Select("SELECT * FROM activity WHERE id = #{id}")
+    Activity selectActivityById(@Param("id") int id);
+
+    /*参加活动的内容*/
+
+
+    /**
+     * 新增activityrecord
+     * @param activityId
+     * @param openId
+     * @return
+     */
+    @Insert("INSERT INTO activityrecord (activityId,openId)" +
+            "VALUES (#{activity.openId},#{activity.activityType},#{activity.activityName},#{activity.activityIntro},#{activity.startTime},#{activity.endTime},#{activity.originPrice},#{activity.activityPrice},#{activity.stock},#{activity.operateType},#{activity.operateContent},#{activity.requirement},#{activity.sendType})")
+    @Options(useGeneratedKeys = true, keyProperty = "activity.id")
+    int insertActivity(@Param("activityId") int activityId , @Param("openId") String openId);
 }
+
+
+

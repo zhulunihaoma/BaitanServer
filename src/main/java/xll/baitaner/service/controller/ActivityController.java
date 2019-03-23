@@ -43,9 +43,9 @@ public class ActivityController {
         activity.setStartTime(new Date(System.currentTimeMillis()));
 
 
-        String res = activityService.insertActivity(activity);
+        int res = activityService.insertActivity(activity);
 
-        return ResponseResult.result(res == null ? 0 : 1, res == null ? "success" : res, null);
+        return ResponseResult.result(res == -1 ? 0 : 1, res == -1 ? "success" : "fail", res);
     }
 
     /**
@@ -81,6 +81,16 @@ public class ActivityController {
 
         return ResponseResult.result(0, "success", activityService.getActivitylist(openId));
     }
+    /**
+     * 根据活动id获取活动详情
+     * @param activityId
+     * @return
+     */
+    @GetMapping("getactivityinfo")
+    public ResponseResult getActivityinfo(int activityId){
 
+        return ResponseResult.result(0, "success", activityService.getActivityById(activityId));
+
+    }
 
 }
