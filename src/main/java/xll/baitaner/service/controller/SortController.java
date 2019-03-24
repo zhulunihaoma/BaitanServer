@@ -79,8 +79,8 @@ public class SortController {
 
     /**
      * 更新分类位置
-     * @param sort
-     * @param sortOrder
+     * @param shopId
+     * @param sortName
      * @return
      */
     @ApiOperation(
@@ -92,8 +92,8 @@ public class SortController {
             @ApiImplicitParam(name = "order", value = "要移动到的位置，从0开始计数", required = true, dataType = "int")
     })
     @RequestMapping("editsortorder")
-    public ResponseResult updateSortOrder(Sort sort, int sortOrder){
-        boolean result = sortService.updateSortOrder(sort, sortOrder);
+    public ResponseResult updateSortOrder(Sort sort, int order){
+        boolean result = sortService.updateSortOrder(sort, order);
         List<Sort> sortList = sortService.getSortList(sort.getShopId());
         if(result){
             return ResponseResult.result(0, "success" , sortList);

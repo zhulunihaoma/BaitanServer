@@ -63,7 +63,7 @@ public class SortService {
         int curOrder = sort.getSortOrder();
         boolean result;
         if (curOrder > order){
-            result = sortMapper.additionOrder(shopId, order, curOrder) > 0;
+            result = sortMapper.addOrder(shopId, order, curOrder) > 0;
             if(result)
             {
                 if (sortMapper.updateSortOrder(sort.getId(), order) > 0){

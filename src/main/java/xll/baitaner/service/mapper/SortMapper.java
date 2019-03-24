@@ -54,7 +54,7 @@ public interface SortMapper {
      * @return
      */
     @Update("UPDATE sort SET sortOrder = sortOrder + 1 WHERE shopId = #{shopId} AND sortOrder >= #{start} AND sortOrder <= #{end}")
-    int additionOrder(@Param("shopId") int shopId, @Param("start") int start, @Param("end") int end);
+    int addOrder(@Param("shopId") int shopId, @Param("start") int start, @Param("end") int end);
 
     /**
      *  start到end间的sort的位置-1

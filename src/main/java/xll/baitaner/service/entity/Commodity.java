@@ -5,8 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 /**
  * 描述：商品信息实体类
  * 创建者：xie
@@ -51,12 +49,6 @@ public class Commodity {
     private float price;
 
     /**
-     * 商品运费
-     */
-    @ApiModelProperty(value="商品运费",name="postage")
-    private float postage;
-
-    /**
      * 月销售数目
      */
     @ApiModelProperty(value="月销售数目",name="monthlySales")
@@ -85,18 +77,6 @@ public class Commodity {
     /**
      * 商品显示位置
      */
-    @ApiModelProperty(value="商品显示位置",name="turn")
-    private int turn;
-
-    /**
-     * 商品规格id列表
-     */
-    @ApiModelProperty(value = "商品规格id列表",name = "specs")
-    private int[] specs;
-
-    /**
-     * 商品规格列表
-     */
-    @ApiModelProperty(value = "商品规格列表", name = "specList")
-    private List<Spec> specList;
+    @ApiModelProperty(value="商品显示位置",name="order")
+    private int order;
 }

@@ -10,75 +10,18 @@ import java.util.List;
 /**
  * 描述：商品信息管理mapper
  * 创建者：xie
- * 日期：2019-2-23
+ * 日期：
  **/
 @Repository
 public interface CommodityMapper {
 
     /**
-     * 新增商品信息
-     * @param co
-     * @return
-     */
-    @Insert("INSERT INTO commodity (shopId,sortId,name,price,postage,monthlySales,pictUrl,introduction,state,turn,stock,datetime) " +
-            "VALUES (#{co.shopId},#{co.sortId},#{co.name},#{co.price},#{co.postage},#{co.monthlySales},#{co.pictUrl}," +
-            "#{co.introduction},#{co.state},#{co.turn},#{co.stock},NOW(0))")
-    @Options(useGeneratedKeys = true, keyProperty = "co.id")
-    int insertCommodity(@Param("co") Commodity co);
-
-    /**
-     * 更新商品信息
-     * @param co
-     * @return
-     */
-    @Update("UPDATE commodity SET name=#{co.name},price=#{co.price},postage=#{co.postage},monthlySales=#{co.monthlySales}, " +
-            "pictUrl = #{co.pictUrl},introduction=#{co.introduction},stock=#{co.stock} WHERE id  = #{co.id}")
-    int updateCommodity(@Param("co") Commodity co);
-
-    /**
-     * 分页查询店铺中对应分类的商品列表（上下架）
-     * @param shopId
-     * @param sortId
-     * @param page
-     * @return
-     */
-    @Select("SELECT * FROM commodity WHERE shopId = #{shopId} AND sortId = #{sortId} AND activable = 1 ORDER BY turn LIMIT #{page.offset},#{page.size}")
-    List<Commodity> selectSortCoList(@Param("shopId") int shopId, @Param("sortId") int sortId, @Param("page") Pageable page);
-
-    /**
-     * 查询店铺中对应分类的商品列表（上架）
-     * @param shopId
-     * @param sortId
-     * @return
-     */
-    @Select("SELECT * FROM commodity WHERE shopId = #{shopId} AND sortId = #{sortId} AND state = 1 AND activable = 1 ORDER BY turn")
-    List<Commodity> selectSortCo(@Param("shopId") int shopId, @Param("sortId") int sortId);
-
-    /**
-     * 查询店铺中对应分类的所有商品总数
-     * @param shopId
-     * @return
-     */
-    @Select("SELECT COUNT(*) FROM commodity WHERE shopId = #{shopId} AND sortId = #{sortId} AND activable = 1")
-    int countSortCoList(@Param("shopId") int shopId, @Param("sortId") int sortId);
-
-    /**
-     * 分页查询店铺中所有商品列表
-     * 先按分类排序，再按分类内商品排序
+     * 查询店铺中所有商品列表
      * 上下架均显示
      * @param shopId
      * @return
      */
-    @Select("SELECT " +
-            " co.*  " +
-            "FROM " +
-            " commodity co " +
-            " JOIN ( SELECT * FROM sort WHERE shopId = #{shopId} ORDER BY sortOrder ) so ON co.sortId = so.id  " +
-            "WHERE " +
-            " co.activable = 1  " +
-            "ORDER BY " +
-            " so.sortOrder, " +
-            " co.turn ASC LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND Disable = 1 ORDER BY Id DESC LIMIT #{page.offset},#{page.size}")
     List<Commodity> selectAllCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
 
     /**
@@ -86,25 +29,16 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM commodity WHERE shopId = #{shopId} AND activable = 1")
+    @Select("SELECT COUNT(*) FROM commodity WHERE ShopId = #{shopId} AND Disable = 1")
     int countAllCoList(@Param("shopId") int shopId);
 
     /**
      * 查询店铺中所有上架商品列表
-     * 先按分类排序，再按分类内商品排序
      * @param shopId
      * @return
      */
-    @Select("SELECT " +
-            " co.*  " +
-            "FROM " +
-            " commodity co " +
-            " JOIN ( SELECT * FROM sort WHERE shopId = #{shopId} ORDER BY sortOrder ) so ON co.sortId = so.id  " +
-            "WHERE " +
-            " co.activable = 1 AND state = 1 " +
-            "ORDER BY " +
-            " so.sortOrder, " +
-            " co.turn ASC LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT * FROM commodity WHERE ShopId = #{shopId} AND State = 1 AND Disable = 1 ORDER BY Id DESC " +
+            "LIMIT #{page.offset},#{page.size}")
     List<Commodity> selectCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
 
     /**
@@ -112,7 +46,7 @@ public interface CommodityMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM commodity WHERE shopId = #{shopId} AND state = 1 AND activable = 1")
+    @Select("SELECT COUNT(*) FROM commodity WHERE ShopId = #{shopId} AND State = 1 AND Disable = 1")
     int countCoList(@Param("shopId") int shopId);
 
     /**
@@ -122,6 +56,26 @@ public interface CommodityMapper {
      */
     @Select("SELECT * FROM commodity WHERE Id = #{id}")
     Commodity selectCommodity(@Param("id") int id);
+
+    /**
+     * 新增商品信息
+     * @param co
+     * @return
+     */
+    @Insert("INSERT INTO commodity (ShopId,Name,Price,MonthlySales,Praise,PictUrl,Introduction,State) " +
+            "VALUES (#{co.shopId},#{co.name},#{co.price},#{co.monthlySales}," +
+            "#{co.praise},#{co.pictUrl},#{co.introduction},#{co.state})")
+    int insertCommodity(@Param("co") Commodity co);
+
+    /**
+     * 更新商品信息
+     * @param co
+     * @return
+     */
+    @Update("UPDATE commodity SET Name = #{co.name}, Price = #{co.price}, MonthlySales = #{co.monthlySales}, " +
+            "Praise = #{co.praise}, PictUrl = #{co.pictUrl}, Introduction = #{co.introduction}, State = #{co.state} " +
+            "WHERE Id  = #{co.id}")
+    int updateCommodity(@Param("co") Commodity co);
 
     /**
      * 删除商品信息
@@ -136,7 +90,7 @@ public interface CommodityMapper {
      * @param id
      * @return
      */
-    @Update("UPDATE commodity SET activable = 0 WHERE id  = #{id}")
+    @Update("UPDATE commodity SET Disable = 0 WHERE Id  = #{id}")
     int updateCoDisabel(@Param("id") int id);
 
     /**
@@ -144,35 +98,6 @@ public interface CommodityMapper {
      * @param id
      * @return
      */
-    @Update("UPDATE commodity SET state = IF(state=0,1,0) WHERE id  = #{id} AND activable = 1")
+    @Update("UPDATE commodity SET State = IF(State=0,1,0) WHERE Id  = #{id}")
     int updateCoState(@Param("id") int id);
-
-    /**
-     * 修改商品的位置顺序到指定位置
-     * @param coId
-     * @param turn
-     * @return
-     */
-    @Update("UPDATE commodity SET turn = #{turn} WHERE id  = #{coId}")
-    int updateCoTurn(@Param("coId") int coId, @Param("turn") int turn);
-
-    /**
-     * start到end间的商的位置顺序+1
-     * @param sortId
-     * @param start
-     * @param end
-     * @return
-     */
-    @Update("UPDATE commodity SET turn = turn + 1 WHERE sortId = #{sortId} AND turn >= #{start} AND turn <= #{end}")
-    int additionTurn(@Param("sortId") int sortId, @Param("start") int start, @Param("end") int end);
-
-    /**
-     * start到end间的商的位置顺序-1
-     * @param sortId
-     * @param start
-     * @param end
-     * @return
-     */
-    @Update("UPDATE commodity SET turn = turn - 1 WHERE sortId = #{sortId} AND turn >= #{start} AND turn <= #{end}")
-    int subtractTurn(@Param("sortId") int sortId, @Param("start") int start, @Param("end") int end);
 }
