@@ -25,6 +25,11 @@ public class Activity {
     private String openId;
 
     /**
+     * 店铺ID
+     */
+    private int shopId;
+
+    /**
      * 活动名称
      */
     private String activityName;
@@ -48,6 +53,13 @@ public class Activity {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
 
     private Date endTime;
+
+    /**
+     *  结束时间string
+     */
+
+    private String endTimeString;
+
 
     /**
      *  活动状态1：启用 0：终止
@@ -107,10 +119,11 @@ public class Activity {
     private String sendType;
 
 
-
-
     /**
-     * 商品信息
+     * 商品信息id
      */
-//    private Commodity commodity;
+
+    @ApiModelProperty(value = "绑定的商品Id",name = "CommodityId")
+    private int commodityId;
+
 }

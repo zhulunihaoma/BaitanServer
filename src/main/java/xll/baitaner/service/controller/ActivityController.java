@@ -6,7 +6,9 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xll.baitaner.service.entity.Activity;
+import xll.baitaner.service.entity.ActivityRecord;
 import xll.baitaner.service.service.ActivityService;
+import xll.baitaner.service.utils.DateUtils;
 import xll.baitaner.service.utils.ResponseResult;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,7 +40,6 @@ public class ActivityController {
     @ApiImplicitParam(name = "activity", value = "用户活动", required = true, dataType = "Activity")
     @PostMapping("createActivity")
     public ResponseResult insertActivity(@RequestBody Activity activity) throws ParseException {
-        System.out.println("======123"+ JSONObject.fromObject(activity));
         //生成下单时间
         activity.setStartTime(new Date(System.currentTimeMillis()));
 
@@ -66,7 +67,6 @@ public class ActivityController {
      */
     @RequestMapping("switchActivityStatus")
     public ResponseResult switchActivityStatus(int activityId,int status){
-        System.out.println("======switchActivityStatus"+activityId+status);
         boolean result = activityService.switchActivityStatus(activityId, status);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
     }
@@ -93,4 +93,66 @@ public class ActivityController {
 
     }
 
-}
+    /**
+     * 新增activityrecord
+     * @param activityId
+     * @param openId
+     * @param nickName
+     * @param avatarUrl
+     * @param gender
+     * @return
+     */
+    @PostMapping("insertActivityrecord")
+    public ResponseResult insertActivityrecord(int activityId,String openId,String nickName,String avatarUrl,String gender){
+
+        ActivityRecord activityRecord = new ActivityRecord();
+        activityRecord.setActivityId(activityId);
+        activityRecord.setOpenId(openId);
+        activityRecord.setNickName(nickName);
+        activityRecord.setAvatarUrl(avatarUrl);
+        activityRecord.setGender(gender);
+        int res = activityService.insertActivityRecord(activityRecord);
+
+        return ResponseResult.result(res > 0 ? 0 : 1, res > 0 ? "success" : "fail", res);
+
+    }
+    /**
+     * 根据activityrecord查询activityrecord详情
+     * @param activityRecordId
+     * @return
+     */
+    @GetMapping("getActivityrecordById")
+    public  ResponseResult getActivityrecordById(int activityRecordId){
+
+        return ResponseResult.result(0, "success", activityService.getActivityrecordById(activityRecordId));
+
+    }
+
+    /**
+     * 新增supportrecord
+     * @param recordId
+     * @param openId
+     * @param nickName
+     * @param avatarUrl
+     * @param gender
+     * @return
+     */
+    @PostMapping("insertSupportrecord")
+    public ResponseResult insertSupportrecord(int recordId,String openId,String nickName,String avatarUrl,String gender){
+        boolean result = activityService.insertSupportrecord(recordId,openId,nickName,avatarUrl,gender);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+
+    }
+
+    /**
+     *查询一个openId有没有参加过一个活动
+     * @param openId
+     * @param activityId
+     * @return
+     */
+    @GetMapping("selectActivityRecordByOpenId_ActivityId")
+    public ResponseResult selectActivityRecordByOpenId_ActivityId(String openId,int activityId) {
+        return ResponseResult.result(0, "success" , activityService.selectActivityRecordByOpenId_ActivityId(openId,activityId));
+
+        }
+    }

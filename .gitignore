@@ -11,6 +11,10 @@ gen
 .idea/
 
 build/
+build.gradle
+gradle
+gradle.bat
+
 out/
 settings.gradle
 upload/

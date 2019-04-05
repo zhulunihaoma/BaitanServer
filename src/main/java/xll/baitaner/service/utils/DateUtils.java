@@ -23,7 +23,17 @@ public class DateUtils {
 
         return sdf.format(date);
     }
+    /**
+     * Date转换成String yyyy-MM-dd。
+     *
+     * @param date
+     * @return
+     */
+    public static String toStringtime(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+        return sdf.format(date);
+    }
     /**
      * 供工单用，格式：YYMMDD
      *
