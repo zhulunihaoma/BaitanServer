@@ -252,7 +252,7 @@ public class ShopManageController {
     @GetMapping("useraccessshop")
     public ResponseResult addShopForUser(String openId, int shopId){
         String result = shopManageService.addShopUser(openId, shopId);
-        return ResponseResult.result(result == null ? 0 : 1, result == null ? "success" : "fail", null);
+        return ResponseResult.result(result == null ? 0 : 1, result == null ? "success" : "fail", result);
     }
 
     /**

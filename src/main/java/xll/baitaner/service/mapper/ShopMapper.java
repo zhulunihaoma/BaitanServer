@@ -132,7 +132,7 @@ public interface ShopMapper {
 
     /**
      * 删除店铺
-     * @param id
+     * @param idsss
      * @return
      */
     @Delete("DELETE FROM shop WHERE id = #{id}")
@@ -144,7 +144,7 @@ public interface ShopMapper {
      * @param shopId
      * @return
      */
-    @Insert("INSERT INTO shopuser (openId, shopId) VALUES (#{openId}, #{shopId}")
+    @Insert("INSERT INTO shopuser (openId, shopId) VALUES (#{openId}, #{shopId})")
     int insertShopUser(@Param("openId") String openId, @Param("shopId") int shopId);
 
     /**
