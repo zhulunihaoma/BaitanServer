@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import xll.baitaner.service.entity.Activity;
 import xll.baitaner.service.entity.ActivityRecord;
@@ -14,6 +15,7 @@ import xll.baitaner.service.utils.ResponseResult;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author zhulu
@@ -103,10 +105,17 @@ public class ActivityController {
      * @param nickName
      * @param avatarUrl
      * @param gender
+     * @param commodityId
+     * @param status
+     * @param activityPrice
+     * @param endTime
+     * @param shopName
+     * @param shopLogoUrl
+     * @param goodname
      * @return
      */
     @PostMapping("insertActivityrecord")
-    public ResponseResult insertActivityrecord(int activityId,String openId,String nickName,String avatarUrl,String gender){
+    public ResponseResult insertActivityrecord(int activityId,String openId,String nickName,String avatarUrl,String gender,int commodityId,int status,float activityPrice,Date endTime,String shopName,String shopLogoUrl,String goodname){
 
         ActivityRecord activityRecord = new ActivityRecord();
         activityRecord.setActivityId(activityId);
@@ -114,8 +123,14 @@ public class ActivityController {
         activityRecord.setNickName(nickName);
         activityRecord.setAvatarUrl(avatarUrl);
         activityRecord.setGender(gender);
+        activityRecord.setCommodityId(commodityId);
+        activityRecord.setStatus(status);
+        activityRecord.setActivityPrice(activityPrice);
+        activityRecord.setEndTime(endTime);
+        activityRecord.setShopName(shopName);
+        activityRecord.setShopLogoUrl(shopLogoUrl);
+        activityRecord.setGoodname(goodname);
         int res = activityService.insertActivityRecord(activityRecord);
-
         return ResponseResult.result(res > 0 ? 0 : 1, res > 0 ? "success" : "fail", res);
 
     }
@@ -146,6 +161,16 @@ public class ActivityController {
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
 
     }
+    /**
+     * 更新 activityrecord supportCount+1
+     * @param recordId
+     * @return
+     */
+    @PostMapping("addsupportCount")
+    public ResponseResult addsupportCount(int recordId){
+        boolean result = activityService.addsupportCount(recordId);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    }
 
     /**
      *查询一个openId有没有参加过一个活动
@@ -158,4 +183,26 @@ public class ActivityController {
         return ResponseResult.result(0, "success" , activityService.selectActivityRecordByOpenId_ActivityId(openId,activityId));
 
         }
+
+    /**
+     *查询活动record根据排名
+     * @param activityId
+     * @return
+     */
+    @GetMapping("selectActivityRecordByOrder")
+    public ResponseResult selectActivityRecordByOrder(int activityId,Pageable pageable){
+
+        return ResponseResult.result(0, "success" , activityService.selectActivityRecordByOrder(activityId,pageable));
+
+    }
+    /**
+     *查询一个openId参加过所有活动
+     * @param openId
+     * @return
+     */
+    @GetMapping("selectActivityRecordByOpenId")
+    public ResponseResult selectActivityRecordByOpenId_ActivityId(String openId,Pageable pageable) {
+        return ResponseResult.result(0, "success" , activityService.selectActivityRecordByOpenId(openId,pageable));
+
+    }
     }

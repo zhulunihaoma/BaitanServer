@@ -3,6 +3,7 @@ package xll.baitaner.service.service;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import xll.baitaner.service.entity.*;
 import xll.baitaner.service.mapper.ActivityMapper;
@@ -80,6 +81,7 @@ public class ActivityService {
         Activity activity = activityMapper.selectActivityById(activityId);
         Shop shopinfo = shopManageService.getShopById(activity.getShopId());//后面改成根据shopId获取，活动和店铺绑定而不是个人
         Commodity commodity = commodityService.getCommodity(activity.getCommodityId());
+        activity.setEndTimeString(DateUtils.toStringtime(activity.getEndTime()));
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("activity",activity);
@@ -136,15 +138,50 @@ public class ActivityService {
     public  boolean insertSupportrecord(int recordId,String openId,String nickName,String avatarUrl,String gender){
         return  activityMapper.insertSupportrecord(recordId,openId,nickName,avatarUrl,gender) > 0;
     }
+
+    /**
+     * 更新 activityrecord supportCount+1
+     * @param recordId
+     * @return
+     */
+    public boolean addsupportCount(int recordId){
+        return  activityMapper.addsupportCount(recordId) > 0;
+    }
+
     /**
      *查询一个openId有没有参加过一个活动
      * @param openId
      * @param activityId
      * @return
      */
-    public ActivityRecord selectActivityRecordByOpenId_ActivityId(String openId,int activityId){
+    public List<ActivityRecord> selectActivityRecordByOpenId_ActivityId(String openId,int activityId){
 
         return activityMapper.selectActivityRecordByOpenId_ActivityId(openId,activityId);
+    }
+    /**
+     *查询活动record根据排名
+     * @param activityId
+     * @return
+     */
+    public  List<ActivityRecord> selectActivityRecordByOrder(int activityId,Pageable pageable){
+        return  activityMapper.selectActivityRecordByOrder(activityId,pageable);
+    }
+
+    /**
+     *查询一个openId参加过所有活动
+     * @param openId
+     * @return
+     */
+    public List <ActivityRecord> selectActivityRecordByOpenId(String openId,Pageable pageable){
+        List <ActivityRecord> ActivityRecordList = activityMapper.selectActivityRecordByOpenId(openId,pageable);
+        for (ActivityRecord activityRecord : ActivityRecordList){
+
+            JSONObject jsonObject = this.getActivityById(activityRecord.getActivityId());
+            activityRecord.setActivity(jsonObject);
+        }
+        //塞入对应的商品信息
+        return ActivityRecordList;
+
     }
 }
 
