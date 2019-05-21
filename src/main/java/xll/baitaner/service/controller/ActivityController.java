@@ -99,23 +99,29 @@ public class ActivityController {
     }
 
     /**
+     * 根据活动id获取活动详情
+     * @param activityId
+     * @return
+     */
+    @GetMapping("getactivityinfo2")
+    public ResponseResult getActivityinfo2(int activityId){
+
+        return ResponseResult.result(0, "success", activityService.getActivityById2(activityId));
+
+    }
+
+    /**
      * 新增activityrecord
      * @param activityId
      * @param openId
      * @param nickName
      * @param avatarUrl
      * @param gender
-     * @param commodityId
-     * @param status
-     * @param activityPrice
-     * @param endTime
-     * @param shopName
-     * @param shopLogoUrl
-     * @param goodname
      * @return
      */
     @PostMapping("insertActivityrecord")
-    public ResponseResult insertActivityrecord(int activityId,String openId,String nickName,String avatarUrl,String gender,int commodityId,int status,float activityPrice,Date endTime,String shopName,String shopLogoUrl,String goodname){
+    public ResponseResult insertActivityrecord(int activityId,String openId,String nickName,String avatarUrl,String gender,String shopName,
+    String shopLogoUrl,String goodname,float activityPrice,Date endTime){
 
         ActivityRecord activityRecord = new ActivityRecord();
         activityRecord.setActivityId(activityId);
@@ -123,17 +129,28 @@ public class ActivityController {
         activityRecord.setNickName(nickName);
         activityRecord.setAvatarUrl(avatarUrl);
         activityRecord.setGender(gender);
-        activityRecord.setCommodityId(commodityId);
-        activityRecord.setStatus(status);
-        activityRecord.setActivityPrice(activityPrice);
-        activityRecord.setEndTime(endTime);
         activityRecord.setShopName(shopName);
         activityRecord.setShopLogoUrl(shopLogoUrl);
         activityRecord.setGoodname(goodname);
+        activityRecord.setActivityPrice(activityPrice);
+        activityRecord.setEndTime(endTime);
+
         int res = activityService.insertActivityRecord(activityRecord);
         return ResponseResult.result(res > 0 ? 0 : 1, res > 0 ? "success" : "fail", res);
 
     }
+
+    /**
+     *查询一个activityId所有点赞的人
+     * @param recordId
+     * @return
+     */
+    @GetMapping("selecSupportRecordList")
+    public ResponseResult selecSupportRecordList(int recordId) {
+        return ResponseResult.result(0, "success" , activityService.selecSupportRecordList(recordId));
+
+    }
+
     /**
      * 根据activityrecord查询activityrecord详情
      * @param activityRecordId

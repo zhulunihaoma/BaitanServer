@@ -101,16 +101,4 @@ public class ActivityRecord {
     private String goodname;
 
 
-    /**
-     * 活动实体类
-     */
-    @ApiModelProperty(value="活动实体类",name="activity")
-    private JSONObject activity;
-
-    /**
-     * 商品
-     */
-    @ApiModelProperty(value="商品实体类",name="commodity")
-    private Commodity commodity;
-
 }

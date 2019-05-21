@@ -9,6 +9,7 @@ import xll.baitaner.service.entity.*;
 import xll.baitaner.service.mapper.ActivityMapper;
 import xll.baitaner.service.utils.DateUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -91,6 +92,21 @@ public class ActivityService {
 
     }
     /**
+     * 根据活动id获取活动详情
+     * @param activityId
+     * @return
+     */
+
+    public Activity_Shop_Commodity  getActivityById2(int activityId){
+        Activity_Shop_Commodity activity_shop_commodity = activityMapper.selectActivityById2(activityId);
+
+//        jsonObject.put(DateUtils.toStringtime());
+
+
+        return activity_shop_commodity;
+
+    }
+    /**
      * 新增activityrecord
      * @param activityRecord
      * @return
@@ -111,23 +127,17 @@ public class ActivityService {
      * @param activityRecordId
      * @return
      */
-    public JSONObject getActivityrecordById(int activityRecordId){
+    public ActivityRecord getActivityrecordById(int activityRecordId){
         ActivityRecord activityRecord = activityMapper.selectActivityrecordById(activityRecordId);
-        Activity activity = activityMapper.selectActivityById(activityRecord.getActivityId());
-        Shop shopinfo = shopManageService.getShopById(activity.getShopId());
-        Commodity commodity = commodityService.getCommodity(activity.getCommodityId());
-        List<SupportRecord>  supportRecordList = activityMapper.selecSupportRecordList(activityRecordId);
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("shopinfo",shopinfo);
-        activity.setEndTimeString(DateUtils.toStringtime(activity.getEndTime()));
-        jsonObject.put("activityRecord",activityRecord);
-        jsonObject.put("activity",activity);
-        jsonObject.put("commodity",commodity);
-        jsonObject.put("supportRecordList",supportRecordList);
-        return jsonObject;
+        return activityRecord;
 
     }
+
+
+
+
+
 
     /**
      * 新增supportrecord
@@ -137,6 +147,18 @@ public class ActivityService {
      */
     public  boolean insertSupportrecord(int recordId,String openId,String nickName,String avatarUrl,String gender){
         return  activityMapper.insertSupportrecord(recordId,openId,nickName,avatarUrl,gender) > 0;
+    }
+
+
+
+    /**
+     *查询一个recordId所有的点赞者
+     * @param recordId
+     * @return
+     */
+    public List <SupportRecord> selecSupportRecordList(int recordId){
+        List <SupportRecord> SupportRecordList = activityMapper.selecSupportRecordList(recordId);
+        return SupportRecordList;
     }
 
     /**
@@ -174,11 +196,10 @@ public class ActivityService {
      */
     public List <ActivityRecord> selectActivityRecordByOpenId(String openId,Pageable pageable){
         List <ActivityRecord> ActivityRecordList = activityMapper.selectActivityRecordByOpenId(openId,pageable);
-        for (ActivityRecord activityRecord : ActivityRecordList){
-
-            JSONObject jsonObject = this.getActivityById(activityRecord.getActivityId());
-            activityRecord.setActivity(jsonObject);
-        }
+//        for (ActivityRecord activityRecord : ActivityRecordList){
+//
+//            activityRecord.setActivity(this.getActivityById2(activityRecord.getActivityId()));
+//        }
         //塞入对应的商品信息
         return ActivityRecordList;
 

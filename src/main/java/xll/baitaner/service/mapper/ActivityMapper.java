@@ -1,12 +1,10 @@
 package xll.baitaner.service.mapper;
 
+import net.sf.json.JSONObject;
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import xll.baitaner.service.entity.Activity;
-import xll.baitaner.service.entity.ActivityRecord;
-import xll.baitaner.service.entity.SupportRecord;
-import xll.baitaner.service.entity.WXUserInfo;
+import xll.baitaner.service.entity.*;
 
 import java.util.List;
 import java.util.Map;
@@ -63,6 +61,16 @@ public interface ActivityMapper {
     @Select("SELECT activity.*, commodity.* FROM activity JOIN commodity ON activity.commodityId = commodity.id WHERE activity.id = #{id}")
     Activity selectActivityById(@Param("id") int id);
 
+
+    /**
+     * 根据活动id查询活动详情 （多表查询activity,commodity,shopinfo 单独请求）
+     * @param id
+     * @return
+     */
+
+    @Select("SELECT activity.endTime, activity.status, activity.activityType, activity.nickName, activity.avatarUrl, activity.activityPrice,commodity.name As commodityName ,commodity.introduction, commodity.pictUrl, commodity.price, " +
+            "shop.shopName ,shop.shopIntroduction ,shop.ownerName ,shop.wxNumber ,shop.contactNumber ,shop.shopAddress ,shop.shopLogoUrl ,shop.id As shopId FROM activity JOIN commodity ON activity.commodityId = commodity.id JOIN shop ON activity.shopId = shop.id   WHERE activity.id = #{id}")
+    Activity_Shop_Commodity selectActivityById2(@Param("id") int id);
 
     /**
      * 新增activityrecord
