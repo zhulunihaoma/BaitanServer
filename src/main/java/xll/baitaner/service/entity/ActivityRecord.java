@@ -29,6 +29,21 @@ public class ActivityRecord {
      */
     private String openId;
 
+
+    /**
+     * 记录状态（0 未完成，1 可以购买 ，2 已完成）
+     */
+
+    @ApiModelProperty(value = "记录状态",name = "recordStatus")
+    private int recordStatus;
+
+    /**
+     *  砍价活动有的当前砍到的价格
+     */
+    @ApiModelProperty(value = "当前砍到的价格",name = "currentPrice")
+    private float currentPrice;
+
+
     /**
      * 商品信息id
      */

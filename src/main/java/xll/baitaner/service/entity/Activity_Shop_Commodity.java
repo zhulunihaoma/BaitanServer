@@ -77,6 +77,12 @@ public class Activity_Shop_Commodity {
     private float activityPrice;
 
     /**
+     *  砍价活动有的当前砍到的价格
+     */
+    @ApiModelProperty(value = "当前砍到的价格",name = "currentPrice")
+    private float currentPrice;
+
+    /**
      *  结束时间
      */
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
