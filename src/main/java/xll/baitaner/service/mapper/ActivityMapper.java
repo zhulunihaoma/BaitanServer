@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import xll.baitaner.service.entity.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -96,9 +97,9 @@ public interface ActivityMapper {
      * @param openId
      * @return
      */
-    @Insert("INSERT INTO supportrecord (recordId,openId,nickName,avatarUrl,gender) " +
-            "VALUES (#{recordId},#{openId},#{nickName},#{avatarUrl},#{gender})")
-    int insertSupportrecord(@Param("recordId") int recordId ,@Param("openId") String openId,@Param("nickName")String nickName, @Param("avatarUrl") String avatarUrl, @Param("gender") String gender);
+    @Insert("INSERT INTO supportrecord (activityId,recordId,openId,nickName,avatarUrl,gender) " +
+            "VALUES (#{activityId},#{recordId},#{openId},#{nickName},#{avatarUrl},#{gender})")
+    int insertSupportrecord(@Param("activityId") int activityId ,@Param("recordId") int recordId ,@Param("openId") String openId,@Param("nickName")String nickName, @Param("avatarUrl") String avatarUrl, @Param("gender") String gender);
 
     /**
      * 更新 activityrecord supportCount+1
@@ -141,6 +142,34 @@ public interface ActivityMapper {
     */
     @Select("SELECT * FROM activityrecord WHERE openId  = #{openId} LIMIT #{page.offset},#{page.size}")
     List <ActivityRecord> selectActivityRecordByOpenId(@Param("openId") String openId,@Param("page") Pageable page);
+
+
+    /**
+     *更改一个活动record的状态
+     * @param recordStatus
+     * @return
+     */
+    @Update("UPDATE activityrecord SET recordStatus = #{recordStatus} WHERE id = #{recordId}")
+    int  changeRecordStatus(@Param("recordStatus") int recordStatus, @Param("recordId") int recordId);
+
+
+    /**
+     * 定时任务方法 每小时执行一次 查询数据库中结束时间和当前时间一致的则改变状态值为0
+     * @param status
+     * @param endTime
+     * @return
+     */
+    @Update("UPDATE activity SET status = #{status} WHERE endTime = #{endTime}")
+    int  CheckActivityEndtime(@Param("status") int status, @Param("endTime") Date endTime);
+
+    /**
+     * 设置新的currentPrice
+     * @param currentPrice
+     * @param recordId
+     * @return
+     */
+    @Update("UPDATE activityrecord SET currentPrice = #{currentPrice} WHERE recordId = #{recordId}")
+    int  UpdateCurrentPrice(@Param("currentPrice") float currentPrice, @Param("recordId") int recordId);
 
 
 

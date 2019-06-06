@@ -26,6 +26,13 @@ public class SupportRecord {
     /**
      * recordId
      */
+    @ApiModelProperty(value="活动id",name="activityId")
+
+    private int activityId;
+
+    /**
+     * recordId
+     */
     @ApiModelProperty(value="活动参加记录id",name="recordId")
 
     private int recordId;

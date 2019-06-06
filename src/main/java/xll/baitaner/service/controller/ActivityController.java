@@ -51,7 +51,7 @@ public class ActivityController {
 
         int res = activityService.insertActivity(activity);
 
-        return ResponseResult.result(res == -1 ? 0 : 1, res == -1 ? "success" : "fail", res);
+        return ResponseResult.result(res != -1 ? 0 : 1, res != -1 ? "success" : "fail", res);
     }
 
     /**
@@ -173,9 +173,10 @@ public class ActivityController {
      * @return
      */
     @PostMapping("insertSupportrecord")
-    public ResponseResult insertSupportrecord(int recordId,String openId,String nickName,String avatarUrl,String gender){
-        boolean result = activityService.insertSupportrecord(recordId,openId,nickName,avatarUrl,gender);
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    public ResponseResult insertSupportrecord(int activityId, String operateType, String operateContent,int recordId,String openId,String nickName,String avatarUrl,String gender){
+        int result = activityService.insertSupportrecord(activityId,operateType,operateContent,recordId,openId,nickName,avatarUrl,gender);
+        return ResponseResult.result(result , result == 0 ? "success" : "fail", "价格已砍到最低价格");
+
 
     }
     /**
