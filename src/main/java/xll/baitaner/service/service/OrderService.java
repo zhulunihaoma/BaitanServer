@@ -10,6 +10,7 @@ import xll.baitaner.service.entity.*;
 import xll.baitaner.service.mapper.CommodityMapper;
 import xll.baitaner.service.mapper.OrderMapper;
 import xll.baitaner.service.mapper.ProfileMapper;
+import xll.baitaner.service.utils.LogUtils;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -24,6 +25,8 @@ import java.util.*;
 @Service
 public class OrderService {
 
+    private String TAG = "Baitaner-OrderService";
+
     @Autowired
     private OrderMapper orderMapper;
 
@@ -33,6 +36,9 @@ public class OrderService {
     @Autowired
     private CommodityMapper commodityMapper;
 
+    @Autowired
+    private SpecService specService;
+
     /**
      * 下单处理，新增订单及订单商品数据
      * @param order
@@ -41,15 +47,28 @@ public class OrderService {
      */
     @Transactional
     public boolean addOrder(Order order, List<OrderCommodity> list){
-        ReceiverAddress address = profileMapper.selectAddress(order.getReceiverAddressId());
-        int re = orderMapper.insertOrder(order, address);
+        int re = orderMapper.insertOrder(order);
 
         if(re > 0 ){
+            //插入订单商品
             String orderId = order.getOrderId();
             boolean result = true;
             for (OrderCommodity oc : list){
                 Commodity commodity = commodityMapper.selectCommodity(oc.getCommodityId());
-                result = orderMapper.insertOrderList(oc.getCommodityId(), oc.getCount(), orderId, commodity) > 0;
+
+                if (oc.getSpecId() >= 0){
+                    Spec spec = specService.getSpec(oc.getSpecId());
+                    if (spec != null && spec.getCommodityId() == oc.getCommodityId()){
+                        result = orderMapper.insertOrderListSpec(commodity, oc.getCount(), orderId, spec) > 0;
+                        continue;
+                    }
+                }
+                result = orderMapper.insertOrderList(commodity, oc.getCount(), orderId) > 0;
+
+                if (!result){
+                    LogUtils.error(TAG, "Order " + orderId + "--OrderCommodity: \n" + oc.toString() + "\n插入数据库失败");
+                    throw new RuntimeException();
+                }
             }
 
             return result;
@@ -85,13 +104,13 @@ public class OrderService {
      * @param clientId
      * @return
      */
-    public PageImpl<Order> getOrderListByClient(String clientId, Pageable pageable){
-        List<Order> orderList = orderMapper.seleceOrdersByClientId(clientId, pageable);
+    public PageImpl<Order> getOrderListByUser(String openId, Pageable pageable){
+        List<Order> orderList = orderMapper.seleceOrdersByClientId(openId, pageable);
 
         for(Order order : orderList){
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
         }
-        int count = orderMapper.countOrdersByClientId(clientId);
+        int count = orderMapper.countOrdersByClientId(openId);
         return new PageImpl<Order>(orderList, pageable, count);
     }
 

@@ -57,7 +57,7 @@ public class WXPayController {
             return ResponseResult.result(1, "订单并不是未支付订单",null);
         }
 
-        if(!order.getClientId().equals(openId)){
+        if(!order.getOpenId().equals(openId)){
             return ResponseResult.result(1, "订单用户和当前发起支付用户不匹配",null);
         }
 

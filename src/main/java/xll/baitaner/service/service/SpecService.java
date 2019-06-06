@@ -29,6 +29,15 @@ public class SpecService {
     }
 
     /**
+     * 获取规格详情
+     * @param specId
+     * @return
+     */
+    public Spec getSpec(int specId){
+        return specMapper.selectSpec(specId);
+    }
+
+    /**
      * 更新规格
      * @param spec
      * @return

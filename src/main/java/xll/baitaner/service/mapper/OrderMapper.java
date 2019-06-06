@@ -23,12 +23,25 @@ public interface OrderMapper {
      * @param order
      * @return
      */
-    @Insert("INSERT INTO `order` (OrderId,ClientId,ReceiverAddressId,ShopId,Date,ArriveDate,Remarks,TotalMoney,State," +
-            "Name,Sex,Address,Phone) " +
-            "VALUES (#{order.orderId},#{order.clientId},#{order.receiverAddressId},#{order.shopId},#{order.date}," +
-            "#{order.arriveDate},#{order.remarks},#{order.totalMoney},#{order.state},#{re.name},#{re.sex}," +
-            "#{re.address},#{re.phone})")
-    int insertOrder(@Param("order") Order order, @Param("re") ReceiverAddress re);
+    @Insert("INSERT INTO `order` (orderId,openId,shopId,date,payType,remarks,totalMoney,postage,state," +
+            "name,sex,address,phone,isActivity,activityId) " +
+            "VALUES (#{order.orderId},#{order.openId},#{order.shopId},#{order.date},#{order.payType},#{order.remarks}," +
+            "#{order.totalMoney},#{order.postage},#{order.state},#{order.name},#{order.sex},#{order.address}," +
+            "#{order.phone},#{order.isActivity},#{order.activityId})")
+    int insertOrder(@Param("order") Order order);
+
+    /**
+     * 插入订单商品列表 带spec规格
+     * @param commodityId
+     * @param count
+     * @param orderId
+     * @return
+     */
+    @Insert("INSERT INTO orderlist (commodityId,count,orderId,name,price,monthlySales,pictUrl,introduction,specId,specName,specPrice) " +
+            "VALUES (#{co.id},#{count},#{orderId},#{co.name},#{co.price},#{co.monthlySales},#{co.pictUrl}," +
+            "#{co.introduction},#{spec.id},#{spec.name},#{spec.price})")
+    int insertOrderListSpec(@Param("co") Commodity co, @Param("count") int count,
+                        @Param("orderId") String orderId, @Param("spec") Spec spec);
 
     /**
      * 插入订单商品列表
@@ -37,12 +50,10 @@ public interface OrderMapper {
      * @param orderId
      * @return
      */
-    @Insert("INSERT INTO orderlist (CommodityId,Count,OrderId,Name,Price,MonthlySales,Praise,PictUrl,Introduction) " +
-            "VALUES (#{commodityId},#{count},#{orderId},#{co.name},#{co.price},#{co.monthlySales},#{co.praise}," +
-            "#{co.pictUrl},#{co.introduction})")
-    int insertOrderList(@Param("commodityId") int commodityId, @Param("count") int count,
-                        @Param("orderId") String orderId, @Param("co") Commodity co);
-
+    @Insert("INSERT INTO orderlist (commodityId,count,orderId,name,price,monthlySales,pictUrl,introduction) " +
+            "VALUES (#{co.id},#{count},#{orderId},#{co.name},#{co.price},#{co.monthlySales},#{co.pictUrl}," +
+            "#{co.introduction})")
+    int insertOrderList(@Param("co") Commodity co, @Param("count") int count, @Param("orderId") String orderId);
 
     /**
      * 根据订单编号获取订单详情
@@ -66,23 +77,24 @@ public interface OrderMapper {
      * @param clientId
      * @return
      */
-    @Select("SELECT * FROM `order` WHERE ClientId = #{clientId} ORDER BY Date DESC LIMIT #{page.offset},#{page.size}")
-    List<Order> seleceOrdersByClientId(@Param("clientId") String clientId, @Param("page") Pageable page);
+    @Select("SELECT * FROM `order` WHERE openId = #{openId} ORDER BY date DESC LIMIT #{page.offset},#{page.size}")
+    List<Order> seleceOrdersByClientId(@Param("openId") String openId, @Param("page") Pageable page);
 
     /**
      *查询对应用户的订单列表总个数
      * @param clientId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `order` WHERE ClientId = #{clientId}")
-    int countOrdersByClientId(@Param("clientId") String clientId);
+    @Select("SELECT COUNT(*) FROM `order` WHERE openId = #{openId}")
+    int countOrdersByClientId(@Param("openId") String openId);
 
     /**
      * 根据订单编号获取订单商品详情
      * @param orderId
      * @return
      */
-    @Select("SELECT * FROM orderlist WHERE OrderId = #{orderId}")
+    @Select("SELECT ol.*, o.name AS clientName, o.remarks AS orderRemarks FROM orderlist ol " +
+            "JOIN `order` o ON o.orderId = ol.orderId WHERE ol.orderId = #{orderId}")
     List<OrderCommodity> selectOrderCoListByOrderId(@Param("orderId") String orderId);
 
     /**

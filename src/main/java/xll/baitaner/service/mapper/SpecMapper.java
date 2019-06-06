@@ -21,6 +21,9 @@ public interface SpecMapper {
     @Options(useGeneratedKeys = true, keyProperty = "spec.id")
     int insertSpec(@Param("spec") Spec spec);
 
+    @Select("SELECT * FROM spec WHERE id = #{specId}")
+    Spec selectSpec(@Param("specId") int specId);
+
     /**
      * 更新规格数据
      * @param spec

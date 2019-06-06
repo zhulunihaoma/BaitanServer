@@ -57,7 +57,7 @@ public class SpecController {
 
     /**
      * 删除规格接口
-     * @param spec
+     * @param specId
      * @return
      */
     @ApiOperation(

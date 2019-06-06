@@ -11,7 +11,6 @@ gen
 .idea/
 
 build/
-build.gradle
 gradle
 gradle.bat
 
