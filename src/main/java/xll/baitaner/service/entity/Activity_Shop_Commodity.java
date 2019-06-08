@@ -77,10 +77,16 @@ public class Activity_Shop_Commodity {
     private float activityPrice;
 
     /**
-     *  砍价活动有的当前砍到的价格
+     *  集赞方式(rank,maxnum)/砍价方式(rank,maxnum)
      */
-    @ApiModelProperty(value = "当前砍到的价格",name = "currentPrice")
-    private float currentPrice;
+    @ApiModelProperty(value = "集赞方式/砍价方式",name = "operateType")
+    private String operateType;
+
+    /**
+     *  集赞方式对应的内容如 前多少名可以领取
+     */
+    @ApiModelProperty(value = "集赞/砍价方式对应的内容",name = "operateContent")
+    private String operateContent;
 
     /**
      *  结束时间
