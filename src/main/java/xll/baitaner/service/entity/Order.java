@@ -47,6 +47,18 @@ public class Order {
     private int shopId;
 
     /**
+     * 店铺名称
+     */
+    @ApiModelProperty(value="店铺名称",name="shopName")
+    private String shopName;
+
+    /**
+     * 店铺logo（选填）
+     */
+    @ApiModelProperty(value="店铺logo（选填）",name="shopLogoUrl")
+    private String shopLogoUrl;
+
+    /**
      * 下单时间
      */
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

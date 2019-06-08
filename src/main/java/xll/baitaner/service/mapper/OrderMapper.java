@@ -60,7 +60,7 @@ public interface OrderMapper {
      * @param orderId
      * @return
      */
-    @Select("SELECT * FROM `order` WHERE OrderId = #{orderId}")
+    @Select("SELECT o.*, s.shopName, s.shopLogoUrl FROM `order` o JOIN shop s ON o.shopId = s.id WHERE o.OrderId = #{orderId}")
     Order selectOrder(@Param("orderId") String orderId);
 
     /**
@@ -77,7 +77,7 @@ public interface OrderMapper {
      * @param clientId
      * @return
      */
-    @Select("SELECT * FROM `order` WHERE openId = #{openId} ORDER BY date DESC LIMIT #{page.offset},#{page.size}")
+    @Select("SELECT o.*, s.shopName, s.shopLogoUrl FROM `order` o JOIN shop s ON o.shopId = s.id WHERE o.openId = #{openId} ORDER BY date DESC LIMIT #{page.offset},#{page.size}")
     List<Order> seleceOrdersByClientId(@Param("openId") String openId, @Param("page") Pageable page);
 
     /**
