@@ -123,7 +123,7 @@ public class ActivityService {
      * @return
      */
     public int insertActivityRecord(ActivityRecord activityRecord) {
-
+        activityRecord.setCurrentPrice(activityRecord.getActivityPrice());
         boolean result = activityMapper.insertActivityRecord(activityRecord) > 0;
         if (result) {
             return activityRecord.getId();
@@ -173,8 +173,8 @@ public class ActivityService {
     public int insertSupportrecord(int activityId, String operateType, String operateContent, int recordId, String openId, String nickName, String avatarUrl, String gender) {
         //如果supportrecord的数量已经达到要求了这时候要更改状态
 
-        if (operateType == "maxnum") {//点赞的数量超过也没事
-            int result = activityMapper.insertSupportrecord(activityId, recordId, openId, nickName, avatarUrl, gender);
+        if (operateType.equals("maxnum")) {//点赞的数量超过也没事
+            int result = activityMapper.insertSupportrecord(activityId, recordId,0, openId, nickName, avatarUrl, gender);
             List<SupportRecord> SupportRecordList = activityMapper.selecSupportRecordList(recordId);
             if (SupportRecordList.size() >= Integer.parseInt(operateContent) && result > 0 ) {
                 // 改变recordstattus的值为1（可购买）
@@ -184,29 +184,30 @@ public class ActivityService {
 
                 return 0;
             }
-        } else if (operateType == "kanprice"){
+        } else if (operateType.equals("kanprice")){
             //如果为砍价的话，获取当前record里面的currentprice 然后减去一定的价格然后再判断是否到最后了，是则改变状态
             Activity_Shop_Commodity activity_shop_commodity = activityMapper.selectActivityById2(activityId);
+            ActivityRecord activityRecord = activityMapper.selectActivityrecordById(recordId);
             //活动价格和当前价格一致的时候 这时候需要提出提示，而不能再砍价了
-            if(activity_shop_commodity.getCurrentPrice() == activity_shop_commodity.getActivityPrice()){
+            if(activityRecord.getCurrentPrice() == activity_shop_commodity.getActivityPrice()){
             //给出提示已经砍完价格了
                 return 2;
             }else {
-                int result = activityMapper.insertSupportrecord(activityId, recordId, openId, nickName, avatarUrl, gender);//可以直接返回价格
-                if(result>0){
-        //  砍价计算
-                   float perPrice = (activity_shop_commodity.getPrice() - activity_shop_commodity.getActivityPrice())/Integer.parseInt(operateContent);
-                    float newCurrentPrice = activity_shop_commodity.getActivityPrice() - perPrice;
-                  return   activityMapper.UpdateCurrentPrice(newCurrentPrice, recordId) > 0 ? 0 : 1;
 
-                }else {
-                    return 1;
-                }
+                    //  砍价计算
+                    float perPrice = (activity_shop_commodity.getPrice() - activity_shop_commodity.getActivityPrice())/Integer.parseInt(operateContent);
+                    float newCurrentPrice = activityRecord.getCurrentPrice() - perPrice;
+                    int UpdateResult =  activityMapper.UpdateCurrentPrice(newCurrentPrice, recordId) > 0 ? 0 : 1;
+
+
+                int result = activityMapper.insertSupportrecord(activityId, recordId,perPrice,openId, nickName, avatarUrl, gender);//可以直接返回价格
+                return result > 0 ? 0 : 1;
+
             }
 
 
         }else {
-            return activityMapper.insertSupportrecord(activityId, recordId, openId, nickName, avatarUrl, gender) > 0 ? 0 : 1;
+            return activityMapper.insertSupportrecord(activityId, recordId, 0,openId, nickName, avatarUrl, gender) > 0 ? 0 : 1;
 
         }
 

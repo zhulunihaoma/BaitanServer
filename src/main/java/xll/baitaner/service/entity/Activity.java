@@ -129,8 +129,8 @@ public class Activity {
     /**
      * 商品名
      */
-    @ApiModelProperty(value="商品名",name="name")
-    private String name;
+    @ApiModelProperty(value="商品名",name="commodityName")
+    private String commodityName;
 
     /**
      * 商品描述

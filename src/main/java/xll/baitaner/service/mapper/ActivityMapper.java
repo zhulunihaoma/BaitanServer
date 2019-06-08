@@ -23,8 +23,8 @@ public interface ActivityMapper {
      * @param activity
      * @return
      */
-    @Insert("INSERT INTO activity (openId,shopId,activityType,activityName,activityIntro,startTime,endTime,originPrice,activityPrice,stock,operateType,operateContent,requirement,sendType,commodityId) " +
-            "VALUES (#{activity.openId},#{activity.shopId},#{activity.activityType},#{activity.activityName},#{activity.activityIntro},#{activity.startTime},#{activity.endTime},#{activity.originPrice},#{activity.activityPrice},#{activity.stock},#{activity.operateType},#{activity.operateContent},#{activity.requirement},#{activity.sendType},#{activity.commodityId})")
+    @Insert("INSERT INTO activity (openId,shopId,activityType,activityName,activityIntro,startTime,endTime,originPrice,activityPrice,stock,operateType,operateContent,requirement,sendType,commodityId,commodityName) " +
+                "VALUES (#{activity.openId},#{activity.shopId},#{activity.activityType},#{activity.activityName},#{activity.activityIntro},#{activity.startTime},#{activity.endTime},#{activity.originPrice},#{activity.activityPrice},#{activity.stock},#{activity.operateType},#{activity.operateContent},#{activity.requirement},#{activity.sendType},#{activity.commodityId},#{activity.commodityName})")
     @Options(useGeneratedKeys = true, keyProperty = "activity.id")
     int insertActivity(@Param("activity") Activity activity);
 
@@ -69,7 +69,7 @@ public interface ActivityMapper {
      * @return
      */
 
-    @Select("SELECT activity.endTime, activity.status, activity.activityType, activity.nickName, activity.avatarUrl, activity.activityPrice,commodity.name As commodityName ,commodity.introduction, commodity.pictUrl, commodity.price, " +
+    @Select("SELECT activity.endTime,activity.operateType,activity.operateContent, activity.status, activity.activityType, activity.nickName, activity.avatarUrl, activity.activityPrice,commodity.name As commodityName ,commodity.introduction, commodity.pictUrl, commodity.price, " +
             "shop.shopName ,shop.shopIntroduction ,shop.ownerName ,shop.wxNumber ,shop.contactNumber ,shop.shopAddress ,shop.shopLogoUrl ,shop.id As shopId FROM activity JOIN commodity ON activity.commodityId = commodity.id JOIN shop ON activity.shopId = shop.id   WHERE activity.id = #{id}")
     Activity_Shop_Commodity selectActivityById2(@Param("id") int id);
 
@@ -78,8 +78,8 @@ public interface ActivityMapper {
      * @param activityRecord
      * @return
      */
-    @Insert("INSERT INTO activityrecord (activityId,openId,nickName,avatarUrl,gender,commodityId,status,activityPrice,endTime,shopName,shopLogoUrl,goodname) " +
-            "VALUES (#{activityRecord.activityId},#{activityRecord.openId},#{activityRecord.nickName},#{activityRecord.avatarUrl},#{activityRecord.gender},#{activityRecord.commodityId},#{activityRecord.status},#{activityRecord.activityPrice},#{activityRecord.endTime},#{activityRecord.shopName},#{activityRecord.shopLogoUrl},#{activityRecord.goodname})")
+    @Insert("INSERT INTO activityrecord (activityId,openId,nickName,avatarUrl,gender,commodityId,status,currentPrice,activityPrice,endTime,shopName,shopLogoUrl,goodname) " +
+            "VALUES (#{activityRecord.activityId},#{activityRecord.openId},#{activityRecord.nickName},#{activityRecord.avatarUrl},#{activityRecord.gender},#{activityRecord.commodityId},#{activityRecord.status},#{activityRecord.currentPrice},#{activityRecord.activityPrice},#{activityRecord.endTime},#{activityRecord.shopName},#{activityRecord.shopLogoUrl},#{activityRecord.goodname})")
     @Options(useGeneratedKeys = true, keyProperty = "activityRecord.id")
     int insertActivityRecord(@Param("activityRecord") ActivityRecord activityRecord );
 
@@ -97,9 +97,9 @@ public interface ActivityMapper {
      * @param openId
      * @return
      */
-    @Insert("INSERT INTO supportrecord (activityId,recordId,openId,nickName,avatarUrl,gender) " +
-            "VALUES (#{activityId},#{recordId},#{openId},#{nickName},#{avatarUrl},#{gender})")
-    int insertSupportrecord(@Param("activityId") int activityId ,@Param("recordId") int recordId ,@Param("openId") String openId,@Param("nickName")String nickName, @Param("avatarUrl") String avatarUrl, @Param("gender") String gender);
+    @Insert("INSERT INTO supportrecord (activityId,recordId,cutPrice,openId,nickName,avatarUrl,gender) " +
+            "VALUES (#{activityId},#{recordId},#{cutPrice},#{openId},#{nickName},#{avatarUrl},#{gender})")
+    int insertSupportrecord(@Param("activityId") int activityId ,@Param("recordId") int recordId ,@Param("cutPrice") float cutPrice,@Param("openId") String openId,@Param("nickName")String nickName, @Param("avatarUrl") String avatarUrl, @Param("gender") String gender);
 
     /**
      * 更新 activityrecord supportCount+1

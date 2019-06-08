@@ -26,7 +26,7 @@ public class SupportRecord {
     /**
      * recordId
      */
-    @ApiModelProperty(value="活动id",name="activityId")
+    @ApiModelProperty(value="活动Id",name="activityId")
 
     private int activityId;
 
@@ -36,6 +36,13 @@ public class SupportRecord {
     @ApiModelProperty(value="活动参加记录id",name="recordId")
 
     private int recordId;
+
+    /**
+     * cutPrice
+     */
+    @ApiModelProperty(value="每次砍掉的价格",name="cutPrice")
+
+    private float cutPrice;
 
     /**
      * openId
