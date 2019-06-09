@@ -115,12 +115,45 @@ public class OrderService {
     }
 
     /**
+     * 获取店铺的未付款订单 （二维码支付的订单）
+     * @param clientId
+     * @return
+     */
+    public PageImpl<Order> getNoPayOrderListByShop(int shopId, Pageable pageable){
+        List<Order> orderList = orderMapper.selectNoPayOrdersByShop(shopId, pageable);
+
+        for(Order order : orderList){
+            order.setOrderCoList(getOrderCoList(order.getOrderId()));
+        }
+        int count = orderMapper.countNoPayOrdersByShop(shopId);
+        return new PageImpl<Order>(orderList, pageable, count);
+    }
+
+    /**
+     * 获取店铺待完成订单
+     * @param shopId
+     * @param pageable
+     * @return
+     */
+    public PageImpl<Order> getReadyOrderLisetShop(int shopId, Pageable pageable){
+        //state 0：待支付;  1：已接单;  2：待完成; 3：已完成
+        List<Order> orderList = orderMapper.selectOrdersByShop(shopId, 2, pageable);
+
+        for(Order order : orderList){
+            order.setOrderCoList(getOrderCoList(order.getOrderId()));
+        }
+        int count = orderMapper.countOrdersByShop(shopId, 2);
+        return new PageImpl<Order>(orderList, pageable, count);
+    }
+
+    /**
      * 获取店铺的已接订单列表(按订单分类)
      * @param shopId
      * @param pageable
      * @return
      */
-    public PageImpl<Order> getOrderListByShop(int shopId, Pageable pageable){
+    public PageImpl<Order> getTakenOrderListByShop(int shopId, Pageable pageable){
+        //state 0：待支付;  1：已接单;  2：待完成; 3：已完成
         List<Order> orderList = orderMapper.selectOrdersByShop(shopId, 1, pageable);
 
         for(Order order : orderList){
@@ -159,7 +192,7 @@ public class OrderService {
                     CommodityOrder commodityOrder = new CommodityOrder();
                     commodityOrder.setCommodityId(coId);
 
-                    //todo 商品详情数据直接从OrderCommodity中获取，防止商品被删除后无数据
+                    //商品详情数据直接从OrderCommodity中获取，防止商品被删除后无数据
                     Commodity commodity = new Commodity();
                     commodity.setId(coId);
                     commodity.setName(orderCommodity.getName());
@@ -170,7 +203,6 @@ public class OrderService {
                     commodity.setIntroduction(orderCommodity.getIntroduction());
                     commodityOrder.setCommodity(commodity);
 
-//                    commodityOrder.setCommodity(commodityMapper.selectCommodity(coId));
                     commodityOrder.setTotalNum(orderMapper.sumCoCount(coId));
 
                     List<OrderCommodity> list = new ArrayList<>();
@@ -196,13 +228,13 @@ public class OrderService {
     /**
      * 更新订单状态
      * @param orderId
-     * @param state
+     * @param state 0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
     @Transactional
     public boolean updateOrderState(String orderId, int state){
         boolean result = orderMapper.updateOrderState(orderId, state) > 0;
-        if(state == 2){
+        if(state == 3){
             if(result){
                 if(creatHistoryOrder(orderId)){
                     return true;

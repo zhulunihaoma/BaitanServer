@@ -86,8 +86,9 @@ public class Order {
     /**
      * 订单状态
      * 0：待支付
-     * 1：待送达
-     * 2：已完成
+     * 1：已接单
+     * 2：待完成
+     * 3：已完成
      */
     @ApiModelProperty(value="订单状态  0：待支付  1：待送达  2：已完成",name="state")
     private int state;

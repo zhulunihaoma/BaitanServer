@@ -146,36 +146,98 @@ public class OrderController {
     }
 
     /**
+     * 获取店铺的未付款订单 （二维码支付的订单）
+     * @param shopId
+     * @param pageable
+     * @return
+     */
+    @ApiOperation(
+            value = "获取店铺的未付款订单",
+            httpMethod = "GET",
+            notes = "获取店铺的未付款订单 （二维码支付的订单）, 分页显示")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
+    })
+    @GetMapping("getshopnopayorders")
+    public ResponseResult getNoPayOrderLisetShop(int shopId, Pageable pageable){
+        return ResponseResult.result(0, "success", orderService.getNoPayOrderListByShop(shopId, pageable));
+    }
+
+    /**
      * 更新订单状态
      * @param orderId
      * @param state
      * @return
      */
-    @GetMapping("ordermanage/updateorderstate")
+    @ApiOperation(
+            value = "更新订单状态",
+            httpMethod = "GET",
+            notes = "更新订单状态, 订单状态  0：待支付;  1：已接单;  2：待完成; 3：已完成")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderId", value = "订单编号", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "state", value = "订单状态  0：待支付;  1：已接单;  2：待完成; 3：已完成", required = true, dataType = "int")
+    })
+    @GetMapping("updateorderstate")
     public ResponseResult updateOrderState(String orderId, int state){
         boolean result = orderService.updateOrderState(orderId,state);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail",null);
     }
 
     /**
-     * 获取店铺的已结订单列表（按订单分类）
+     * 获取店铺的已接单列表（按订单分类）
      * @param shopId
      * @param pageable
      * @return
      */
-    @GetMapping("ordermanage/getshoporders")
-    public ResponseResult getOrderListShop(int shopId, Pageable pageable){
-        return ResponseResult.result(0, "success", orderService.getOrderListByShop(shopId, pageable));
+    @ApiOperation(
+            value = "获取店铺的已接单列表（按订单分类）",
+            httpMethod = "GET",
+            notes = "获取店铺的已接单列表（按订单分类）, 分页显示")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
+    })
+    @GetMapping("getshoptakenorders")
+    public ResponseResult getTakenOrderListShop(int shopId, Pageable pageable){
+        return ResponseResult.result(0, "success", orderService.getTakenOrderListByShop(shopId, pageable));
     }
 
     /**
-     * 获取店铺的已接订单列表(按商品分类)
+     * 获取店铺的已接单列表(按商品分类)
      * @param shopId
      * @return
      */
-    @GetMapping("ordermanage/getshoporders2")
+    @ApiOperation(
+            value = "获取店铺的已接单列表(按商品分类)",
+            httpMethod = "GET",
+            notes = "获取店铺的已接单列表(按商品分类), 分页显示")
+    @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int")
+    @GetMapping("getshoptakenordersbyco")
     public ResponseResult getCoListShop(int shopId){
         return ResponseResult.result(0, "success", orderService.getCommdityListByShop(shopId));
+    }
+
+    /**
+     * 获取店铺待完成订单
+     * @param shopId
+     * @param pageable
+     * @return
+     */
+    @ApiOperation(
+            value = "获取店铺待完成订单",
+            httpMethod = "GET",
+            notes = "获取店铺待完成订单, 分页显示")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
+    })
+    @GetMapping("getshopreadyorders")
+    public ResponseResult getReadyOrderLisetShop(int shopId, Pageable pageable){
+        return ResponseResult.result(0, "success", orderService.getReadyOrderLisetShop(shopId, pageable));
     }
 
     /**
@@ -184,7 +246,16 @@ public class OrderController {
      * @param pageable
      * @return
      */
-    @GetMapping("ordermanage/gethistoryorders")
+    @ApiOperation(
+            value = "获取店铺历史订单列表",
+            httpMethod = "GET",
+            notes = "获取店铺历史订单列表 (已完成), 分页显示")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
+    })
+    @GetMapping("gethistoryorders")
     public ResponseResult getHistoryOrderList(int shopId, Pageable pageable){
         return ResponseResult.result(0, "success", orderService.getHistoryOrderList(shopId, pageable));
     }

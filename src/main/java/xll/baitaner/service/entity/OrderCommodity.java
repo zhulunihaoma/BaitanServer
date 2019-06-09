@@ -91,11 +91,13 @@ public class OrderCommodity {
     /**
      * 订单中收货人名字
      */
+    @ApiModelProperty(value="订单中收货人名字",name="clientName")
     private String clientName;
 
     /**
      * 订单备注
      */
+    @ApiModelProperty(value="订单备注",name="orderRemarks")
     private String orderRemarks;
 
 
