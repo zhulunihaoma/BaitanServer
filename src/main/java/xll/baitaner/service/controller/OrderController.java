@@ -259,4 +259,19 @@ public class OrderController {
     public ResponseResult getHistoryOrderList(int shopId, Pageable pageable){
         return ResponseResult.result(0, "success", orderService.getHistoryOrderList(shopId, pageable));
     }
+    /**
+     * 删除订单
+     * @param orderId
+     * @return
+     */
+    @ApiOperation(
+            value = "删除订单（二维码订单且未支付的）",
+            httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderId", value = "订单编号", required = true, dataType = "String")})
+    @GetMapping("deleteOrder")
+    public ResponseResult deleteOrder(String orderId){
+        boolean result = orderService.deleteOrder(orderId);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    }
 }

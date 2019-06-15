@@ -315,4 +315,15 @@ public class OrderService {
         int count = orderMapper.countHistoryOrderList(shopId);
         return new PageImpl<HistoryOrder>(list, pageable, count);
     }
+
+    /**
+     * 删除订单（二维码订单且未支付的）
+     *
+     * @param orderId
+     * @return
+     */
+    public boolean deleteOrder(String orderId) {
+        return orderMapper.deleteOrder(orderId) > 0;
+    }
+
 }

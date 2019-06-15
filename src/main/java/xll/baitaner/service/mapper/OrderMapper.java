@@ -216,4 +216,13 @@ public interface OrderMapper {
     @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
             "WHERE ho.shopHistoryId = #{historyId} ORDER BY o.date DESC")
     List<Order> selectDateOrderList(@Param("historyId") int historyId);
+
+
+    /**
+     * 删除订单（二维码订单且未支付的）
+     * @param orderId
+     * @return
+     */
+    @Delete("DELETE FROM `order` WHERE orderId = #{orderId}")
+    int deleteOrder(@Param("orderId") String orderId);
 }
