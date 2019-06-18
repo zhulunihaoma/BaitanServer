@@ -116,12 +116,14 @@ public class ProfileService {
     public ShopStatistics getStatistics(int shopId){
         int orderCount = orderMapper.countOrdersByShop(shopId, 1);
         float todySales = profileMapper.selectTodaySalesByShop(shopId);
+
         float totalSales = profileMapper.selectTotalSalesByShop(shopId);
         ShopStatistics statistics = new ShopStatistics();
         statistics.setShopId(shopId);
         statistics.setTodaySales(todySales);
         statistics.setTotalSales(totalSales);
-        statistics.setReceivedOrder(orderCount);
+
+        statistics.setTodayReceivedOrder(orderCount);
 
         return statistics;
     }

@@ -94,6 +94,7 @@ public interface ProfileMapper {
     float selectTodaySalesByShop(@Param("shopId") int shopId);
 
 
+
     /**
      * 查询店铺总营业额
      * @param shopId
