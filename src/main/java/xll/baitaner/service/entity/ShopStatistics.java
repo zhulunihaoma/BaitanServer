@@ -22,14 +22,41 @@ public class ShopStatistics {
      * 今日营业额
      */
     private float todaySales;
+    /**
+     * 昨日营业额
+     */
+    private float yesterdaySales;
+
+    /**
+     * 今日已接订单数
+     */
+    private int todayReceivedOrder;
+
+    /**
+     * 昨日已接订单数
+     */
+    private int yesterdayReceivedOrder;
+    /**
+     * 本月营业额
+     */
+    private float thismonthSales;
+    /**
+     * 上个月营业额
+     */
+    private float lastmonthSales;
+    /**
+     * 本周营业额
+     */
+    private float thisweekSales;
+    /**
+     * 上周营业额
+     */
+    private float lastweekSales;
 
     /**
      * 总营业额
      */
     private float totalSales;
 
-    /**
-     * 已接订单数
-     */
-    private int receivedOrder;
+
 }
