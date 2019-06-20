@@ -2,10 +2,15 @@ package xll.baitaner.service.controller;
 
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import xll.baitaner.service.entity.Order;
@@ -24,12 +29,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 描述：
+ * 类名：PayController
+ * 描述：支付模块接口 包括微信支付、钱方支付，体现等
  * 创建者：xie
- * 日期：2017/11/14
+ * 日期：2019.6.20
  **/
+@Api(value = "支付模块controller", description = "微信支付、钱方支付，体现等")
 @RestController
-public class WXPayController {
+public class PayController {
 
     @Autowired
     private OrderService orderService;
@@ -48,19 +55,31 @@ public class WXPayController {
      * @param openId
      * @return
      */
-    @GetMapping("wxpay")
+    @ApiOperation(
+            value = "发起微信支付",
+            httpMethod = "POST",
+            notes = "发起微信支付,走微信商户平台")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderId", value = "订单号", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String")
+    })
+    @PostMapping("wxpay")
     public ResponseResult pay(String orderId, String openId){
         return payService.payMent(orderId, openId, 0);
     }
 
     /**
-     * 微信支付结果回调
+     * 微信支付结果异步通知地址
      * @return
      */
-    @RequestMapping("/wxpay/notify")
+    @ApiOperation(
+            value = "微信支付结果异步通知地址，内部不要调用",
+            httpMethod = "POST",
+            notes = "微信支付结果异步通知地址,接收微信商户平台返回的支付结果，内部不要调用")
+    @PostMapping("/wxpay/notify")
     public void  getwxpaynotify(HttpServletRequest request, HttpServletResponse response){
         String tt = "WXPay--Notify:  ";
-        System.out.print(tt + "++++++++++++++++++++++++\n" +
+        LogUtils.debug(TAG,tt + "++++++++++++++++++++++++\n" +
                 "------------------------\n" +
                 "fuckWXfuckWXfuckWXfuckWX\n");
         String UTF8 = "UTF-8";
@@ -79,7 +98,8 @@ public class WXPayController {
                 stringBuffer.append(line);
             }
             String resp = stringBuffer.toString();
-            System.out.print(tt + "回调xml:  \n"+ resp);
+            LogUtils.debug(TAG,tt + "回调xml:  \n"+ resp);
+
             resultMap = WXPayUtil.xmlToMap(resp);
             if(resultMap.get("return_code").equals("SUCCESS")){
                 //签名对比 应答微信服务器
@@ -88,32 +108,18 @@ public class WXPayController {
                             "<return_code><![CDATA[SUCCESS]]></return_code>" +
                             "<return_msg><![CDATA[OK]]></return_msg>" +
                             "</xml>";
-                    System.out.print(tt + "签名对比: true");
+                    LogUtils.debug(TAG,tt + "签名对比: true");
                     response.getWriter().write(responseXml);
                 }
 
                 String out_trade_no = resultMap.get("out_trade_no");// 订单号
                 String total_fee = resultMap.get("total_fee"); //支付金额
 
-                Order order = orderService.getOrder(out_trade_no);
-
-                DecimalFormat decimalFormat = new DecimalFormat("0");
-                String money = decimalFormat.format((order.getTotalMoney() * 100));
-
-                System.out.print("\nout_trade_no: " + out_trade_no + "\ntotal_fee : " + total_fee + "\nMoney: "
-                        + money);
-
-                if(total_fee.equals(money)){
-                    boolean res = orderService.updateOrderState(out_trade_no, 1);
-                    System.out.print("updateOrderState: " + res);
-                }
-
+                payService.PayResuleCheck(out_trade_no, total_fee);
             }
             else {
-                System.out.print(tt + resultMap.get("return_msg"));
+                LogUtils.error(TAG,tt + resultMap.get("return_msg"));
             }
-
-
         } catch (Exception e){
             e.printStackTrace();
             try {
@@ -131,12 +137,20 @@ public class WXPayController {
 
     /***************好近钱方支付******************/
     /**
-     * 好近钱方支付
+     * 好近钱方支付 //TODO 钱方支付结果异步回调地址要在钱方平台设置 目前无法知晓支付结果
      * @param fee
      * @param openId
      * @return
      */
-    @GetMapping("qfpay")
+    @ApiOperation(
+            value = "发起好近钱方支付",
+            httpMethod = "POST",
+            notes = "发起好近钱方支付,走钱方平台")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderId", value = "订单号", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String")
+    })
+    @PostMapping("qfpay")
     public ResponseResult qfwxpay(String orderId, String openId){
         return payService.payMent(orderId, openId, 1);
     }

@@ -16,7 +16,7 @@ import org.apache.http.util.EntityUtils;
 import java.util.*;
 
 /**
- * 钱台微信公众号支工具类
+ * 钱台微信公众号支付工具类
  * @author
  * @version 1.0
  */

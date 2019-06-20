@@ -4,6 +4,7 @@ import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import xll.baitaner.service.entity.Order;
 import xll.baitaner.service.utils.*;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  * 创建者：xie
  * 日期：2019.6.19
  **/
+@Service
 public class PayService {
 
     private String TAG = "Baitaner-PayService";
@@ -28,6 +30,13 @@ public class PayService {
     private WXPay wxPay;
 
 
+    /**
+     * 发起支付
+     * @param orderId
+     * @param openId
+     * @param payType 0：微信商户支付 1：钱方支付
+     * @return
+     */
     public ResponseResult payMent(String orderId, String openId, int payType) {
         Order order = orderService.getOrder(orderId);
 
@@ -65,8 +74,16 @@ public class PayService {
         return null;
     }
 
+    //异步接收微信支付结果通知的回调地址,外网可访问地址
     String notify_url = "https://www.eastzebra.cn/service/wxpay/notify";
 
+    /**
+     * 微信商户平台支付流程
+     * @param total_fee     订单支付金额，单位分
+     * @param out_trade_no  订单号
+     * @param openId
+     * @return
+     */
     private ResponseResult WXPayMent(String total_fee, String out_trade_no, String openId) {
 
         try {
@@ -130,6 +147,27 @@ public class PayService {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseResult.result(1, "统一支付接口获取预支付订单出错", null);
+        }
+    }
+
+    /**
+     * 根据支付异步通知结果验证支付是否成功，并更改订单状态
+     * @param orderId       订单号
+     * @param total_fee     订单金额
+     */
+    public void PayResuleCheck(String orderId, String total_fee)
+    {
+        Order order = orderService.getOrder(orderId);
+
+        DecimalFormat decimalFormat = new DecimalFormat("0");
+        String money = decimalFormat.format((order.getTotalMoney() * 100));
+
+        LogUtils.debug(TAG,"\nout_trade_no: " + orderId + "\ntotal_fee : " + total_fee + "\nMoney: "
+                + money);
+
+        if(total_fee.equals(money)){
+            boolean res = orderService.updateOrderState(orderId, 1);
+            LogUtils.debug(TAG,"updateOrderState: " + res);
         }
     }
 }
