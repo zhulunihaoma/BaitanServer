@@ -94,6 +94,15 @@ public interface ProfileMapper {
     float selectTodaySalesByShop(@Param("shopId") int shopId);
 
 
+    /**
+     * 查询店铺本月总营业额
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `order` " +
+            "WHERE ShopId = #{shopId} AND State > 0 AND  DATEDIFF(MM,DATE(NOW()),GETDATE())=0")
+    float selectThismonthSalesByShop(@Param("shopId") int shopId);
+
 
     /**
      * 查询店铺总营业额

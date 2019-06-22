@@ -163,6 +163,7 @@ public class OrderService {
         return new PageImpl<Order>(orderList, pageable, count);
     }
 
+
     /**
      * 获取店铺全部的商品订单关系数据列表，并插入订单实体类
      * @return
@@ -234,7 +235,7 @@ public class OrderService {
     @Transactional
     public boolean updateOrderState(String orderId, int state){
         boolean result = orderMapper.updateOrderState(orderId, state) > 0;
-        if(state == 3){
+        if(state == 1){
             if(result){
                 if(creatHistoryOrder(orderId)){
                     return true;
@@ -242,8 +243,11 @@ public class OrderService {
                 else throw new RuntimeException();
             }
             else throw new RuntimeException();
+        }else {
+
+           return orderMapper.updateHistoryorderState(orderId, state) > 0;
+
         }
-        return result;
     }
 
     /**
@@ -270,7 +274,7 @@ public class OrderService {
             if(orderMapper.selectCountHistoryOrder(ho.getId(), orderId) > 0){
                 return false;
             }else {
-                return orderMapper.insertHistoryOrder(ho.getId(), orderId) > 0;
+                return orderMapper.insertHistoryOrder(ho.getId(), orderId, order.getPayType(), order.getState()) > 0;
             }
         }
         else {
@@ -284,7 +288,7 @@ public class OrderService {
                 if(orderMapper.selectCountHistoryOrder(id, orderId) > 0){
                     return false;
                 }else {
-                    return orderMapper.insertHistoryOrder(id, orderId) > 0;
+                    return orderMapper.insertHistoryOrder(id, orderId, order.getPayType(), order.getState()) > 0;
                 }
             }
             else {
@@ -300,11 +304,25 @@ public class OrderService {
      * @return
      */
     @Transactional
-    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, Pageable pageable){
+    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int payType,int state, Pageable pageable){
         List<HistoryOrder> list = orderMapper.selectHistoryOrderList(shopId, pageable);
         if(list.size() > 0){
             for (HistoryOrder ho : list){
-                List<Order> orderList = orderMapper.selectDateOrderList(ho.getId());
+                List<Order> orderList;
+                if(payType == -1){
+                    if(state == 3){
+                        orderList = orderMapper.selectDateOrderListByState(ho.getId(),state);
+
+                    }else {
+                        orderList = orderMapper.selectDateOrderList(ho.getId());
+
+                    }
+
+                }else {
+                    orderList = orderMapper.selectDateOrderListByPayType(ho.getId(),payType);
+
+                }
+
                 for(Order order : orderList){
                     order.setOrderCoList(getOrderCoList(order.getOrderId()));
                 }
@@ -315,6 +333,34 @@ public class OrderService {
         int count = orderMapper.countHistoryOrderList(shopId);
         return new PageImpl<HistoryOrder>(list, pageable, count);
     }
+
+    /**
+     * 获取店铺除了未支付外的所有订单按照日期和支付方式查询(payType = -1查询所有支付方式订单)
+     * @param shopId
+     * @param pageable
+     * @return
+     */
+    public PageImpl<Order> selectOrdersByShopAndPayTypeAndDate(int shopId,int payType, Date date, Pageable pageable){
+        //state 0：待支付;  1：已接单;  2：待完成; 3：已完成
+        List<Order> orderList;
+        int count;
+        if(payType == -1){
+            orderList = orderMapper.selectOrdersByShopAllAndDate(shopId, date, pageable);
+            count = orderMapper.countOrdersByShopAllAndDate(shopId, date);
+
+        }else {
+            orderList = orderMapper.selectOrdersByShopAndPayTypeAndDate(shopId, payType,date, pageable);
+            count = orderMapper.countOrdersByShopAndPayTypeAndDate(shopId, payType, date);
+
+        }
+
+        for(Order order : orderList){
+            order.setOrderCoList(getOrderCoList(order.getOrderId()));
+        }
+
+        return new PageImpl<Order>(orderList, pageable, count);
+    }
+
 
     /**
      * 删除订单（二维码订单且未支付的）

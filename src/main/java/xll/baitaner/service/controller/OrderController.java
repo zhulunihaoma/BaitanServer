@@ -128,7 +128,7 @@ public class OrderController {
 
     /**
      * 获取用户订单列表接口
-     * @param clientId
+     * @param openId
      * @return
      */
     @ApiOperation(
@@ -244,21 +244,27 @@ public class OrderController {
      * 获取店铺历史订单列表
      * @param shopId
      * @param pageable
+     * @param state
      * @return
      */
     @ApiOperation(
             value = "获取店铺历史订单列表",
             httpMethod = "GET",
-            notes = "获取店铺历史订单列表 (已完成), 分页显示")
+            notes = "获取店铺历史订单列表 (已完成), 分页显示,state = -1时候拉取除了未支付之外的所有状态类型，payType=-1拉取所有支付类型")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "payType", value = "订单的payType", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "state", value = "订单的state", required = true, dataType = "int"),
             @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("gethistoryorders")
-    public ResponseResult getHistoryOrderList(int shopId, Pageable pageable){
-        return ResponseResult.result(0, "success", orderService.getHistoryOrderList(shopId, pageable));
+    public ResponseResult getHistoryOrderList(int shopId, int payType, int state, Pageable pageable){
+        return ResponseResult.result(0, "success", orderService.getHistoryOrderList(shopId, payType, state, pageable));
     }
+
+
+
     /**
      * 删除订单
      * @param orderId

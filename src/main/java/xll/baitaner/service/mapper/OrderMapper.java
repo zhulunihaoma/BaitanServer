@@ -127,13 +127,56 @@ public interface OrderMapper {
     List<Order> selectOrdersByShop(@Param("shopId") int shopId, @Param("state") int state, @Param("page") Pageable page);
 
     /**
-     * 查询店铺对应状态的订单列表总个数
+     * 查询店铺所有已接以及历史订单列表
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT * FROM `order` WHERE shopId = #{shopId} AND state != 0 AND date = #{date} ORDER BY date DESC " +
+            "LIMIT #{page.offset},#{page.size}")
+    List<Order> selectOrdersByShopAllAndDate(@Param("shopId") int shopId, @Param("date") Date date, @Param("page") Pageable page);
+
+
+
+    /**
+     * 查询店铺所有已接不同支付方式订单列表
+     * @param shopId
+     * @param payType 0：在线;  1：二维码;
+     * @return
+     */
+    @Select("SELECT * FROM `order` WHERE shopId = #{shopId} AND state != 0 AND payType = #{payType} AND date = #{date} ORDER BY date DESC " +
+            "LIMIT #{page.offset},#{page.size}")
+    List<Order> selectOrdersByShopAndPayTypeAndDate(@Param("shopId") int shopId, @Param("payType") int payType, @Param("date") Date date, @Param("page") Pageable page);
+
+    /**
+     * 查询店铺对应状态的已接以及历史订单订单列表总个数
      * @param shopId
      * @param state 0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
     @Select("SELECT COUNT(*) FROM `order` WHERE shopId = #{shopId} AND state = #{state}")
     int countOrdersByShop(@Param("shopId") int shopId, @Param("state") int state);
+
+
+    /**
+     * 查询店铺的订单列表总个数
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT COUNT(*) FROM `order` WHERE shopId = #{shopId} AND state != 0 AND date = #{date}")
+    int countOrdersByShopAllAndDate(@Param("shopId") int shopId, @Param("date") Date date);
+
+
+    /**
+     * 查询店铺对应支付方式的已接以及历史订单列表总个数
+     * @param shopId
+     * @param payType  0：在线支付  1：二维码支付
+     * @return
+     */
+    @Select("SELECT COUNT(*) FROM `order` WHERE shopId = #{shopId} AND payType = #{payType} AND state != 0 AND date = #{date}")
+    int countOrdersByShopAndPayTypeAndDate(@Param("shopId") int shopId, @Param("payType") int payType, @Param("date") Date date);
+
+
+
 
     /**
      * 获取店铺全部已接订单的商品详情
@@ -205,8 +248,8 @@ public interface OrderMapper {
      * @param orderId
      * @return
      */
-    @Insert("INSERT INTO historyorder (shopHistoryId,orderId) VALUES (#{historyId},#{orderId})")
-    int insertHistoryOrder(@Param("historyId") int historyId, @Param("orderId") String orderId);
+    @Insert("INSERT INTO historyorder (shopHistoryId,orderId,payType,state) VALUES (#{historyId},#{orderId},#{payType},#{state})")
+    int insertHistoryOrder(@Param("historyId") int historyId, @Param("orderId") String orderId, @Param("payType") int payType, @Param("state") int state);
 
     /**
      * 从historyorder查询具体日期的历史订单列表
@@ -216,6 +259,37 @@ public interface OrderMapper {
     @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
             "WHERE ho.shopHistoryId = #{historyId} ORDER BY o.date DESC")
     List<Order> selectDateOrderList(@Param("historyId") int historyId);
+
+
+
+    /**
+     * 从historyorder查询具体日期的历史订单列表
+     * @param historyId
+     * @return
+     */
+    @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
+            "WHERE ho.shopHistoryId = #{historyId} AND ho.state = #{state} ORDER BY o.date DESC")
+    List<Order> selectDateOrderListByState(@Param("historyId") int historyId, @Param("state") int state );
+
+
+    /**
+     * 从historyorder查询具体日期的历史订单列表根据PayType
+     * @param historyId
+     * @return
+     */
+    @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
+            "WHERE ho.shopHistoryId = #{historyId} AND ho.payType = #{payType} ORDER BY o.date DESC")
+    List<Order> selectDateOrderListByPayType(@Param("historyId") int historyId, @Param("payType") int payType);
+
+    /**
+     * 更改historyorder 的state 通过orderId
+     * @param orderId
+     * @param state 0：待支付;  1：已接单;  2：待完成; 3：已完成
+     * @return
+     */
+    @Update("UPDATE `historyorder` SET State = #{state} WHERE OrderId = #{orderId}")
+    int updateHistoryorderState(@Param("orderId") String orderId, @Param("state") int state);
+
 
 
     /**
