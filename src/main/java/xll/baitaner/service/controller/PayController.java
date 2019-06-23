@@ -135,6 +135,56 @@ public class PayController {
     }
 
 
+    @PostMapping("/qfpay/notify")
+    public void  getqfpaynotify(HttpServletRequest request, HttpServletResponse response){
+        String tt = "QFPay--Notify:  ";
+        LogUtils.debug(TAG,tt + "++++++++++++++++++++++++\n" +
+                "------------------------\n" +
+                "fuckWXfuckWXfuckWXfuckWX\n");
+        String UTF8 = "UTF-8";
+
+        try{
+            Map<String, String> resultMap = new HashMap<String, String>();
+            //获取回调xml,转化Map
+            InputStream inputStream = request.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF8));
+            final StringBuffer stringBuffer = new StringBuffer();
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuffer.append(line);
+            }
+            String resp = stringBuffer.toString();
+            LogUtils.debug(TAG,tt + "回调xml:  \n"+ resp);
+
+                //TODO 签名对比 应答钱方服务器
+                //if(wxPay.isPayResultNotifySignatureValid(resultMap)){
+                    String responseXml = "<xml>" +
+                            "<return_code><![CDATA[SUCCESS]]></return_code>" +
+                            "<return_msg><![CDATA[OK]]></return_msg>" +
+                            "</xml>";
+                    LogUtils.debug(TAG,tt + "签名对比: true");
+                    response.getWriter().write(responseXml);
+                //}
+
+                String out_trade_no = resultMap.get("out_trade_no");// 订单号
+                String total_fee = resultMap.get("total_fee"); //支付金额
+
+                //payService.PayResuleCheck(out_trade_no, total_fee);
+        } catch (Exception e){
+            e.printStackTrace();
+            try {
+                String responseXml = "<xml>" +
+                        "<return_code><![CDATA[FAIL]]></return_code>" +
+                        "<return_msg><![CDATA[error]]></return_msg>" +
+                        "</xml>";
+                response.getWriter().write(responseXml);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+
     /***************好近钱方支付******************/
     /**
      * 好近钱方支付 //TODO 钱方支付结果异步回调地址要在钱方平台设置 目前无法知晓支付结果

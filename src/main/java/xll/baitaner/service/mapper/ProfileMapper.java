@@ -18,11 +18,11 @@ public interface ProfileMapper {
 
     /**
      * 查询用户所有收货地址列表
-     * @param clientId
+     * @param openId
      * @return
      */
-    @Select("SELECT * FROM receiveraddress WHERE ClientId = #{clientId} AND Disable = 1")
-    List<ReceiverAddress> selectAddressList(@Param("clientId") String clientId);
+    @Select("SELECT * FROM receiveraddress WHERE openId = #{openId} AND Disable = 1")
+    List<ReceiverAddress> selectAddressList(@Param("openId") String openId);
 
     /**
      * 获取单个收货地址数据
@@ -37,8 +37,8 @@ public interface ProfileMapper {
      * @param ad
      * @return
      */
-    @Insert("INSERT INTO receiveraddress (ClientId,Name,Sex,Address,Phone,IsDefault) " +
-            "VALUES (#{ad.clientId},#{ad.name},#{ad.sex},#{ad.address},#{ad.phone},#{ad.isDefault})")
+    @Insert("INSERT INTO receiveraddress (openId,Name,Sex,Address,Phone,IsDefault) " +
+            "VALUES (#{ad.openId},#{ad.name},#{ad.sex},#{ad.address},#{ad.phone},#{ad.isDefault})")
     int insertAddress(@Param("ad") ReceiverAddress ad);
 
     /**
@@ -69,19 +69,19 @@ public interface ProfileMapper {
     /**
      * 收货地址设为默认地址
      * @param id
-     * @param clientId
+     * @param openId
      * @return
      */
-    @Update("UPDATE receiveraddress SET IsDefault = IF(Id=#{id},1,0) WHERE ClientId = #{clientId}")
-    int updateAddressState(@Param("id") int id, @Param("clientId") String clientId);
+    @Update("UPDATE receiveraddress SET IsDefault = IF(Id=#{id},1,0) WHERE openId = #{openId}")
+    int updateAddressState(@Param("id") int id, @Param("openId") String openId);
 
     /**
      * 查询用户默认地址
-     * @param clientId
+     * @param openId
      * @return
      */
-    @Select("SELECT * FROM receiveraddress WHERE ClientId = #{clientId} AND IsDefault = 1 AND Disable = 1")
-    ReceiverAddress selectDefaultAddress(@Param("clientId") String clientId);
+    @Select("SELECT * FROM receiveraddress WHERE openId = #{openId} AND IsDefault = 1 AND Disable = 1")
+    ReceiverAddress selectDefaultAddress(@Param("openId") String openId);
 
 
     /**

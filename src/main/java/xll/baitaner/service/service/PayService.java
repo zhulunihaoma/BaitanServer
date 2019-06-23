@@ -65,7 +65,7 @@ public class PayService {
                 String txdtm = DateUtils.getCurrentDate();
                 JSONObject payObj = QfWxPay.QfPayMent(total_fee, out_trade_no, txdtm, openId);
                 LogUtils.info(TAG, "qfwxpay 返回数据中的pay_params: " + payObj);
-                return ResponseResult.result(1, "success", payObj);
+                return ResponseResult.result(0, "success", payObj);
             }
         } catch (Exception e) {
             e.printStackTrace();

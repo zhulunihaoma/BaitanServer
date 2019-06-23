@@ -50,7 +50,7 @@ public class ProfileService {
      * @return
      */
     public boolean addAddress(ReceiverAddress address){
-        List<ReceiverAddress> list = getAddressList(address.getClientId());
+        List<ReceiverAddress> list = getAddressList(address.getOpenId());
         if(list.size() == 0){
             address.setDefault(true);
         }
@@ -95,8 +95,8 @@ public class ProfileService {
      * @param clientId
      * @return
      */
-    public boolean updateAddressState(int addressId, String clientId){
-        return profileMapper.updateAddressState(addressId, clientId) > 0;
+    public boolean updateAddressState(int addressId, String openId){
+        return profileMapper.updateAddressState(addressId, openId) > 0;
     }
 
     /**
@@ -104,8 +104,8 @@ public class ProfileService {
      * @param clientId
      * @return
      */
-    public ReceiverAddress getDefaultAddress(String clientId){
-        return profileMapper.selectDefaultAddress(clientId);
+    public ReceiverAddress getDefaultAddress(String openId){
+        return profileMapper.selectDefaultAddress(openId);
     }
 
     /**

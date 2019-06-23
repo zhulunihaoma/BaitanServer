@@ -18,7 +18,7 @@ public class ReceiverAddress {
     /**
      * 用户ID
      */
-    private String clientId;
+    private String openId;
 
     /**
      * 联系人姓名
