@@ -85,7 +85,7 @@ public class OrderController {
             Commodity commodity = commodityService.getCommodity(orderCommodity.getCommodityId());
             if (orderCommodity.getSpecId() >= 0){
                 Spec spec = specService.getSpec(orderCommodity.getSpecId());
-                if (spec != null && spec.getCommodityId() == orderCommodity.getCommodityId()){
+                if (spec != null && spec.getCommodityId() != orderCommodity.getCommodityId()){
                     money = spec.getPrice() * orderCommodity.getCount();
                     total += money;
                     continue;
@@ -96,7 +96,7 @@ public class OrderController {
                 }
             }else {
                 LogUtils.error(TAG, "Order " + id + " OrderCommodity list commodityId: " +
-                        orderCommodity.getCommodityId() + " specId "+ "orderCommodity.getSpecId()" + " is unavailable_2");
+                        orderCommodity.getCommodityId() + " specId "+ orderCommodity.getSpecId() + " < 0");
             }
 
             money = commodity.getPrice() * orderCommodity.getCount();

@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 类名：PayService
+ * 类名：PayService //TODO 增加订单主动查询功能
  * 描述：支付类接口服务，包括微信支付、钱方支付，体现等
  * 创建者：xie
  * 日期：2019.6.19
@@ -64,7 +64,7 @@ public class PayService {
                 //钱方支付
                 String txdtm = DateUtils.getCurrentDate();
                 JSONObject payObj = QfWxPay.QfPayMent(total_fee, out_trade_no, txdtm, openId);
-                LogUtils.info(TAG, "qfwxpay 返回数据中的pay_params: " + payObj);
+                LogUtils.info(TAG, "qfwxpay 返回数据中的pay_params: \n" + payObj);
                 return ResponseResult.result(0, "success", payObj);
             }
         } catch (Exception e) {
@@ -151,7 +151,7 @@ public class PayService {
     }
 
     /**
-     * 根据支付异步通知结果验证支付是否成功，并更改订单状态
+     * 根据支付异步通知结果验证支付是否成功，并更改订单状态 //TODO 增加流水记录
      * @param orderId       订单号
      * @param total_fee     订单金额
      */

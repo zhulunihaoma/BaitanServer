@@ -110,12 +110,17 @@ public class PayController {
                             "</xml>";
                     LogUtils.debug(TAG,tt + "签名对比: true");
                     response.getWriter().write(responseXml);
+
+                    if(resultMap.get("result_code").equals("SUCCESS")){
+                        LogUtils.debug(TAG,tt + "支付结果: SUCCESS");
+                        String out_trade_no = resultMap.get("out_trade_no");// 订单号
+                        String total_fee = resultMap.get("total_fee"); //支付金额
+                        payService.PayResuleCheck(out_trade_no, total_fee);
+                    }
+                    else {
+                        LogUtils.debug(TAG,tt + "支付结果: FAIL");
+                    }
                 }
-
-                String out_trade_no = resultMap.get("out_trade_no");// 订单号
-                String total_fee = resultMap.get("total_fee"); //支付金额
-
-                payService.PayResuleCheck(out_trade_no, total_fee);
             }
             else {
                 LogUtils.error(TAG,tt + resultMap.get("return_msg"));
@@ -144,8 +149,9 @@ public class PayController {
         String UTF8 = "UTF-8";
 
         try{
-            Map<String, String> resultMap = new HashMap<String, String>();
-            //获取回调xml,转化Map
+            String sign = request.getHeader("X-QF-SIGN");
+
+            //获取body
             InputStream inputStream = request.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF8));
             final StringBuffer stringBuffer = new StringBuffer();
@@ -154,23 +160,21 @@ public class PayController {
                 stringBuffer.append(line);
             }
             String resp = stringBuffer.toString();
-            LogUtils.debug(TAG,tt + "回调xml:  \n"+ resp);
+            //签名对比 应答钱方服务器
+            if (QfWxPay.isPayResultNotifySignatureValid(resp, sign)){
+                String responseStr = "SUCCESS";
+                LogUtils.debug(TAG, tt + "签名对比: true");
+                response.getWriter().write(responseStr);
 
-                //TODO 签名对比 应答钱方服务器
-                //if(wxPay.isPayResultNotifySignatureValid(resultMap)){
-                    String responseXml = "<xml>" +
-                            "<return_code><![CDATA[SUCCESS]]></return_code>" +
-                            "<return_msg><![CDATA[OK]]></return_msg>" +
-                            "</xml>";
-                    LogUtils.debug(TAG,tt + "签名对比: true");
-                    response.getWriter().write(responseXml);
-                //}
-
-                String out_trade_no = resultMap.get("out_trade_no");// 订单号
-                String total_fee = resultMap.get("total_fee"); //支付金额
-
-                //payService.PayResuleCheck(out_trade_no, total_fee);
-        } catch (Exception e){
+                JSONObject res = JSONObject.fromObject(resp);
+                if(res.get("status").equals("1")){
+                    LogUtils.debug(TAG,tt + "支付结果: SUCCESS");
+                    String out_trade_no = res.getString("out_trade_no");// 订单号
+                    String total_fee = res.getString("txamt"); //支付金额
+                    payService.PayResuleCheck(out_trade_no, total_fee);
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             try {
                 String responseXml = "<xml>" +
@@ -187,7 +191,7 @@ public class PayController {
 
     /***************好近钱方支付******************/
     /**
-     * 好近钱方支付 //TODO 钱方支付结果异步回调地址要在钱方平台设置 目前无法知晓支付结果
+     * 好近钱方支付
      * @param fee
      * @param openId
      * @return

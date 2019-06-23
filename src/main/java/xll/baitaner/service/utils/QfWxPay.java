@@ -131,4 +131,18 @@ public class QfWxPay {
         sortedMap.put("sign", sign);
         return sortedMap;
     }
+
+    /**
+     * 验证签名
+     * @param body
+     * @param fromSign
+     * @return
+     */
+    public static boolean isPayResultNotifySignatureValid(String body, String fromSign){
+        String sign = DigestUtils.md5Hex(body + key).toUpperCase();
+        LogUtils.debug(TAG, "isPayResultNotifySignatureValid " + "\n  fromSign: " + fromSign +
+                "\n  body: " + body + "\n  sign: " + sign);
+
+        return sign.equals(fromSign);
+    }
 }
