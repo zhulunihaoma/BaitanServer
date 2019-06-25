@@ -114,16 +114,35 @@ public class ProfileService {
      * @return
      */
     public ShopStatistics getStatistics(int shopId){
-        int orderCount = orderMapper.countOrdersByShop(shopId, 1);
+        int todayReceivedOrder = profileMapper.selectTodayReceivedOrderCount(shopId);
+        int yesterdayReceivedOrder = profileMapper.selectYesterdayReceivedOrderCount(shopId);
+
         float todySales = profileMapper.selectTodaySalesByShop(shopId);
+        float yesterdaySales = profileMapper.selectYesterdaySalesByShop(shopId);
+
+        float thisweekSales = profileMapper.selectThisWeekSalesByShop(shopId);
+        float lastweekSales = profileMapper.selectLastWeekSalesByShop(shopId);
+
+        float thismonthSales = profileMapper.selectThismonthSalesByShop(shopId);
+        float lastmonthSales = profileMapper.selectLastmonthSalesByShop(shopId);
 
         float totalSales = profileMapper.selectTotalSalesByShop(shopId);
+
         ShopStatistics statistics = new ShopStatistics();
         statistics.setShopId(shopId);
-        statistics.setTodaySales(todySales);
-        statistics.setTotalSales(totalSales);
+        statistics.setTodayReceivedOrder(todayReceivedOrder);
+        statistics.setYesterdayReceivedOrder(yesterdayReceivedOrder);
 
-        statistics.setTodayReceivedOrder(orderCount);
+        statistics.setTodaySales(todySales);
+        statistics.setYesterdaySales(yesterdaySales);
+
+        statistics.setThisweekSales(thisweekSales);
+        statistics.setLastweekSales(lastweekSales);
+
+        statistics.setThismonthSales(thismonthSales);
+        statistics.setLastmonthSales(lastmonthSales);
+
+        statistics.setTotalSales(totalSales);
 
         return statistics;
     }

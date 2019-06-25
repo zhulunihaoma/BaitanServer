@@ -140,8 +140,13 @@ public class ProfileController {
      * @param shopId
      * @return
      */
-//    @GetMapping("profilemanage/getstatistics")
-//    public ResponseResult getShopStatistics(int shopId){
-//        return ResponseResult.result( 0, "success", profileService.getStatistics(shopId));
-//    }
+    @ApiOperation(
+            value = "获取当前店铺销售统计数据",
+            httpMethod = "GET",
+            notes = "获取当前店铺销售统计数据 ")
+    @ApiImplicitParam(name = "shopId", value = "店铺id", required = true, dataType = "int")
+    @GetMapping("getshopstatistics")
+    public ResponseResult getShopStatistics(int shopId){
+        return ResponseResult.result( 0, "success", profileService.getStatistics(shopId));
+    }
 }

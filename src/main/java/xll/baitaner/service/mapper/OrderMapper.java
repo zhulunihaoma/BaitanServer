@@ -263,8 +263,9 @@ public interface OrderMapper {
 
 
     /**
-     * 从historyorder查询具体日期的历史订单列表
+     * 从historyorder查询具体日期的历史订单列表根据state
      * @param historyId
+     * @param state 0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
     @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
@@ -275,6 +276,7 @@ public interface OrderMapper {
     /**
      * 从historyorder查询具体日期的历史订单列表根据PayType
      * @param historyId
+     * @param payType  0：在线支付  1：二维码支付
      * @return
      */
     @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
@@ -289,7 +291,6 @@ public interface OrderMapper {
      */
     @Update("UPDATE `historyorder` SET State = #{state} WHERE OrderId = #{orderId}")
     int updateHistoryorderState(@Param("orderId") String orderId, @Param("state") int state);
-
 
 
     /**

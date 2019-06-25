@@ -233,21 +233,20 @@ public class OrderService {
      * @return
      */
     @Transactional
-    public boolean updateOrderState(String orderId, int state){
+    public boolean updateOrderState(String orderId, int state) {
         boolean result = orderMapper.updateOrderState(orderId, state) > 0;
-        if(state == 1){
-            if(result){
-                if(creatHistoryOrder(orderId)){
+        if (result) {
+            if (state == 1) {
+                //state更新为1：已接单 创建历史订单
+                if (creatHistoryOrder(orderId)) {
                     return true;
-                }
-                else throw new RuntimeException();
+                } else throw new RuntimeException();
+            } else if (state > 1) {
+                //更新历史订单状态
+                return orderMapper.updateHistoryorderState(orderId, state) > 0;
             }
-            else throw new RuntimeException();
-        }else {
-
-           return orderMapper.updateHistoryorderState(orderId, state) > 0;
-
         }
+        return false;
     }
 
     /**
@@ -298,29 +297,29 @@ public class OrderService {
     }
 
     /**
-     * 获取历史订单列表
+     * 获取订单管理和经营数据中历史订单列表
      * @param shopId
+     * @param type  获取历史订单种类
      * @param pageable
      * @return
      */
     @Transactional
-    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int payType,int state, Pageable pageable){
+    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int type, Pageable pageable){
         List<HistoryOrder> list = orderMapper.selectHistoryOrderList(shopId, pageable);
         if(list.size() > 0){
             for (HistoryOrder ho : list){
                 List<Order> orderList;
-                if(payType == -1){
-                    if(state == 3){
-                        orderList = orderMapper.selectDateOrderListByState(ho.getId(),state);
-
-                    }else {
-                        orderList = orderMapper.selectDateOrderList(ho.getId());
-
-                    }
-
-                }else {
-                    orderList = orderMapper.selectDateOrderListByPayType(ho.getId(),payType);
-
+                if (type == 0){ //经营数据中 全部已付款订单
+                    orderList = orderMapper.selectDateOrderList(ho.getId());
+                }
+                else if (type == 1){ //经营数据中 在线付款订单
+                    orderList = orderMapper.selectDateOrderListByPayType(ho.getId(),0);
+                }
+                else if (type == 2){ //经营数据中 二维码付款订单
+                    orderList = orderMapper.selectDateOrderListByPayType(ho.getId(),1);
+                }
+                else { //订单管理模块的历史订单  已完成订单
+                    orderList = orderMapper.selectDateOrderListByState(ho.getId(),3);
                 }
 
                 for(Order order : orderList){
