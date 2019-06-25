@@ -33,7 +33,7 @@ public interface OrderMapper {
     /**
      * 插入订单商品列表 带spec规格
      *
-     * @param commodityId
+     * @param co
      * @param count
      * @param orderId
      * @return
@@ -47,7 +47,7 @@ public interface OrderMapper {
     /**
      * 插入订单商品列表
      *
-     * @param commodityId
+     * @param co
      * @param count
      * @param orderId
      * @return
@@ -69,7 +69,7 @@ public interface OrderMapper {
     /**
      * 查询对应用户的订单列表
      *
-     * @param clientId
+     * @param openId
      * @return
      */
     @Select("SELECT o.*, s.shopName, s.shopLogoUrl FROM `order` o JOIN shop s ON o.shopId = s.id " +
@@ -79,7 +79,7 @@ public interface OrderMapper {
     /**
      * 查询对应用户的订单列表总个数
      *
-     * @param clientId
+     * @param openId
      * @return
      */
     @Select("SELECT COUNT(*) FROM `order` WHERE openId = #{openId}")
@@ -286,6 +286,7 @@ public interface OrderMapper {
      * 从historyorder查询具体日期的历史订单列表
      *
      * @param historyId
+     * @param state 0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
     @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
@@ -297,6 +298,7 @@ public interface OrderMapper {
      * 从historyorder查询具体日期的历史订单列表根据PayType
      *
      * @param historyId
+     * @param payType  0：在线支付  1：二维码支付
      * @return
      */
     @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +

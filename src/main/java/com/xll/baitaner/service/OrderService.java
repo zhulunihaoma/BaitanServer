@@ -6,6 +6,7 @@ import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.OrderCommodity;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -100,4 +101,15 @@ public interface OrderService {
      * @return
      */
     boolean deleteOrder(String orderId);
+
+    /**
+     * 获取历史订单列表
+     *
+     * 获取订单管理和经营数据中历史订单列表
+     * @param shopId
+     * @param type  获取历史订单种类
+     * @param pageable
+     * @return
+     */
+    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int type, Pageable pageable);
 }

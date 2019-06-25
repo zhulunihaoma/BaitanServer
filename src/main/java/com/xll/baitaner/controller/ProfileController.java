@@ -144,4 +144,19 @@ public class ProfileController {
     public ResponseResult getDefaultAddress(String openId) {
         return ResponseResult.result(0, "success", profileService.getDefaultAddress(openId));
     }
+
+    /**
+     * 获取当前店铺销售统计数据
+     * @param shopId
+     * @return
+     */
+    @ApiOperation(
+            value = "获取当前店铺销售统计数据",
+            httpMethod = "GET",
+            notes = "获取当前店铺销售统计数据 ")
+    @ApiImplicitParam(name = "shopId", value = "店铺id", required = true, dataType = "int")
+    @GetMapping("getshopstatistics")
+    public ResponseResult getShopStatistics(int shopId){
+        return ResponseResult.result( 0, "success", profileService.getStatistics(shopId));
+    }
 }

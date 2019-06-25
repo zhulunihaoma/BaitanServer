@@ -1,6 +1,7 @@
 package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.ReceiverAddress;
+import com.xll.baitaner.entity.ShopStatistics;
 
 import java.util.List;
 
@@ -65,4 +66,12 @@ public interface ProfileService {
      * @return
      */
     ReceiverAddress getDefaultAddress(String openId);
+
+    /**
+     * 获取当前店铺销售统计数据
+     *
+     * @param shopId
+     * @return
+     */
+    ShopStatistics getStatistics(int shopId);
 }
