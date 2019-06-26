@@ -172,7 +172,7 @@ public class CommodityServiceImpl implements CommodityService {
             List<Commodity> commodityList = getStorOnColist(shopid, sort.getId());
             JSONArray array = JSONArray.fromObject(commodityList);
             JSONObject object = JSONObject.fromObject(sort);
-            object.put("commodityList", array);
+            object.put("commodityList", commodityList);
             jsonArray.add(object);
         }
         return jsonArray;
@@ -199,7 +199,6 @@ public class CommodityServiceImpl implements CommodityService {
      */
     @Override
     public boolean deleteCommodity(int commodityId) {
-//        return commodityMapper.deleteCommodity(commodityId) > 0;
         return commodityMapper.updateCoDisabel(commodityId) > 0;
     }
 
