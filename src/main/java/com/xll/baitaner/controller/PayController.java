@@ -33,7 +33,7 @@ import java.util.Map;
  * 创建者：xie
  * 日期：2019.6.20
  **/
-@Api(value = "支付模块controller", description = "微信支付、钱方支付，体现等")
+@Api(value = "支付模块controller", description = "微信支付、钱方支付，提现等")
 @RestController
 public class PayController {
 

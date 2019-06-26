@@ -260,7 +260,6 @@ public class OrderController {
             notes = "获取店铺历史订单列表 (已完成), 分页显示")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "type", value = "订单的payType", required = true, dataType = "int"),
             @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
@@ -283,7 +282,7 @@ public class OrderController {
             notes = "type类型定义 0: 全部已付款订单, 1: 在线付款订单, 2: 二维码付款订单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "type", value = "订单的payType", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "type", value = "经营数据下订单的type", required = true, dataType = "int"),
             @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
