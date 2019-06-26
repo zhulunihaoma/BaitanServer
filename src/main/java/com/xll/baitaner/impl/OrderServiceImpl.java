@@ -1,20 +1,29 @@
 package com.xll.baitaner.impl;
 
-import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.Commodity;
+import com.xll.baitaner.entity.CommodityOrder;
+import com.xll.baitaner.entity.HistoryOrder;
+import com.xll.baitaner.entity.Order;
+import com.xll.baitaner.entity.OrderCommodity;
+import com.xll.baitaner.entity.Spec;
 import com.xll.baitaner.mapper.CommodityMapper;
 import com.xll.baitaner.mapper.OrderMapper;
-import com.xll.baitaner.mapper.ProfileMapper;
 import com.xll.baitaner.service.OrderService;
+import com.xll.baitaner.service.SpecService;
 import com.xll.baitaner.utils.LogUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 描述：订单管理service
@@ -27,17 +36,14 @@ public class OrderServiceImpl implements OrderService {
 
     private final String TAG = "Baitaner-OrderService";
 
-    @Autowired
+    @Resource
     private OrderMapper orderMapper;
 
-    @Autowired
-    private ProfileMapper profileMapper;
-
-    @Autowired
+    @Resource
     private CommodityMapper commodityMapper;
 
-    @Autowired
-    private SpecServiceImpl specService;
+    @Resource
+    private SpecService specService;
 
     /**
      * 下单处理，新增订单及订单商品数据
@@ -119,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
         }
         int count = orderMapper.countOrdersByClientId(openId);
-        return new PageImpl<Order>(orderList, pageable, count);
+        return new PageImpl<>(orderList, pageable, count);
     }
 
     /**
@@ -137,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
         }
         int count = orderMapper.countNoPayOrdersByShop(shopId);
-        return new PageImpl<Order>(orderList, pageable, count);
+        return new PageImpl<>(orderList, pageable, count);
     }
 
     /**
@@ -156,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
         }
         int count = orderMapper.countOrdersByShop(shopId, 2);
-        return new PageImpl<Order>(orderList, pageable, count);
+        return new PageImpl<>(orderList, pageable, count);
     }
 
     /**
@@ -175,7 +181,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
         }
         int count = orderMapper.countOrdersByShop(shopId, 1);
-        return new PageImpl<Order>(orderList, pageable, count);
+        return new PageImpl<>(orderList, pageable, count);
     }
 
 
@@ -267,11 +273,6 @@ public class OrderServiceImpl implements OrderService {
         return false;
     }
 
-    @Override
-    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int payType, int state, Pageable pageable) {
-        return null;
-    }
-
     /**
      * 生成历史订单流程
      *
@@ -320,31 +321,29 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 获取历史订单列表
-     *
+     * <p>
      * 获取订单管理和经营数据中历史订单列表
+     *
      * @param shopId
-     * @param type  获取历史订单种类
+     * @param type     获取历史订单种类
      * @param pageable
      * @return
      */
     @Transactional
     @Override
-    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int type, Pageable pageable){
+    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int type, Pageable pageable) {
         List<HistoryOrder> list = orderMapper.selectHistoryOrderList(shopId, pageable);
         if (list.size() > 0) {
             for (HistoryOrder ho : list) {
                 List<Order> orderList;
-                if (type == 0){ //经营数据中 全部已付款订单
+                if (type == 0) { //经营数据中 全部已付款订单
                     orderList = orderMapper.selectDateOrderList(ho.getId());
-                }
-                else if (type == 1){ //经营数据中 在线付款订单
-                    orderList = orderMapper.selectDateOrderListByPayType(ho.getId(),0);
-                }
-                else if (type == 2){ //经营数据中 二维码付款订单
-                    orderList = orderMapper.selectDateOrderListByPayType(ho.getId(),1);
-                }
-                else { //订单管理模块的历史订单  已完成订单
-                    orderList = orderMapper.selectDateOrderListByState(ho.getId(),3);
+                } else if (type == 1) { //经营数据中 在线付款订单
+                    orderList = orderMapper.selectDateOrderListByPayType(ho.getId(), 0);
+                } else if (type == 2) { //经营数据中 二维码付款订单
+                    orderList = orderMapper.selectDateOrderListByPayType(ho.getId(), 1);
+                } else { //订单管理模块的历史订单  已完成订单
+                    orderList = orderMapper.selectDateOrderListByState(ho.getId(), 3);
                 }
 
                 for (Order order : orderList) {
@@ -355,7 +354,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         int count = orderMapper.countHistoryOrderList(shopId);
-        return new PageImpl<HistoryOrder>(list, pageable, count);
+        return new PageImpl<>(list, pageable, count);
     }
 
     /**
@@ -383,7 +382,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderCoList(getOrderCoList(order.getOrderId()));
         }
 
-        return new PageImpl<Order>(orderList, pageable, count);
+        return new PageImpl<>(orderList, pageable, count);
     }
 
 

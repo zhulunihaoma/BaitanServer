@@ -6,7 +6,6 @@ import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.OrderCommodity;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -86,15 +85,6 @@ public interface OrderService {
     boolean updateOrderState(String orderId, int state);
 
     /**
-     * 获取历史订单列表
-     *
-     * @param shopId
-     * @param pageable
-     * @return
-     */
-    PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int payType, int state, Pageable pageable);
-
-    /**
      * 删除订单（二维码订单且未支付的）
      *
      * @param orderId
@@ -104,12 +94,13 @@ public interface OrderService {
 
     /**
      * 获取历史订单列表
-     *
+     * <p>
      * 获取订单管理和经营数据中历史订单列表
+     *
      * @param shopId
-     * @param type  获取历史订单种类
+     * @param type     获取历史订单种类
      * @param pageable
      * @return
      */
-    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int type, Pageable pageable);
+    PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int type, Pageable pageable);
 }

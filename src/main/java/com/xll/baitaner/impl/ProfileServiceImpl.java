@@ -2,10 +2,8 @@ package com.xll.baitaner.impl;
 
 import com.xll.baitaner.entity.ReceiverAddress;
 import com.xll.baitaner.entity.ShopStatistics;
-import com.xll.baitaner.mapper.OrderMapper;
 import com.xll.baitaner.mapper.ProfileMapper;
 import com.xll.baitaner.service.ProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +20,6 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Resource
     private ProfileMapper profileMapper;
-
-    @Resource
-    private OrderMapper orderMapper;
-
 
     /**
      * 查询用户所有收货地址列表
@@ -130,7 +124,7 @@ public class ProfileServiceImpl implements ProfileService {
      * @return
      */
     @Override
-    public ShopStatistics getStatistics(int shopId){
+    public ShopStatistics getStatistics(int shopId) {
         int todayReceivedOrder = profileMapper.selectTodayReceivedOrderCount(shopId);
         int yesterdayReceivedOrder = profileMapper.selectYesterdayReceivedOrderCount(shopId);
 

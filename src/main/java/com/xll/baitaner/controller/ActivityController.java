@@ -8,7 +8,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
@@ -20,11 +24,9 @@ import java.util.Date;
  * @description xll.baitaner.service.controller
  * @date 2019/1/13
  */
-@Api(value = "活动模块controller",
-        description = "活动模块")
+@Api(value = "活动模块controller")
 @RestController
 public class ActivityController {
-
 
     @Resource
     private ActivityService activityService;
@@ -45,10 +47,7 @@ public class ActivityController {
     public ResponseResult insertActivity(@RequestBody Activity activity) throws ParseException {
         //生成下单时间
         activity.setStartTime(new Date(System.currentTimeMillis()));
-
-
         int res = activityService.insertActivity(activity);
-
         return ResponseResult.result(res != -1 ? 0 : 1, res != -1 ? "success" : "fail", res);
     }
 
@@ -127,7 +126,6 @@ public class ActivityController {
     @PostMapping("insertActivityrecord")
     public ResponseResult insertActivityrecord(int activityId, String openId, String nickName, String avatarUrl, String gender, String shopName,
                                                String shopLogoUrl, String goodname, float activityPrice, Date endTime) {
-
         ActivityRecord activityRecord = new ActivityRecord();
         activityRecord.setActivityId(activityId);
         activityRecord.setOpenId(openId);

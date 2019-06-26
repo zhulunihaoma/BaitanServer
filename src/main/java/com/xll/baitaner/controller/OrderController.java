@@ -5,9 +5,9 @@ import com.xll.baitaner.entity.Commodity;
 import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.OrderCommodity;
 import com.xll.baitaner.entity.Spec;
-import com.xll.baitaner.impl.SpecServiceImpl;
 import com.xll.baitaner.service.CommodityService;
 import com.xll.baitaner.service.OrderService;
+import com.xll.baitaner.service.SpecService;
 import com.xll.baitaner.utils.LogUtils;
 import com.xll.baitaner.utils.ResponseResult;
 import com.xll.baitaner.utils.SerialUtils;
@@ -34,7 +34,7 @@ import java.util.List;
 @RestController
 public class OrderController {
 
-    private String TAG = "Baitaner-OrderController";
+    private final String TAG = "Baitaner-OrderController";
 
     @Resource
     private OrderService orderService;
@@ -43,7 +43,7 @@ public class OrderController {
     private CommodityService commodityService;
 
     @Resource
-    private SpecServiceImpl specService;
+    private SpecService specService;
 
     /**
      * 提交订单接口
@@ -248,15 +248,10 @@ public class OrderController {
     }
 
     /**
-<<<<<<< HEAD:src/main/java/com/xll/baitaner/controller/OrderController.java
-     * 获取店铺历史订单列表
-     *
-=======
      * 获取店铺订单管理 历史订单列表
->>>>>>> 18dcd13e7e0f00995bf2fa445266a8e790262ccb:src/main/java/xll/baitaner/service/controller/OrderController.java
+     *
      * @param shopId
      * @param pageable
-     * @param state
      * @return
      */
     @ApiOperation(
@@ -270,12 +265,13 @@ public class OrderController {
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("gethistoryorders")
-    public ResponseResult getHistoryOrderList(int shopId, Pageable pageable){
+    public ResponseResult getHistoryOrderList(int shopId, Pageable pageable) {
         return ResponseResult.result(0, "success", orderService.getHistoryOrderList(shopId, 3, pageable));
     }
 
     /**
      * 获取店铺经营数据中各类型的历史订单列表
+     *
      * @param shopId
      * @param type
      * @param pageable
@@ -292,7 +288,7 @@ public class OrderController {
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("getstatisticsorders")
-    public ResponseResult getStatisticsHistoryOrderList(int shopId, int type, Pageable pageable){
+    public ResponseResult getStatisticsHistoryOrderList(int shopId, int type, Pageable pageable) {
         return ResponseResult.result(0, "success", orderService.getHistoryOrderList(shopId, type, pageable));
     }
 

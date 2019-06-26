@@ -2,9 +2,12 @@ package com.xll.baitaner.controller;
 
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
-import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.PayService;
-import com.xll.baitaner.utils.*;
+import com.xll.baitaner.utils.LogUtils;
+import com.xll.baitaner.utils.QfWxPay;
+import com.xll.baitaner.utils.ResponseResult;
+import com.xll.baitaner.utils.SerialUtils;
+import com.xll.baitaner.utils.WXPayConfigImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -33,9 +36,6 @@ import java.util.Map;
 @Api(value = "支付模块controller", description = "微信支付、钱方支付，体现等")
 @RestController
 public class PayController {
-
-    @Resource
-    private OrderService orderService;
 
     @Resource
     private PayService payService;

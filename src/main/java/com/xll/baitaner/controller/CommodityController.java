@@ -21,7 +21,7 @@ import javax.annotation.Resource;
  * 创建者：xie
  * 日期：2017/10/10
  **/
-@Api(value = "商品模块controller", description = "商品模块接口")
+@Api(value = "商品模块controller")
 @RestController
 public class CommodityController {
 
@@ -216,7 +216,6 @@ public class CommodityController {
      * 分类下上移商品
      *
      * @param co
-     * @param turn
      * @return
      */
     @ApiOperation(
@@ -234,7 +233,6 @@ public class CommodityController {
      * 分类下置顶商品
      *
      * @param co
-     * @param turn
      * @return
      */
     @ApiOperation(

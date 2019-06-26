@@ -18,7 +18,7 @@ import javax.annotation.Resource;
  * 创建者：xie
  * 日期：2017/10/11
  **/
-@Api(value = "个人功能类（收货地址）Controller", description = "个人功能  目前主要是收货地址相关接口")
+@Api(value = "个人功能类（收货地址）Controller")
 @RestController
 public class ProfileController {
 
@@ -147,6 +147,7 @@ public class ProfileController {
 
     /**
      * 获取当前店铺销售统计数据
+     *
      * @param shopId
      * @return
      */
@@ -156,7 +157,7 @@ public class ProfileController {
             notes = "获取当前店铺销售统计数据 ")
     @ApiImplicitParam(name = "shopId", value = "店铺id", required = true, dataType = "int")
     @GetMapping("getshopstatistics")
-    public ResponseResult getShopStatistics(int shopId){
-        return ResponseResult.result( 0, "success", profileService.getStatistics(shopId));
+    public ResponseResult getShopStatistics(int shopId) {
+        return ResponseResult.result(0, "success", profileService.getStatistics(shopId));
     }
 }

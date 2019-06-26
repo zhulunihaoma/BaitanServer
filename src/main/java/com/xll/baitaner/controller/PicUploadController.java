@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  * 创建者：xie
  * 日期：2017/9/27
  **/
-@Api(value = "图片上传controller", description = "图片上传模块接口")
+@Api(value = "图片上传controller")
 @RestController
 public class PicUploadController {
 
