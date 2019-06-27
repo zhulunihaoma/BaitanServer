@@ -15,7 +15,7 @@ group 'com.baitaner.test'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'org.springframework.boot'
 
