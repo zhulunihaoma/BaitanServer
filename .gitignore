@@ -20,3 +20,5 @@ upload/
 src/main/webapp/
 src/main/resources/static/upload/
 classes/
+
+application-dev.properties
