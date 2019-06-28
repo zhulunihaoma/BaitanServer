@@ -39,7 +39,6 @@ public class SwaggerConfig {
                 .title("接口列表 v1.1.0") // 任意，请稍微规范点
                 .description("接口测试") // 任意，请稍微规范点
                 .termsOfServiceUrl("http://www.eastzebra.cn/swagger-ui.html") // 将“url”换成自己的ip:port
-                .contact("Xie") // 无所谓（这里是作者的别称）
                 .version("1.1.0")
                 .build();
     }
