@@ -31,6 +31,18 @@ public interface OrderMapper {
     int insertOrder(@Param("order") Order order);
 
     /**
+     * 插入订单数据
+     *
+     * @param order
+     * @return
+     */
+    @Insert("INSERT INTO `shop_order` (order_id,open_id,shop_id,address_id,pay_type,remarks,total_money,postage,state," +
+            "activity_not,activity_id) " +
+            "VALUES (#{order.orderId},#{order.openId},#{order.shopId},#{order.addressId},#{order.payType},#{order.remarks}," +
+            "#{order.totalMoney},#{order.postage},#{order.state},#{order.activityNot},#{order.activityId})")
+    int insertOrder(@Param("order") ShopOrder order);
+
+    /**
      * 插入订单商品列表 带spec规格
      *
      * @param co
@@ -286,7 +298,7 @@ public interface OrderMapper {
      * 从historyorder查询具体日期的历史订单列表根据state
      *
      * @param historyId
-     * @param state 0：待支付;  1：已接单;  2：待完成; 3：已完成
+     * @param state     0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
     @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
@@ -298,7 +310,7 @@ public interface OrderMapper {
      * 从historyorder查询具体日期的历史订单列表根据PayType
      *
      * @param historyId
-     * @param payType  0：在线支付  1：二维码支付
+     * @param payType   0：在线支付  1：二维码支付
      * @return
      */
     @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +

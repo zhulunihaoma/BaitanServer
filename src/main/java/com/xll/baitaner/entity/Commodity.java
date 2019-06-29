@@ -46,13 +46,13 @@ public class Commodity {
      * 商品单价
      */
     @ApiModelProperty(value = "商品单价", name = "price")
-    private float price;
+    private String price;
 
     /**
      * 商品运费
      */
     @ApiModelProperty(value = "商品运费", name = "postage")
-    private float postage;
+    private String postage;
 
     /**
      * 月销售数目

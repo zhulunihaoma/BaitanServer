@@ -29,7 +29,7 @@ public class Spec {
      * 规格价格
      */
     @ApiModelProperty(value = "规格价格", name = "price")
-    private float price;
+    private String price;
 
     /**
      * 规格库存

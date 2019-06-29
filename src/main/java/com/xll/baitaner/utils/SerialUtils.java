@@ -1,5 +1,8 @@
 package com.xll.baitaner.utils;
 
+import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -26,5 +29,15 @@ public class SerialUtils {
         sbf.append(rand.nextInt(9999) % 9000 + 1000);
         System.err.println(sbf);
         return sbf.toString();
+    }
+
+    public synchronized static Long getSerialOrderId(Integer shopId) {
+        StringBuffer sbf = new StringBuffer();
+        sbf.append(shopId);
+        sbf.append(RandomStringUtils.random(2,false,true));
+        SimpleDateFormat sfm = new SimpleDateFormat("ssSSS");
+        sbf.append(sfm.format(new Date()));
+        sbf.append(RandomStringUtils.random(3,false,true));
+        return Long.valueOf(sbf.toString());
     }
 }

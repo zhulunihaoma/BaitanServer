@@ -188,7 +188,7 @@ public class CommodityServiceImpl implements CommodityService {
     public Commodity getCommodity(int commodityId) {
         Commodity commodity = commodityMapper.selectCommodity(commodityId);
         commodity.setSpecList(specService.getSpecList(commodityId));
-        return commodity;
+            return commodity;
     }
 
     /**

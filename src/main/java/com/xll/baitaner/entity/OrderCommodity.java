@@ -36,7 +36,7 @@ public class OrderCommodity {
      * 订单编号
      */
     @ApiModelProperty(value = "订单编号", name = "orderId")
-    private String orderId;
+    private Long orderId;
 
 
     //规格详情
@@ -49,8 +49,11 @@ public class OrderCommodity {
     /**
      * 规格价格
      */
+//    @ApiModelProperty(value = "规格价格", name = "specPrice")
+//    private float specPrice;
+
     @ApiModelProperty(value = "规格价格", name = "specPrice")
-    private float specPrice;
+    private String specPrice;
 
     //商品详情字段
 
@@ -65,6 +68,12 @@ public class OrderCommodity {
      */
     @ApiModelProperty(value = "商品单价", name = "price")
     private float price;
+
+    /**
+     * 商品单价
+     */
+    @ApiModelProperty(value = "商品单价", name = "price")
+    private String unitPrice;
 
     /**
      * 月销售数目

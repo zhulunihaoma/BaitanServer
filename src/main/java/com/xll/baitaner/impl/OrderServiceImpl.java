@@ -1,29 +1,25 @@
 package com.xll.baitaner.impl;
 
-import com.xll.baitaner.entity.Commodity;
-import com.xll.baitaner.entity.CommodityOrder;
-import com.xll.baitaner.entity.HistoryOrder;
-import com.xll.baitaner.entity.Order;
-import com.xll.baitaner.entity.OrderCommodity;
-import com.xll.baitaner.entity.Spec;
+import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.VO.ShopOrderVO;
 import com.xll.baitaner.mapper.CommodityMapper;
+import com.xll.baitaner.mapper.OrderCommodityMapper;
 import com.xll.baitaner.mapper.OrderMapper;
+import com.xll.baitaner.service.CommodityService;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.SpecService;
-import com.xll.baitaner.utils.LogUtils;
+import com.xll.baitaner.utils.SerialUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 描述：订单管理service
@@ -31,6 +27,7 @@ import java.util.Map;
  * 日期：2017/10/15
  **/
 
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -45,6 +42,53 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private SpecService specService;
 
+    @Resource
+    OrderCommodityMapper orderCommodityMapper;
+
+    @Resource
+    private CommodityService commodityService;
+
+    /**
+     * 提交订单
+     * @param input
+     * @return
+     */
+    @Override
+    public Long submitOrder(ShopOrderVO input) {
+        ShopOrder order = input.getOrder();
+        List<OrderCommodity> commodityList = input.getCommodityList();
+        Long orderId = SerialUtils.getSerialOrderId(order.getShopId());
+        //生成订单编号
+        order.setOrderId(orderId);
+        //计算订单金额
+        BigDecimal total = new BigDecimal("0.00");
+        for (OrderCommodity orderCommodity : commodityList) {
+            //获取商品信息
+            Commodity commodity = commodityService.getCommodity(orderCommodity.getCommodityId());
+            BigDecimal money = new BigDecimal("0.00");
+            //有规格
+            if (orderCommodity.getSpecId() > 0) {
+                //获取商品规格
+                Spec spec = specService.getSpec(orderCommodity.getSpecId());
+                if (spec != null && spec.getCommodityId() != orderCommodity.getCommodityId()) {
+                    money = new BigDecimal(spec.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
+                }
+                total = total.add(money);
+            } else {
+                money = new BigDecimal(commodity.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
+            }
+        }
+        order.setTotalMoney(total.toString());
+        //订单状态
+        order.setState(0);
+        //下单
+        boolean result = this.addOrder(order, commodityList);
+        if (result) {
+            return orderId;
+        }
+        return 0L;
+    }
+
     /**
      * 下单处理，新增订单及订单商品数据
      *
@@ -54,33 +98,33 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional
     @Override
-    public boolean addOrder(Order order, List<OrderCommodity> list) {
+    public boolean addOrder(ShopOrder order, List<OrderCommodity> list) {
+        //插入订单数据
         int re = orderMapper.insertOrder(order);
-
+        boolean result = false;
         if (re > 0) {
             //插入订单商品
-            String orderId = order.getOrderId();
-            boolean result = true;
+            Long orderId = order.getOrderId();
             for (OrderCommodity oc : list) {
                 Commodity commodity = commodityMapper.selectCommodity(oc.getCommodityId());
-
-                if (oc.getSpecId() >= 0) {
+                //插入商品规格
+                if (oc.getSpecId() > 0) {
                     Spec spec = specService.getSpec(oc.getSpecId());
                     if (spec != null && spec.getCommodityId() == oc.getCommodityId()) {
-                        result = orderMapper.insertOrderListSpec(commodity, oc.getCount(), orderId, spec) > 0;
-                        continue;
+                        oc.setOrderId(orderId);
+                        oc.setSpecId(spec.getId());
+                        oc.setSpecName(spec.getName());
+                        oc.setSpecPrice(spec.getPrice());
                     }
                 }
-                result = orderMapper.insertOrderList(commodity, oc.getCount(), orderId) > 0;
-
+                result = orderCommodityMapper.insertOrderList(oc) > 0;
                 if (!result) {
-                    LogUtils.error(TAG, "Order " + orderId + "--OrderCommodity: \n" + oc.toString() + "\n插入数据库失败");
+                    log.error("下单存入商品失败");
                     throw new RuntimeException();
                 }
             }
-
-            return result;
         } else throw new RuntimeException();
+        return result;
     }
 
     /**
@@ -193,7 +237,7 @@ public class OrderServiceImpl implements OrderService {
     private List<OrderCommodity> getAllOrderCoList(int shopId) {
         List<OrderCommodity> orderCommodityList = orderMapper.selectAllOrderCoList(shopId);
         for (OrderCommodity orderCommodity : orderCommodityList) {
-            Order order = orderMapper.selectOrder(orderCommodity.getOrderId());
+            Order order = orderMapper.selectOrder(orderCommodity.getOrderId().toString());
             orderCommodity.setOrder(order);
         }
         return orderCommodityList;
@@ -221,7 +265,7 @@ public class OrderServiceImpl implements OrderService {
                     Commodity commodity = new Commodity();
                     commodity.setId(coId);
                     commodity.setName(orderCommodity.getName());
-                    commodity.setPrice(orderCommodity.getPrice());
+                    commodity.setPrice(orderCommodity.getUnitPrice());
                     commodity.setMonthlySales(orderCommodity.getMonthlySales());
                     //commodity.setPraise(orderCommodity.getPraise());
                     commodity.setPictUrl(orderCommodity.getPictUrl());

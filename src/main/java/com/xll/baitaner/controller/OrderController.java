@@ -1,29 +1,21 @@
 package com.xll.baitaner.controller;
 
 
-import com.xll.baitaner.entity.Commodity;
-import com.xll.baitaner.entity.Order;
-import com.xll.baitaner.entity.OrderCommodity;
-import com.xll.baitaner.entity.Spec;
+import com.xll.baitaner.entity.VO.ShopOrderVO;
 import com.xll.baitaner.service.CommodityService;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.SpecService;
-import com.xll.baitaner.utils.LogUtils;
 import com.xll.baitaner.utils.ResponseResult;
-import com.xll.baitaner.utils.SerialUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import net.sf.json.JSONArray;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 描述：订单模块controller
@@ -48,10 +40,67 @@ public class OrderController {
     /**
      * 提交订单接口
      *
-     * @param order
-     * @param orderCoListStr
+     * @param input
      * @return
      */
+//    @ApiOperation(
+//            value = "提交订单接口",
+//            httpMethod = "POST",
+//            notes = "提交订单接口，" +
+//                    "orderCoListStr字段说明实例：\n" +
+//                    "订单中商品详情，数组，已string方式传递\n" +
+//                    "orderCoList:[\n" +
+//                    "      { commodityId: 1, count: 2, specId: 1},\n" +
+//                    "      { commodityId: 3, count: 1, specId: 2 },\n" +
+//                    "      { commodityId: 4, count: 4, specId: 3 },\n" +
+//                    "]\n" +
+//                    "orderCoListStr = JSON.stringify(that.data.orderCoList); //需要转化成字符串提交服务器")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "order", value = "订单实体类", required = true, dataType = "Commodity"),
+//            @ApiImplicitParam(name = "orderCoListStr", value = "订单中商品详情 数组", required = true, dataType = "OrderCommodity")
+//    })
+//    @PostMapping("ordersubmit")
+//    public ResponseResult submitOrder(Order order, String orderCoListStr) {
+//        List<OrderCommodity> orderCoList = (List<OrderCommodity>) JSONArray.toCollection(JSONArray.fromObject(orderCoListStr), OrderCommodity.class);
+//
+//        String id = SerialUtils.getSerialId();
+//        //生成订单编号
+//        order.setOrderId(id);
+//
+//        //生成下单时间
+//        order.setDate(new Date(System.currentTimeMillis()));
+//
+//        //计算订单金额
+//        float total = 0;
+//        for (OrderCommodity orderCommodity : orderCoList) {
+//            float money = 0;
+//            Commodity commodity = commodityService.getCommodity(orderCommodity.getCommodityId());
+//            if (orderCommodity.getSpecId() >= 0) {
+//                Spec spec = specService.getSpec(orderCommodity.getSpecId());
+//                if (spec != null && spec.getCommodityId() != orderCommodity.getCommodityId()) {
+//                    money = spec.getPrice() * orderCommodity.getCount();
+//                    total += money;
+//                    continue;
+//                } else {
+//                    LogUtils.error(TAG, "Order " + id + " OrderCommodity list commodityId: " +
+//                            orderCommodity.getCommodityId() + " specId " + orderCommodity.getSpecId() + " is unavailable_1");
+//                }
+//            } else {
+//                LogUtils.error(TAG, "Order " + id + " OrderCommodity list commodityId: " +
+//                        orderCommodity.getCommodityId() + " specId " + orderCommodity.getSpecId() + " < 0");
+//            }
+//
+//            money = commodity.getPrice() * orderCommodity.getCount();
+//            total += money;
+//        }
+//        order.setTotalMoney(total);
+//
+//        //订单状态
+//        order.setState(0);
+//
+//        boolean result = orderService.addOrder(order, orderCoList);
+//        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", result ? id : null);
+//    }
     @ApiOperation(
             value = "提交订单接口",
             httpMethod = "POST",
@@ -69,46 +118,14 @@ public class OrderController {
             @ApiImplicitParam(name = "orderCoListStr", value = "订单中商品详情 数组", required = true, dataType = "OrderCommodity")
     })
     @PostMapping("ordersubmit")
-    public ResponseResult submitOrder(Order order, String orderCoListStr) {
-        List<OrderCommodity> orderCoList = (List<OrderCommodity>) JSONArray.toCollection(JSONArray.fromObject(orderCoListStr), OrderCommodity.class);
-
-        String id = SerialUtils.getSerialId();
-        //生成订单编号
-        order.setOrderId(id);
-
-        //生成下单时间
-        order.setDate(new Date(System.currentTimeMillis()));
-
-        //计算订单金额
-        float total = 0;
-        for (OrderCommodity orderCommodity : orderCoList) {
-            float money = 0;
-            Commodity commodity = commodityService.getCommodity(orderCommodity.getCommodityId());
-            if (orderCommodity.getSpecId() >= 0) {
-                Spec spec = specService.getSpec(orderCommodity.getSpecId());
-                if (spec != null && spec.getCommodityId() != orderCommodity.getCommodityId()) {
-                    money = spec.getPrice() * orderCommodity.getCount();
-                    total += money;
-                    continue;
-                } else {
-                    LogUtils.error(TAG, "Order " + id + " OrderCommodity list commodityId: " +
-                            orderCommodity.getCommodityId() + " specId " + orderCommodity.getSpecId() + " is unavailable_1");
-                }
-            } else {
-                LogUtils.error(TAG, "Order " + id + " OrderCommodity list commodityId: " +
-                        orderCommodity.getCommodityId() + " specId " + orderCommodity.getSpecId() + " < 0");
-            }
-
-            money = commodity.getPrice() * orderCommodity.getCount();
-            total += money;
+    public ResponseResult submitOrder(ShopOrderVO input) {
+        try {
+            Long orderId = orderService.submitOrder(input);
+            return ResponseResult.result(0, "success", orderId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseResult.result(1, "fail", null);
         }
-        order.setTotalMoney(total);
-
-        //订单状态
-        order.setState(0);
-
-        boolean result = orderService.addOrder(order, orderCoList);
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", result ? id : null);
     }
 
     /**

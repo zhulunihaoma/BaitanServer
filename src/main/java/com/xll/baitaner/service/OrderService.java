@@ -1,9 +1,7 @@
 package com.xll.baitaner.service;
 
-import com.xll.baitaner.entity.CommodityOrder;
-import com.xll.baitaner.entity.HistoryOrder;
-import com.xll.baitaner.entity.Order;
-import com.xll.baitaner.entity.OrderCommodity;
+import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.VO.ShopOrderVO;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
@@ -15,13 +13,21 @@ import java.util.List;
 public interface OrderService {
 
     /**
+     * 提交订单
+     *
+     * @param input
+     * @return
+     */
+    Long submitOrder(ShopOrderVO input);
+
+    /**
      * 下单处理，新增订单及订单商品数据
      *
      * @param order
      * @param list
      * @return
      */
-    boolean addOrder(Order order, List<OrderCommodity> list);
+    boolean addOrder(ShopOrder order, List<OrderCommodity> list);
 
     /**
      * 获取单个订单数据,包含订单中商品详情
