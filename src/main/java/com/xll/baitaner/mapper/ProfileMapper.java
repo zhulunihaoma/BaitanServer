@@ -40,6 +40,7 @@ public interface ProfileMapper {
      */
     @Insert("INSERT INTO receiveraddress (openId,Name,Sex,Address,Phone,IsDefault) " +
             "VALUES (#{ad.openId},#{ad.name},#{ad.sex},#{ad.address},#{ad.phone},#{ad.isDefault})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insertAddress(@Param("ad") ReceiverAddress ad);
 
     /**
@@ -94,6 +95,7 @@ public interface ProfileMapper {
 
     /**
      * 查询今日已接订单数
+     *
      * @param shopId
      * @return
      */
@@ -102,6 +104,7 @@ public interface ProfileMapper {
 
     /**
      * 查询昨日已接订单数
+     *
      * @param shopId
      * @return
      */
@@ -120,6 +123,7 @@ public interface ProfileMapper {
 
     /**
      * 查询店铺昨日营业额
+     *
      * @param shopId
      * @return
      */
@@ -130,6 +134,7 @@ public interface ProfileMapper {
 
     /**
      * 查询店铺本周营业额
+     *
      * @param shopId
      * @return
      */
@@ -140,6 +145,7 @@ public interface ProfileMapper {
 
     /**
      * 查询店铺上周营业额
+     *
      * @param shopId
      * @return
      */
@@ -161,6 +167,7 @@ public interface ProfileMapper {
 
     /**
      * 查询店铺上个月营业额
+     *
      * @param shopId
      * @return
      */

@@ -50,12 +50,18 @@ public class ProfileServiceImpl implements ProfileService {
      * @return
      */
     @Override
-    public boolean addAddress(ReceiverAddress address) {
+    public Integer addAddress(ReceiverAddress address) {
         List<ReceiverAddress> list = getAddressList(address.getOpenId());
         if (list.size() == 0) {
             address.setDefault(true);
         }
-        return profileMapper.insertAddress(address) > 0;
+        try {
+            profileMapper.insertAddress(address);
+            return address.getId();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     /**
@@ -68,7 +74,7 @@ public class ProfileServiceImpl implements ProfileService {
     public boolean editAddress(ReceiverAddress address) {
         int id = address.getId();
         boolean re1 = deleteAddress(id);
-        boolean re2 = addAddress(address);
+        boolean re2 = addAddress(address) > 0;
         return re1 && re2;
     }
 

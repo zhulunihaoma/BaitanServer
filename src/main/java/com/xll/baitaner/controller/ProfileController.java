@@ -70,8 +70,8 @@ public class ProfileController {
     @ApiImplicitParam(name = "address", value = "收货地址", required = true, dataType = "ReceiverAddress")
     @PostMapping("addaddress")
     public ResponseResult addAddress(ReceiverAddress address) {
-        boolean result = profileService.addAddress(address);
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+        int result = profileService.addAddress(address);
+        return ResponseResult.result(result > 0 ? 0 : 1, result > 0 ? "success" : "fail", result);
     }
 
     /**

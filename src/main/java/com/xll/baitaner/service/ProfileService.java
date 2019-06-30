@@ -32,7 +32,7 @@ public interface ProfileService {
      * @param address
      * @return
      */
-    boolean addAddress(ReceiverAddress address);
+    Integer addAddress(ReceiverAddress address);
 
     /**
      * 更新收货地址信息
