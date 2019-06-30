@@ -3,6 +3,8 @@ package com.xll.baitaner.service;
 import com.xll.baitaner.entity.VO.WithdrawVO;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
+
 /**
  * 钱包相关接口
  *
@@ -18,5 +20,12 @@ public interface WalletService {
      * @param page
      * @return
      */
-    WithdrawVO getWithdrawAmountList(Integer shopId, String date, Pageable page);
+    WithdrawVO queryWithdrawAmountList(Integer shopId, String date, Pageable page);
+
+    /**
+     * 获取店铺余额
+     * @param shopId
+     * @return
+     */
+    BigDecimal getShopAmounts(Integer shopId);
 }

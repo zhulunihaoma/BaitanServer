@@ -17,6 +17,8 @@ import java.util.List;
 @Repository
 public interface OrderMapper {
 
+    final String shopOrder = "order_id,open_id,shop_id,address_id,create_date,pay_type,remarks,total_money,postage,state,activity_not,activity_id,del_flag";
+
     /**
      * 插入订单
      *
@@ -77,6 +79,15 @@ public interface OrderMapper {
      */
     @Select("SELECT o.*, s.shopName, s.shopLogoUrl FROM `order` o JOIN shop s ON o.shopId = s.id WHERE o.OrderId = #{orderId}")
     Order selectOrder(@Param("orderId") String orderId);
+
+    /**
+     * 根据订单号查询订单信息
+     *
+     * @param orderId
+     * @return
+     */
+    @Select("select " + shopOrder + "from `shop_order` where order_id=#{orderId} and del_flag=0")
+    ShopOrder selectShopOrderByOrderId(@Param("orderId") Long orderId);
 
     /**
      * 查询对应用户的订单列表

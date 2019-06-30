@@ -12,5 +12,5 @@ import java.util.List;
 @Data
 public class WithdrawVO {
 
-    private List<String> amountList;
+    private List<String> amounts;
 }

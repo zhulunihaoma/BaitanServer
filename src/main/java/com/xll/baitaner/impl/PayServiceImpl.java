@@ -3,6 +3,10 @@ package com.xll.baitaner.impl;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.xll.baitaner.entity.Order;
+import com.xll.baitaner.entity.ShopOrder;
+import com.xll.baitaner.entity.ShopWallet;
+import com.xll.baitaner.mapper.OrderMapper;
+import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.PayService;
 import com.xll.baitaner.utils.*;
@@ -25,6 +29,12 @@ public class PayServiceImpl implements PayService {
 
     @Resource
     private OrderService orderService;
+
+    @Resource
+    OrderMapper orderMapper;
+
+    @Resource
+    WalletMapper walletMapper;
 
     private final String TAG = "Baitaner-PayService";
 
@@ -160,20 +170,30 @@ public class PayServiceImpl implements PayService {
      * 根据支付异步通知结果验证支付是否成功，并更改订单状态 //TODO 增加流水记录
      *
      * @param orderId   订单号
-     * @param total_fee 订单金额
+     * @param totalFee 订单金额
      */
     @Override
-    public void PayResuleCheck(String orderId, String total_fee) {
-        Order order = orderService.getOrder(orderId);
-
-        DecimalFormat decimalFormat = new DecimalFormat("0");
-        String money = decimalFormat.format((order.getTotalMoney() * 100));
-
-        LogUtils.debug(TAG, "\nout_trade_no: " + orderId + "\ntotal_fee : " + total_fee + "\nMoney: "
+    public void PayResuleCheck(String orderId, String totalFee) {
+//        Order order = orderService.getOrder(orderId);
+        ShopOrder shopOrder = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
+        String money = shopOrder.getTotalMoney();
+        LogUtils.debug(TAG, "\nout_trade_no: " + orderId + "\ntotal_fee : " + totalFee + "\nMoney: "
                 + money);
-
-        if (total_fee.equals(money)) {
-            boolean res = orderService.updateOrderState(orderId, 1);
+        if (totalFee.equals(money)) {
+            boolean res = false;
+            try {
+                res = orderService.updateOrderState(orderId, 1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //添加付款记录
+            ShopWallet wallet = new ShopWallet();
+            wallet.setShopId(shopOrder.getShopId());
+            wallet.setOrderId(Long.valueOf(orderId));
+            wallet.setOpenId(shopOrder.getOpenId());
+            wallet.setAmount(money);
+            wallet.setOperator("ADD");
+            walletMapper.insertWalletRecord(wallet);
             LogUtils.debug(TAG, "updateOrderState: " + res);
         }
     }

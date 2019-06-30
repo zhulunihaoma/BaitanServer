@@ -15,9 +15,9 @@ public class ShopWallet {
 
     private Integer shopId;
 
-    private Double orderId;
+    private Long orderId;
 
-    private String userId;
+    private String openId;
 
     private String amount;
 
