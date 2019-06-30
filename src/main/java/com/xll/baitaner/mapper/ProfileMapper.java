@@ -40,7 +40,7 @@ public interface ProfileMapper {
      */
     @Insert("INSERT INTO receiveraddress (openId,Name,Sex,Address,Phone,IsDefault) " +
             "VALUES (#{ad.openId},#{ad.name},#{ad.sex},#{ad.address},#{ad.phone},#{ad.isDefault})")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    @Options(useGeneratedKeys = true, keyProperty = "ad.id", keyColumn = "id")
     int insertAddress(@Param("ad") ReceiverAddress ad);
 
     /**
