@@ -42,7 +42,7 @@ public interface OrderMapper {
             "activity_not,activity_id) " +
             "VALUES (#{order.orderId},#{order.openId},#{order.shopId},#{order.addressId},#{order.payType},#{order.remarks}," +
             "#{order.totalMoney},#{order.postage},#{order.state},#{order.activityNot},#{order.activityId})")
-    int insertOrder(@Param("order") ShopOrder order);
+    int insertShopOrder(@Param("order") ShopOrder order);
 
     /**
      * 插入订单商品列表 带spec规格

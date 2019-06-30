@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean addOrder(ShopOrder order, List<OrderCommodity> list) {
         //插入订单数据
-        int re = orderMapper.insertOrder(order);
+        int re = orderMapper.insertShopOrder(order);
         boolean result = false;
         if (re > 0) {
             //插入订单商品
