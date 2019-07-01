@@ -1,5 +1,6 @@
 package com.xll.baitaner.entity;
 
+import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -111,6 +112,6 @@ public class OrderCommodity {
     /**
      * 订单实体类
      */
-    private Order order;
+    private OrderDetailsVO orderDetails;
 
 }

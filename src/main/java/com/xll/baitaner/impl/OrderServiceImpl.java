@@ -1,15 +1,28 @@
 package com.xll.baitaner.impl;
 
-import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.Commodity;
+import com.xll.baitaner.entity.CommodityOrder;
+import com.xll.baitaner.entity.HistoryOrder;
+import com.xll.baitaner.entity.Order;
+import com.xll.baitaner.entity.OrderCommodity;
+import com.xll.baitaner.entity.ReceiverAddress;
+import com.xll.baitaner.entity.Shop;
+import com.xll.baitaner.entity.ShopOrder;
+import com.xll.baitaner.entity.Spec;
+import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import com.xll.baitaner.entity.VO.ShopOrderVO;
 import com.xll.baitaner.mapper.CommodityMapper;
 import com.xll.baitaner.mapper.OrderCommodityMapper;
 import com.xll.baitaner.mapper.OrderMapper;
+import com.xll.baitaner.mapper.ProfileMapper;
+import com.xll.baitaner.mapper.ShopMapper;
 import com.xll.baitaner.service.CommodityService;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.SpecService;
 import com.xll.baitaner.utils.SerialUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +32,11 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 描述：订单管理service
@@ -48,8 +65,15 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private CommodityService commodityService;
 
+    @Resource
+    ProfileMapper profileMapper;
+
+    @Resource
+    ShopMapper shopMapper;
+
     /**
      * 提交订单
+     *
      * @param input
      * @return
      */
@@ -73,11 +97,13 @@ public class OrderServiceImpl implements OrderService {
                 if (spec != null && spec.getCommodityId() != orderCommodity.getCommodityId()) {
                     money = new BigDecimal(spec.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
                 }
-                total = total.add(money);
             } else {
                 money = new BigDecimal(commodity.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
             }
+            total = total.add(money);
         }
+        //运费
+        total = total.add(new BigDecimal(order.getPostage()));
         order.setTotalMoney(total.toString());
         //订单状态
         order.setState(0);
@@ -135,13 +161,33 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional
     @Override
-    public Order getOrder(String orderId) {
-        Order order = orderMapper.selectOrder(orderId);
-        List<OrderCommodity> orderCoList = getOrderCoList(order.getOrderId());
-        if (orderCoList.size() > 0) {
-            order.setOrderCoList(orderCoList);
+    public OrderDetailsVO getOrderDetails(String orderId) {
+        OrderDetailsVO details = new OrderDetailsVO();
+        if (StringUtils.isBlank(orderId)) {
+            return details;
         }
-        return order;
+        //订单信息
+        ShopOrder order = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
+        if (order == null) {
+            return details;
+        }
+        details.setShopOrder(order);
+        //获取收货地址
+        if (order.getAddressId() > 0) {
+            ReceiverAddress receiverAddress = profileMapper.selectAddress(order.getAddressId());
+            details.setAddress(receiverAddress);
+        }
+        //店铺信息
+        if (order.getShopId() > 0) {
+            Shop shop = shopMapper.selectShopById(order.getShopId());
+            details.setShop(shop);
+        }
+        //查询商品信息
+        List<OrderCommodity> orderCoList = getOrderCoList(orderId);
+        if (CollectionUtils.isNotEmpty(orderCoList)) {
+            details.setCommoditys(orderCoList);
+        }
+        return details;
     }
 
     /**
@@ -151,7 +197,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     private List<OrderCommodity> getOrderCoList(String orderId) {
-        return orderMapper.selectOrderCoListByOrderId(orderId);
+        return orderCommodityMapper.selectOrderCommodityByOrderId(Long.valueOf(orderId));
     }
 
     /**
@@ -162,14 +208,15 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public PageImpl<Order> getOrderListByUser(String openId, Pageable pageable) {
-        List<Order> orderList = orderMapper.seleceOrdersByClientId(openId, pageable);
-
-        for (Order order : orderList) {
-            order.setOrderCoList(getOrderCoList(order.getOrderId()));
+    public PageImpl<OrderDetailsVO> getOrderListByUser(String openId, Pageable pageable) {
+        List<ShopOrder> orderList = orderMapper.selectOrdersByOpenId(openId, pageable);
+        List<OrderDetailsVO> details = new ArrayList<>();
+        for (ShopOrder order : orderList) {
+            OrderDetailsVO orderDetails = this.getOrderDetails(order.getOrderId().toString());
+            details.add(orderDetails);
         }
         int count = orderMapper.countOrdersByClientId(openId);
-        return new PageImpl<>(orderList, pageable, count);
+        return new PageImpl<>(details, pageable, count);
     }
 
     /**
@@ -180,14 +227,15 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public PageImpl<Order> getNoPayOrderListByShop(int shopId, Pageable pageable) {
-        List<Order> orderList = orderMapper.selectNoPayOrdersByShop(shopId, pageable);
-
-        for (Order order : orderList) {
-            order.setOrderCoList(getOrderCoList(order.getOrderId()));
+    public PageImpl<OrderDetailsVO> getNoPayOrderListByShop(int shopId, Pageable pageable) {
+        List<ShopOrder> orderList = orderMapper.selectNoPayOrdersByShopId(shopId, pageable);
+        List<OrderDetailsVO> details = new ArrayList<>();
+        for (ShopOrder order : orderList) {
+            OrderDetailsVO orderDetails = this.getOrderDetails(order.getOrderId().toString());
+            details.add(orderDetails);
         }
         int count = orderMapper.countNoPayOrdersByShop(shopId);
-        return new PageImpl<>(orderList, pageable, count);
+        return new PageImpl<>(details, pageable, count);
     }
 
     /**
@@ -198,15 +246,16 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public PageImpl<Order> getReadyOrderLisetShop(int shopId, Pageable pageable) {
+    public PageImpl<OrderDetailsVO> getReadyOrderLisetShop(int shopId, Pageable pageable) {
         //state 0：待支付;  1：已接单;  2：待完成; 3：已完成
-        List<Order> orderList = orderMapper.selectOrdersByShop(shopId, 2, pageable);
-
-        for (Order order : orderList) {
-            order.setOrderCoList(getOrderCoList(order.getOrderId()));
+        List<ShopOrder> orderList = orderMapper.selectShopOrdersByShop(shopId, 2, pageable);
+        List<OrderDetailsVO> details = new ArrayList<>();
+        for (ShopOrder order : orderList) {
+            OrderDetailsVO orderDetails = this.getOrderDetails(order.getOrderId().toString());
+            details.add(orderDetails);
         }
         int count = orderMapper.countOrdersByShop(shopId, 2);
-        return new PageImpl<>(orderList, pageable, count);
+        return new PageImpl<>(details, pageable, count);
     }
 
     /**
@@ -217,15 +266,16 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public PageImpl<Order> getTakenOrderListByShop(int shopId, Pageable pageable) {
+    public PageImpl<OrderDetailsVO> getTakenOrderListByShop(int shopId, Pageable pageable) {
         //state 0：待支付;  1：已接单;  2：待完成; 3：已完成
-        List<Order> orderList = orderMapper.selectOrdersByShop(shopId, 1, pageable);
-
-        for (Order order : orderList) {
-            order.setOrderCoList(getOrderCoList(order.getOrderId()));
+        List<ShopOrder> orderList = orderMapper.selectShopOrdersByShop(shopId, 1, pageable);
+        List<OrderDetailsVO> details = new ArrayList<>();
+        for (ShopOrder order : orderList) {
+            OrderDetailsVO orderDetails = this.getOrderDetails(order.getOrderId().toString());
+            details.add(orderDetails);
         }
         int count = orderMapper.countOrdersByShop(shopId, 1);
-        return new PageImpl<>(orderList, pageable, count);
+        return new PageImpl<>(details, pageable, count);
     }
 
 
@@ -237,8 +287,8 @@ public class OrderServiceImpl implements OrderService {
     private List<OrderCommodity> getAllOrderCoList(int shopId) {
         List<OrderCommodity> orderCommodityList = orderMapper.selectAllOrderCoList(shopId);
         for (OrderCommodity orderCommodity : orderCommodityList) {
-            Order order = orderMapper.selectOrder(orderCommodity.getOrderId().toString());
-            orderCommodity.setOrder(order);
+            OrderDetailsVO order = this.getOrderDetails(orderCommodity.getOrderId().toString());
+            orderCommodity.setOrderDetails(order);
         }
         return orderCommodityList;
     }
@@ -271,13 +321,10 @@ public class OrderServiceImpl implements OrderService {
                     commodity.setPictUrl(orderCommodity.getPictUrl());
                     commodity.setIntroduction(orderCommodity.getIntroduction());
                     commodityOrder.setCommodity(commodity);
-
                     commodityOrder.setTotalNum(orderMapper.sumCoCount(coId));
-
                     List<OrderCommodity> list = new ArrayList<>();
                     list.add(orderCommodity);
                     commodityOrder.setOrderCommodityList(list);
-
                     map.put(coId, commodityOrder);
                 } else {
                     List<OrderCommodity> list = map.get(coId).getOrderCommodityList();
@@ -302,11 +349,14 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public boolean updateOrderState(String orderId, int state) {
-        boolean result = orderMapper.updateOrderState(orderId, state) > 0;
+        if (StringUtils.isBlank(orderId)) {
+            return false;
+        }
+        boolean result = orderMapper.updateOrderState(Long.valueOf(orderId), state) > 0;
         if (result) {
             if (state == 1) {
                 //state更新为1：已接单 创建历史订单
-                if (creatHistoryOrder(orderId)) {
+                if (this.creatHistoryOrder(orderId)) {
                     return true;
                 } else throw new RuntimeException();
             } else if (state > 1) {
@@ -325,9 +375,9 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional
     public boolean creatHistoryOrder(String orderId) {
-        Order order = getOrder(orderId);
+        ShopOrder order = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
         int shopId = order.getShopId();
-        Date historyDate = order.getDate();
+        Date historyDate = order.getCreateDate();
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String datetostr = formatter.format(historyDate);
@@ -389,9 +439,8 @@ public class OrderServiceImpl implements OrderService {
                 } else { //订单管理模块的历史订单  已完成订单
                     orderList = orderMapper.selectDateOrderListByState(ho.getId(), 3);
                 }
-
                 for (Order order : orderList) {
-                    order.setOrderCoList(getOrderCoList(order.getOrderId()));
+                    order.setOrderCoList(getOrderCoList(order.getOrderId().toString()));
                 }
                 ho.setOrderList(orderList);
             }
@@ -423,7 +472,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         for (Order order : orderList) {
-            order.setOrderCoList(getOrderCoList(order.getOrderId()));
+            order.setOrderCoList(getOrderCoList(order.getOrderId().toString()));
         }
 
         return new PageImpl<>(orderList, pageable, count);
@@ -438,7 +487,10 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public boolean deleteOrder(String orderId) {
-        return orderMapper.deleteOrder(orderId) > 0;
+        if (StringUtils.isBlank(orderId)) {
+            return false;
+        }
+        return orderMapper.deleteOrder(Long.valueOf(orderId)) > 0;
     }
 
 }

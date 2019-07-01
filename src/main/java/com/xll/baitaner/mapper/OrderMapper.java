@@ -1,7 +1,14 @@
 package com.xll.baitaner.mapper;
 
-import com.xll.baitaner.entity.*;
-import org.apache.ibatis.annotations.*;
+import com.xll.baitaner.entity.HistoryOrder;
+import com.xll.baitaner.entity.Order;
+import com.xll.baitaner.entity.OrderCommodity;
+import com.xll.baitaner.entity.ShopOrder;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -17,20 +24,8 @@ import java.util.List;
 @Repository
 public interface OrderMapper {
 
-    final String shopOrder = "order_id,open_id,shop_id,address_id,create_date,pay_type,remarks,total_money,postage,state,activity_not,activity_id,del_flag";
-
-    /**
-     * 插入订单
-     *
-     * @param order
-     * @return
-     */
-    @Insert("INSERT INTO `order` (orderId,openId,shopId,date,payType,remarks,totalMoney,postage,state," +
-            "name,sex,address,phone,isActivity,activityId) " +
-            "VALUES (#{order.orderId},#{order.openId},#{order.shopId},#{order.date},#{order.payType},#{order.remarks}," +
-            "#{order.totalMoney},#{order.postage},#{order.state},#{order.name},#{order.sex},#{order.address}," +
-            "#{order.phone},#{order.isActivity},#{order.activityId})")
-    int insertOrder(@Param("order") Order order);
+    String shopOrder = " `order_id`,`open_id`,`shop_id`,`address_id`,`create_date`,`pay_type`,`remarks`,`total_money`,`postage`,`state`," +
+            "`activity_not`,`activity_id`,`del_flag` ";
 
     /**
      * 插入订单数据
@@ -45,48 +40,12 @@ public interface OrderMapper {
     int insertShopOrder(@Param("order") ShopOrder order);
 
     /**
-     * 插入订单商品列表 带spec规格
-     *
-     * @param co
-     * @param count
-     * @param orderId
-     * @return
-     */
-    @Insert("INSERT INTO orderlist (commodityId,count,orderId,name,price,monthlySales,pictUrl,introduction,specId,specName,specPrice) " +
-            "VALUES (#{co.id},#{count},#{orderId},#{co.name},#{co.price},#{co.monthlySales},#{co.pictUrl}," +
-            "#{co.introduction},#{spec.id},#{spec.name},#{spec.price})")
-    int insertOrderListSpec(@Param("co") Commodity co, @Param("count") int count,
-                            @Param("orderId") String orderId, @Param("spec") Spec spec);
-
-    /**
-     * 插入订单商品列表
-     *
-     * @param co
-     * @param count
-     * @param orderId
-     * @return
-     */
-    @Insert("INSERT INTO orderlist (commodityId,count,orderId,name,price,monthlySales,pictUrl,introduction) " +
-            "VALUES (#{co.id},#{count},#{orderId},#{co.name},#{co.price},#{co.monthlySales},#{co.pictUrl}," +
-            "#{co.introduction})")
-    int insertOrderList(@Param("co") Commodity co, @Param("count") int count, @Param("orderId") String orderId);
-
-    /**
-     * 根据订单编号获取订单详情
-     *
-     * @param orderId
-     * @return
-     */
-    @Select("SELECT o.*, s.shopName, s.shopLogoUrl FROM `order` o JOIN shop s ON o.shopId = s.id WHERE o.OrderId = #{orderId}")
-    Order selectOrder(@Param("orderId") String orderId);
-
-    /**
      * 根据订单号查询订单信息
      *
      * @param orderId
      * @return
      */
-    @Select("select " + shopOrder + "from `shop_order` where order_id=#{orderId} and del_flag=0")
+    @Select("select" + shopOrder + "from `shop_order` where order_id=#{orderId} and del_flag=0")
     ShopOrder selectShopOrderByOrderId(@Param("orderId") Long orderId);
 
     /**
@@ -95,9 +54,9 @@ public interface OrderMapper {
      * @param openId
      * @return
      */
-    @Select("SELECT o.*, s.shopName, s.shopLogoUrl FROM `order` o JOIN shop s ON o.shopId = s.id " +
-            "WHERE o.openId = #{openId} ORDER BY date DESC LIMIT #{page.offset},#{page.size}")
-    List<Order> seleceOrdersByClientId(@Param("openId") String openId, @Param("page") Pageable page);
+    @Select("select" + shopOrder + "from `shop_order` where open_id=#{openId} and del_flag=0 " +
+            "order by create_data desc LIMIT #{page.offset},#{page.size}")
+    List<ShopOrder> selectOrdersByOpenId(@Param("openId") String openId, @Param("page") Pageable page);
 
     /**
      * 查询对应用户的订单列表总个数
@@ -105,18 +64,8 @@ public interface OrderMapper {
      * @param openId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `order` WHERE openId = #{openId}")
+    @Select("SELECT COUNT(*) FROM `shop_order` WHERE open_id = #{openId}")
     int countOrdersByClientId(@Param("openId") String openId);
-
-    /**
-     * 根据订单编号获取订单商品详情
-     *
-     * @param orderId
-     * @return
-     */
-    @Select("SELECT ol.*, o.name AS clientName, o.remarks AS orderRemarks FROM orderlist ol " +
-            "JOIN `order` o ON o.orderId = ol.orderId WHERE ol.orderId = #{orderId}")
-    List<OrderCommodity> selectOrderCoListByOrderId(@Param("orderId") String orderId);
 
     /**
      * 获取店铺的未付款订单 （二维码支付的订单）
@@ -125,9 +74,9 @@ public interface OrderMapper {
      * @param page
      * @return
      */
-    @Select("SELECT * FROM `order` WHERE shopId = #{shopId} AND state = 0 AND payType = 1 " +
+    @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = 0 AND pay_type = 1 " +
             "ORDER BY date DESC LIMIT #{page.offset},#{page.size} ")
-    List<Order> selectNoPayOrdersByShop(@Param("shopId") int shopId, @Param("page") Pageable page);
+    List<ShopOrder> selectNoPayOrdersByShopId(@Param("shopId") int shopId, @Param("page") Pageable page);
 
     /**
      * 获取店铺的未付款订单 （二维码支付的订单） 总个数
@@ -135,7 +84,7 @@ public interface OrderMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `order` WHERE shopId = #{shopId} AND state = 0 AND payType = 1")
+    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND state = 0 AND pay_type = 1")
     int countNoPayOrdersByShop(@Param("shopId") int shopId);
 
     /**
@@ -145,8 +94,8 @@ public interface OrderMapper {
      * @param state   0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
-    @Update("UPDATE `order` SET State = #{state} WHERE OrderId = #{orderId}")
-    int updateOrderState(@Param("orderId") String orderId, @Param("state") int state);
+    @Update("UPDATE `shop_order` SET state = #{state} WHERE order_id = #{orderId}")
+    int updateOrderState(@Param("orderId") Long orderId, @Param("state") int state);
 
     /**
      * 查询店铺对应状态的订单列表
@@ -155,9 +104,10 @@ public interface OrderMapper {
      * @param state  0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
-    @Select("SELECT * FROM `order` WHERE shopId = #{shopId} AND state = #{state} ORDER BY date DESC " +
-            "LIMIT #{page.offset},#{page.size}")
-    List<Order> selectOrdersByShop(@Param("shopId") int shopId, @Param("state") int state, @Param("page") Pageable page);
+    @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = #{state} ORDER BY " +
+            "create_date DESC LIMIT #{page.offset},#{page.size}")
+    List<ShopOrder> selectShopOrdersByShop(@Param("shopId") int shopId, @Param("state") int state,
+                                           @Param("page") Pageable page);
 
     /**
      * 查询店铺所有已接以及历史订单列表
@@ -188,7 +138,7 @@ public interface OrderMapper {
      * @param state  0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `order` WHERE shopId = #{shopId} AND state = #{state}")
+    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND state = #{state}")
     int countOrdersByShop(@Param("shopId") int shopId, @Param("state") int state);
 
 
@@ -219,9 +169,8 @@ public interface OrderMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT o.*, od.name AS clientName, od.remarks AS orderRemarks FROM orderlist o " +
-            "JOIN `order` od ON od.orderId = o.orderId " +
-            "WHERE od.state = 1 AND od.shopId = #{shopId}")
+    @Select("SELECT o.*, od.name AS clientName, od.remarks AS orderRemarks FROM order_commodity o " +
+            "JOIN `shop_order` od ON od.order_id = o.order_id WHERE od.state = 1 AND od.shop_id = #{shopId}")
     List<OrderCommodity> selectAllOrderCoList(@Param("shopId") int shopId);
 
     /**
@@ -230,9 +179,9 @@ public interface OrderMapper {
      * @param coId
      * @return
      */
-    @Select("SELECT SUM(o.Count) FROM orderlist o " +
-            "JOIN `order` od ON od.orderId = o.orderId  " +
-            "WHERE o.commodityId = #{coId} AND od.state = 1")
+    @Select("SELECT SUM(o.count) FROM order_commodity o " +
+            "JOIN `shop_order` od ON od.order_id = o.order_id  " +
+            "WHERE o.commodity_id = #{coId} AND od.state = 1")
     int sumCoCount(@Param("coId") int coId);
 
     /**
@@ -300,8 +249,8 @@ public interface OrderMapper {
      * @param historyId
      * @return
      */
-    @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
-            "WHERE ho.shopHistoryId = #{historyId} ORDER BY o.date DESC")
+    @Select("SELECT o.* FROM historyorder ho JOIN `shop_order` o ON o.order_id = ho.orderId " +
+            "WHERE ho.shopHistoryId = #{historyId} ORDER BY o.create_date DESC")
     List<Order> selectDateOrderList(@Param("historyId") int historyId);
 
 
@@ -312,8 +261,8 @@ public interface OrderMapper {
      * @param state     0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
-    @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
-            "WHERE ho.shopHistoryId = #{historyId} AND ho.state = #{state} ORDER BY o.date DESC")
+    @Select("SELECT o.* FROM historyorder ho JOIN `shop_order` o ON o.order_id = ho.orderId " +
+            "WHERE ho.shopHistoryId = #{historyId} AND ho.state = #{state} ORDER BY o.create_date DESC")
     List<Order> selectDateOrderListByState(@Param("historyId") int historyId, @Param("state") int state);
 
 
@@ -324,8 +273,8 @@ public interface OrderMapper {
      * @param payType   0：在线支付  1：二维码支付
      * @return
      */
-    @Select("SELECT o.* FROM historyorder ho JOIN `order` o ON o.orderId = ho.orderId " +
-            "WHERE ho.shopHistoryId = #{historyId} AND ho.payType = #{payType} ORDER BY o.date DESC")
+    @Select("SELECT o.* FROM historyorder ho JOIN `shop_order` o ON o.order_id = ho.orderId " +
+            "WHERE ho.shopHistoryId = #{historyId} AND ho.payType = #{payType} ORDER BY o.create_date DESC")
     List<Order> selectDateOrderListByPayType(@Param("historyId") int historyId, @Param("payType") int payType);
 
     /**
@@ -345,6 +294,6 @@ public interface OrderMapper {
      * @param orderId
      * @return
      */
-    @Delete("DELETE FROM `order` WHERE orderId = #{orderId}")
-    int deleteOrder(@Param("orderId") String orderId);
+    @Update("update `shop_order` set del_flag=1 where order_id=#{orderId}")
+    int deleteOrder(@Param("orderId") Long orderId);
 }

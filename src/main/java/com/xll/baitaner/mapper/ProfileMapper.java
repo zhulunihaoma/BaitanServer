@@ -1,7 +1,12 @@
 package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.ReceiverAddress;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -29,7 +34,7 @@ public interface ProfileMapper {
      * @param id
      * @return
      */
-    @Select("SELECT * FROM receiveraddress WHERE Id = #{id} AND Disable = 1")
+    @Select("SELECT * FROM receiver_address WHERE Id = #{id} AND Disable = 1")
     ReceiverAddress selectAddress(@Param("id") int id);
 
     /**

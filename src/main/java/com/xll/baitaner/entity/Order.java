@@ -22,7 +22,7 @@ public class Order {
      * 订单编号 后台随机生成唯一标识
      */
     @ApiModelProperty(value = "订单编号 后台随机生成唯一标识", name = "orderId")
-    private String orderId;
+    private Long orderId;
 
     /**
      * 用户Id

@@ -2,9 +2,7 @@ package com.xll.baitaner.controller;
 
 
 import com.xll.baitaner.entity.VO.ShopOrderVO;
-import com.xll.baitaner.service.CommodityService;
 import com.xll.baitaner.service.OrderService;
-import com.xll.baitaner.service.SpecService;
 import com.xll.baitaner.utils.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -30,12 +28,6 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
-
-    @Resource
-    private CommodityService commodityService;
-
-    @Resource
-    private SpecService specService;
 
     /**
      * 提交订单接口
@@ -114,8 +106,7 @@ public class OrderController {
                     "]\n" +
                     "orderCoListStr = JSON.stringify(that.data.orderCoList); //需要转化成字符串提交服务器")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "order", value = "订单实体类", required = true, dataType = "Commodity"),
-            @ApiImplicitParam(name = "orderCoListStr", value = "订单中商品详情 数组", required = true, dataType = "OrderCommodity")
+            @ApiImplicitParam(name = "input", value = "订单实体类", required = true, dataType = "ShopOrderVO"),
     })
     @PostMapping("ordersubmit")
     public ResponseResult submitOrder(ShopOrderVO input) {
@@ -141,7 +132,7 @@ public class OrderController {
     @ApiImplicitParam(name = "orderId", value = "订单编号", required = true, dataType = "String")
     @GetMapping("getorder")
     public ResponseResult getOrder(String orderId) {
-        return ResponseResult.result(0, "success", orderService.getOrder(orderId));
+        return ResponseResult.result(0, "success", orderService.getOrderDetails(orderId));
     }
 
     /**
@@ -322,6 +313,6 @@ public class OrderController {
     @GetMapping("deleteOrder")
     public ResponseResult deleteOrder(String orderId) {
         boolean result = orderService.deleteOrder(orderId);
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", result);
     }
 }

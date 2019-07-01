@@ -2,19 +2,21 @@ package com.xll.baitaner.impl;
 
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
-import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.ShopOrder;
 import com.xll.baitaner.entity.ShopWallet;
 import com.xll.baitaner.mapper.OrderMapper;
 import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.PayService;
-import com.xll.baitaner.utils.*;
+import com.xll.baitaner.utils.DateUtils;
+import com.xll.baitaner.utils.LogUtils;
+import com.xll.baitaner.utils.QfWxPay;
+import com.xll.baitaner.utils.ResponseResult;
+import com.xll.baitaner.utils.WXPayConfigImpl;
 import net.sf.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,8 +59,7 @@ public class PayServiceImpl implements PayService {
      */
     @Override
     public ResponseResult payMent(String orderId, String openId, int payType) {
-        Order order = orderService.getOrder(orderId);
-
+        ShopOrder order = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
         if (order.getState() != 0) {
             return ResponseResult.result(1, "订单不是未支付订单", null);
         }
@@ -68,21 +69,20 @@ public class PayServiceImpl implements PayService {
 
         try {
             //支付金额
-            DecimalFormat decimalFormat = new DecimalFormat("0");
-            String total_fee = decimalFormat.format((order.getTotalMoney() * 100));
+            String totalFee = order.getTotalMoney();
             //todo 测试用1分钱
-            total_fee = "1";
+            totalFee = "1";
 
             //商户订单号
-            String out_trade_no = order.getOrderId();
+            String outTradeNo = order.getOrderId().toString();
 
             if (payType == 0) {
                 //微信支付
-                return WXPayMent(total_fee, out_trade_no, openId);
+                return WXPayMent(totalFee, outTradeNo, openId);
             } else if (payType == 1) {
                 //钱方支付
                 String txdtm = DateUtils.getCurrentDate();
-                JSONObject payObj = QfWxPay.QfPayMent(total_fee, out_trade_no, txdtm, openId);
+                JSONObject payObj = QfWxPay.QfPayMent(totalFee, outTradeNo, txdtm, openId);
                 LogUtils.info(TAG, "qfwxpay 返回数据中的pay_params: \n" + payObj);
                 return ResponseResult.result(0, "success", payObj);
             }
@@ -169,7 +169,7 @@ public class PayServiceImpl implements PayService {
     /**
      * 根据支付异步通知结果验证支付是否成功，并更改订单状态 //TODO 增加流水记录
      *
-     * @param orderId   订单号
+     * @param orderId  订单号
      * @param totalFee 订单金额
      */
     @Override
