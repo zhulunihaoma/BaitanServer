@@ -131,6 +131,7 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public ShopStatistics getStatistics(int shopId) {
+
         int todayReceivedOrder = profileMapper.selectTodayReceivedOrderCount(shopId);
         int yesterdayReceivedOrder = profileMapper.selectYesterdayReceivedOrderCount(shopId);
 

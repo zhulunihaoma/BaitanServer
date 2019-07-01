@@ -25,7 +25,7 @@ public interface ProfileMapper {
      * @param openId
      * @return
      */
-    @Select("SELECT * FROM receiveraddress WHERE openId = #{openId} AND Disable = 1")
+    @Select("SELECT * FROM receiver_address WHERE openId = #{openId} AND Disable = 1")
     List<ReceiverAddress> selectAddressList(@Param("openId") String openId);
 
     /**
@@ -43,7 +43,7 @@ public interface ProfileMapper {
      * @param ad
      * @return
      */
-    @Insert("INSERT INTO receiveraddress (openId,Name,Sex,Address,Phone,IsDefault) " +
+    @Insert("INSERT INTO receiver_address (openId,Name,Sex,Address,Phone,IsDefault) " +
             "VALUES (#{ad.openId},#{ad.name},#{ad.sex},#{ad.address},#{ad.phone},#{ad.isDefault})")
     @Options(useGeneratedKeys = true, keyProperty = "ad.id", keyColumn = "id")
     int insertAddress(@Param("ad") ReceiverAddress ad);
@@ -54,7 +54,7 @@ public interface ProfileMapper {
      * @param ad)
      * @return
      */
-    @Update("UPDATE receiveraddress SET Name = #{ad.name}, Sex = #{ad.sex}, Address = #{ad.address}, " +
+    @Update("UPDATE receiver_address SET Name = #{ad.name}, Sex = #{ad.sex}, Address = #{ad.address}, " +
             "Phone = #{ad.phone}, IsDefault = #{ad.isDefault} WHERE Id  = #{ad.id}")
     int updateAddress(@Param("ad") ReceiverAddress ad);
 
@@ -64,7 +64,7 @@ public interface ProfileMapper {
      * @param id
      * @return
      */
-    @Delete("DELETE FROM receiveraddress WHERE Id = #{id}")
+    @Delete("DELETE FROM receiver_address WHERE Id = #{id}")
     int deleteAddress(@Param("id") int id);
 
     /**
@@ -73,7 +73,7 @@ public interface ProfileMapper {
      * @param id
      * @return
      */
-    @Update("UPDATE receiveraddress SET Disable = 0 WHERE Id  = #{id}")
+    @Update("UPDATE receiver_address SET Disable = 0 WHERE Id  = #{id}")
     int updateAdrDisabel(@Param("id") int id);
 
     /**
@@ -83,7 +83,7 @@ public interface ProfileMapper {
      * @param openId
      * @return
      */
-    @Update("UPDATE receiveraddress SET IsDefault = IF(Id=#{id},1,0) WHERE openId = #{openId}")
+    @Update("UPDATE receiver_address SET IsDefault = IF(Id=#{id},1,0) WHERE openId = #{openId}")
     int updateAddressState(@Param("id") int id, @Param("openId") String openId);
 
     /**
@@ -92,7 +92,7 @@ public interface ProfileMapper {
      * @param openId
      * @return
      */
-    @Select("SELECT * FROM receiveraddress WHERE openId = #{openId} AND IsDefault = 1 AND Disable = 1")
+    @Select("SELECT * FROM receiver_address WHERE openId = #{openId} AND IsDefault = 1 AND Disable = 1")
     ReceiverAddress selectDefaultAddress(@Param("openId") String openId);
 
 
@@ -104,7 +104,8 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `order` WHERE ShopId = #{shopId} AND State > 0 AND DATEDIFF(Date(NOW()),DATE(date)) = 0")
+    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0" +
+            "AND DATEDIFF(Date(NOW()),DATE(create_date)) = 0")
     int selectTodayReceivedOrderCount(@Param("shopId") int shopId);
 
     /**
@@ -113,7 +114,8 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `order` WHERE ShopId = #{shopId} AND State > 0 AND DATEDIFF(Date(NOW()),DATE(date)) = 1")
+    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0" +
+            "AND DATEDIFF(Date(NOW()),DATE(create_date)) = 1")
     int selectYesterdayReceivedOrderCount(@Param("shopId") int shopId);
 
     /**
@@ -122,8 +124,8 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `order` " +
-            "WHERE ShopId = #{shopId} AND State > 0 AND DATEDIFF(Date(NOW()),DATE(date)) = 0")
+    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 AND DATEDIFF(Date(NOW()),DATE(create_date)) = 0")
     float selectTodaySalesByShop(@Param("shopId") int shopId);
 
     /**
@@ -132,8 +134,8 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `order` " +
-            "WHERE ShopId = #{shopId} AND State > 0 AND DATEDIFF(Date(NOW()),DATE(date)) = 1")
+    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 AND DATEDIFF(Date(NOW()),DATE(create_date)) = 1")
     float selectYesterdaySalesByShop(@Param("shopId") int shopId);
 
 
@@ -143,9 +145,9 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `order` " +
-            "WHERE ShopId = #{shopId} AND State > 0 AND " +
-            "YEARWEEK(DATE_FORMAT(date,'%Y-%m-%d')) = YEARWEEK(NOW())")
+    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 " +
+            "AND YEARWEEK(DATE_FORMAT(create_date,'%Y-%m-%d')) = YEARWEEK(NOW())")
     float selectThisWeekSalesByShop(@Param("shopId") int shopId);
 
     /**
@@ -154,9 +156,9 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `order` " +
-            "WHERE ShopId = #{shopId} AND State > 0 AND " +
-            "YEARWEEK(DATE_FORMAT(date,'%Y-%m-%d')) = YEARWEEK(NOW()) - 1")
+    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 AND " +
+            "YEARWEEK(DATE_FORMAT(create_date,'%Y-%m-%d')) = YEARWEEK(NOW()) - 1")
     float selectLastWeekSalesByShop(@Param("shopId") int shopId);
 
     /**
@@ -165,9 +167,9 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `order` " +
-            "WHERE ShopId = #{shopId} AND State > 0 AND " +
-            "PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(date,'%Y%m')) = 0")
+    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 AND " +
+            "PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(create_date,'%Y%m')) = 0")
     float selectThismonthSalesByShop(@Param("shopId") int shopId);
 
     /**
@@ -176,9 +178,9 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `order` " +
-            "WHERE ShopId = #{shopId} AND State > 0 AND " +
-            "PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(date,'%Y%m')) = 1")
+    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 AND " +
+            "PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(create_date,'%Y%m')) = 1")
     float selectLastmonthSalesByShop(@Param("shopId") int shopId);
 
     /**
@@ -187,7 +189,7 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `order` " +
-            "WHERE ShopId = #{shopId} AND State > 0")
+    @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0")
     float selectTotalSalesByShop(@Param("shopId") int shopId);
 }
