@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -109,7 +110,7 @@ public class OrderController {
             @ApiImplicitParam(name = "input", value = "订单实体类", required = true, dataType = "ShopOrderVO"),
     })
     @PostMapping("ordersubmit")
-    public ResponseResult submitOrder(ShopOrderVO input) {
+    public ResponseResult submitOrder(@RequestBody ShopOrderVO input) {
         try {
             Long orderId = orderService.submitOrder(input);
             return ResponseResult.result(0, "success", orderId);

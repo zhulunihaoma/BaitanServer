@@ -35,4 +35,6 @@ public class ShopOrder {
 
     private Integer delFlag;
 
+    private String remarks;
+
 }
