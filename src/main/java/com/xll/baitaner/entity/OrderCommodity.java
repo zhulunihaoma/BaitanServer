@@ -68,7 +68,7 @@ public class OrderCommodity {
      * 商品单价
      */
     @ApiModelProperty(value = "商品单价", name = "price")
-    private float price;
+    private String price;
 
     /**
      * 商品单价

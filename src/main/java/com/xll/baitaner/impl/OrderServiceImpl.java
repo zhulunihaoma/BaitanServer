@@ -103,7 +103,9 @@ public class OrderServiceImpl implements OrderService {
             total = total.add(money);
         }
         //运费
-        total = total.add(new BigDecimal(order.getPostage()));
+        if (StringUtils.isNotBlank(order.getPostage())) {
+            total = total.add(new BigDecimal(order.getPostage()));
+        }
         order.setTotalMoney(total.toString());
         //订单状态
         order.setState(0);
@@ -133,11 +135,18 @@ public class OrderServiceImpl implements OrderService {
             Long orderId = order.getOrderId();
             for (OrderCommodity oc : list) {
                 Commodity commodity = commodityMapper.selectCommodity(oc.getCommodityId());
+                oc.setOrderId(orderId);
+                oc.setUnitPrice(commodity.getPrice());
+                oc.setName(commodity.getName());
+                oc.setPictUrl(commodity.getPictUrl());
+                oc.setIntroduction(commodity.getIntroduction());
+                oc.setSpecName("");
+                oc.setSpecPrice("0.00");
+                oc.setSpecId(0);
                 //插入商品规格
                 if (oc.getSpecId() > 0) {
                     Spec spec = specService.getSpec(oc.getSpecId());
                     if (spec != null && spec.getCommodityId() == oc.getCommodityId()) {
-                        oc.setOrderId(orderId);
                         oc.setSpecId(spec.getId());
                         oc.setSpecName(spec.getName());
                         oc.setSpecPrice(spec.getPrice());

@@ -6,10 +6,13 @@ import java.util.Date;
 
 /**
  * 订单表实体类
+ *
  * @author denghuohuo 2019/6/28
  */
 @Data
 public class ShopOrder {
+
+    private Integer id;
 
     private Long orderId;
 
