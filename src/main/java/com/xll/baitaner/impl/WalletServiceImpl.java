@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,15 +33,47 @@ public class WalletServiceImpl implements WalletService {
      * @return
      */
     @Override
-    public WithdrawVO queryWithdrawAmountList(Integer shopId, String date, Pageable page) {
-        WithdrawVO result = new WithdrawVO();
-        List<String> amounts = walletMapper.getWalletWithAmountByDate(shopId, date, page);
-        result.setAmounts(amounts);
+    public List<WithdrawVO> queryWithdrawAmountList(Integer shopId, String date, Pageable page) {
+        List<WithdrawVO> result = new ArrayList<>();
+        List<ShopWallet> wallets = walletMapper.getWalletWithAmountByDate(shopId, date, page);
+        if (CollectionUtils.isEmpty(wallets)) {
+            return result;
+        }
+        for (ShopWallet wallet : wallets) {
+            WithdrawVO vo = new WithdrawVO();
+            vo.setAmount(wallet.getAmount());
+            vo.setDate(wallet.getCreateData());
+            result.add(vo);
+        }
+        return result;
+    }
+
+    /**
+     * 查询所有体现记录
+     *
+     * @param shopId
+     * @param page
+     * @return
+     */
+    @Override
+    public List<WithdrawVO> queryWithdrawAmountList(Integer shopId, Pageable page) {
+        List<WithdrawVO> result = new ArrayList<>();
+        List<ShopWallet> wallets = walletMapper.getWalletAllAmount(shopId, page);
+        if (CollectionUtils.isEmpty(wallets)) {
+            return result;
+        }
+        for (ShopWallet wallet : wallets) {
+            WithdrawVO vo = new WithdrawVO();
+            vo.setAmount(wallet.getAmount());
+            vo.setDate(wallet.getCreateData());
+            result.add(vo);
+        }
         return result;
     }
 
     /**
      * 根据shopId查询余额
+     *
      * @param shopId
      * @return
      */

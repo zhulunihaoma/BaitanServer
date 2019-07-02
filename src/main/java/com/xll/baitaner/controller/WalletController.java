@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 钱包相关操作
@@ -43,7 +44,23 @@ public class WalletController {
     @GetMapping("wallet/withdrawamount")
     public ResponseResult getWithdrawList(Integer shopId, String date, Pageable page) {
         try {
-            WithdrawVO amountVo = walletService.queryWithdrawAmountList(shopId, date, page);
+            List<WithdrawVO> amountVo = walletService.queryWithdrawAmountList(shopId, date, page);
+            return ResponseResult.result(0, "success", amountVo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseResult.result(1, "fail", null);
+        }
+    }
+
+    @ApiOperation(value = "分页查询店铺所有提现记录", httpMethod = "GET", notes = "分页查询店铺提现记录")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
+    })
+    @GetMapping("wallet/withdrawallamount")
+    public ResponseResult getWithdrawList(Integer shopId, Pageable page) {
+        try {
+            List<WithdrawVO> amountVo = walletService.queryWithdrawAmountList(shopId, page);
             return ResponseResult.result(0, "success", amountVo);
         } catch (Exception e) {
             e.printStackTrace();

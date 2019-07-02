@@ -2,7 +2,7 @@ package com.xll.baitaner.entity.VO;
 
 import lombok.Data;
 
-import java.util.List;
+import java.util.Date;
 
 /**
  * 提现
@@ -12,5 +12,8 @@ import java.util.List;
 @Data
 public class WithdrawVO {
 
-    private List<String> amounts;
+
+    private Date date;
+
+    private String amount;
 }
