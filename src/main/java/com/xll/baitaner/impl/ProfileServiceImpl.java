@@ -53,7 +53,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Integer addAddress(ReceiverAddress address) {
         List<ReceiverAddress> list = getAddressList(address.getOpenId());
         if (list.size() == 0) {
-            address.setDefault(true);
+            address.setDefaultNot(1);
         }
         try {
             profileMapper.insertAddress(address);

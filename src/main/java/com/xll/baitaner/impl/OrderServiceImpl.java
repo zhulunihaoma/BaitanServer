@@ -401,7 +401,8 @@ public class OrderServiceImpl implements OrderService {
             if (orderMapper.selectCountHistoryOrder(ho.getId(), orderId) > 0) {
                 return false;
             } else {
-                return orderMapper.insertHistoryOrder(ho.getId(), orderId, order.getPayType(), order.getState()) > 0;
+                return orderMapper.insertHistoryOrder(ho.getId(), Long.valueOf(orderId), order.getPayType(),
+                        order.getState()) > 0;
             }
         } else {
             HistoryOrder hon = new HistoryOrder();
@@ -414,7 +415,8 @@ public class OrderServiceImpl implements OrderService {
                 if (orderMapper.selectCountHistoryOrder(id, orderId) > 0) {
                     return false;
                 } else {
-                    return orderMapper.insertHistoryOrder(id, orderId, order.getPayType(), order.getState()) > 0;
+                    return orderMapper.insertHistoryOrder(id, Long.valueOf(orderId), order.getPayType(),
+                            order.getState()) > 0;
                 }
             } else {
                 return false;

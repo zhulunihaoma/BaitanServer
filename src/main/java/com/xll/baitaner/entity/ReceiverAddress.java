@@ -39,7 +39,12 @@ public class ReceiverAddress {
     private String phone;
 
     /**
-     * 是否默认地址
+     * 是否默认地址（1：true   0：false）
      */
-    private boolean isDefault;
+    private Integer defaultNot;
+
+    /**
+     * 地址启用状态（1：true   0：false）
+     */
+    private Integer disable;
 }

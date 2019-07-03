@@ -241,7 +241,8 @@ public interface OrderMapper {
      * @return
      */
     @Insert("INSERT INTO historyorder (shopHistoryId,orderId,payType,state) VALUES (#{historyId},#{orderId},#{payType},#{state})")
-    int insertHistoryOrder(@Param("historyId") int historyId, @Param("orderId") String orderId, @Param("payType") int payType, @Param("state") int state);
+    int insertHistoryOrder(@Param("historyId") int historyId, @Param("orderId") Long orderId,
+                           @Param("payType") int payType, @Param("state") int state);
 
     /**
      * 从historyorder查询具体日期的历史订单列表

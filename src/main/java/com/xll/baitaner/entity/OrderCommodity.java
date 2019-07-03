@@ -50,9 +50,6 @@ public class OrderCommodity {
     /**
      * 规格价格
      */
-//    @ApiModelProperty(value = "规格价格", name = "specPrice")
-//    private float specPrice;
-
     @ApiModelProperty(value = "规格价格", name = "specPrice")
     private String specPrice;
 
@@ -63,12 +60,6 @@ public class OrderCommodity {
      */
     @ApiModelProperty(value = "商品名", name = "name")
     private String name;
-
-    /**
-     * 商品单价
-     */
-    @ApiModelProperty(value = "商品单价", name = "price")
-    private String price;
 
     /**
      * 商品单价

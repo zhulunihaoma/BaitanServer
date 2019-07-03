@@ -22,6 +22,10 @@ public class HistoryOrder {
      */
     private int shopId;
 
+    private String shopHistoryId;
+
+    private Long orderId;
+
     /**
      * 支付方式
      * 0：在线支付
