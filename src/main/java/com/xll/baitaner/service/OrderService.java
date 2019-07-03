@@ -1,6 +1,7 @@
 package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.VO.HistoryOrderVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import com.xll.baitaner.entity.VO.ShopOrderVO;
 import org.springframework.data.domain.PageImpl;
@@ -37,6 +38,14 @@ public interface OrderService {
      * @return
      */
     OrderDetailsVO getOrderDetails(String orderId);
+
+    /**
+     * 获取订单的商品详情
+     *
+     * @param orderId
+     * @return
+     */
+    List<OrderCommodity> getOrderCoList(String orderId);
 
     /**
      * 获取用户的订单列表
@@ -98,16 +107,4 @@ public interface OrderService {
      * @return
      */
     boolean deleteOrder(String orderId);
-
-    /**
-     * 获取历史订单列表
-     * <p>
-     * 获取订单管理和经营数据中历史订单列表
-     *
-     * @param shopId
-     * @param type     获取历史订单种类
-     * @param pageable
-     * @return
-     */
-    PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int type, Pageable pageable);
 }

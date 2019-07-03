@@ -2,6 +2,7 @@ package com.xll.baitaner.controller;
 
 
 import com.xll.baitaner.entity.VO.ShopOrderVO;
+import com.xll.baitaner.service.HistoryOrderService;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.utils.ResponseResult;
 import io.swagger.annotations.Api;
@@ -29,6 +30,9 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    @Resource
+    private HistoryOrderService historyOrderService;
 
     /**
      * 提交订单接口
@@ -274,7 +278,7 @@ public class OrderController {
     })
     @GetMapping("gethistoryorders")
     public ResponseResult getHistoryOrderList(int shopId, Pageable pageable) {
-        return ResponseResult.result(0, "success", orderService.getHistoryOrderList(shopId, 3, pageable));
+        return ResponseResult.result(0, "success", historyOrderService.getHistoryOrderList(shopId, 3, pageable));
     }
 
     /**
@@ -297,7 +301,7 @@ public class OrderController {
     })
     @GetMapping("getstatisticsorders")
     public ResponseResult getStatisticsHistoryOrderList(int shopId, int type, Pageable pageable) {
-        return ResponseResult.result(0, "success", orderService.getHistoryOrderList(shopId, type, pageable));
+        return ResponseResult.result(0, "success", historyOrderService.getHistoryOrderList(shopId, type, pageable));
     }
 
     /**

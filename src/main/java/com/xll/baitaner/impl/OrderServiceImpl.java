@@ -9,14 +9,17 @@ import com.xll.baitaner.entity.ReceiverAddress;
 import com.xll.baitaner.entity.Shop;
 import com.xll.baitaner.entity.ShopOrder;
 import com.xll.baitaner.entity.Spec;
+import com.xll.baitaner.entity.VO.HistoryOrderVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import com.xll.baitaner.entity.VO.ShopOrderVO;
 import com.xll.baitaner.mapper.CommodityMapper;
 import com.xll.baitaner.mapper.OrderCommodityMapper;
 import com.xll.baitaner.mapper.OrderMapper;
+import com.xll.baitaner.mapper.HistoryOrderMapper;
 import com.xll.baitaner.mapper.ProfileMapper;
 import com.xll.baitaner.mapper.ShopMapper;
 import com.xll.baitaner.service.CommodityService;
+import com.xll.baitaner.service.HistoryOrderService;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.SpecService;
 import com.xll.baitaner.utils.SerialUtils;
@@ -54,6 +57,9 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper orderMapper;
 
     @Resource
+    private HistoryOrderMapper historyOrderMapper;
+
+    @Resource
     private CommodityMapper commodityMapper;
 
     @Resource
@@ -64,6 +70,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private CommodityService commodityService;
+
+    @Resource
+    private HistoryOrderService historyOrderService;
 
     @Resource
     ProfileMapper profileMapper;
@@ -205,7 +214,8 @@ public class OrderServiceImpl implements OrderService {
      * @param orderId
      * @return
      */
-    private List<OrderCommodity> getOrderCoList(String orderId) {
+    @Override
+    public List<OrderCommodity> getOrderCoList(String orderId) {
         return orderCommodityMapper.selectOrderCommodityByOrderId(Long.valueOf(orderId));
     }
 
@@ -365,100 +375,15 @@ public class OrderServiceImpl implements OrderService {
         if (result) {
             if (state == 1) {
                 //state更新为1：已接单 创建历史订单
-                if (this.creatHistoryOrder(orderId)) {
+                if (historyOrderService.creatHistoryOrder(orderId)) {
                     return true;
                 } else throw new RuntimeException();
             } else if (state > 1) {
                 //更新历史订单状态
-                return orderMapper.updateHistoryorderState(orderId, state) > 0;
+                return historyOrderMapper.updateHistoryorderState(Long.valueOf(orderId), state) > 0;
             }
         }
         return false;
-    }
-
-    /**
-     * 生成历史订单流程
-     *
-     * @param orderId
-     * @return
-     */
-    @Transactional
-    public boolean creatHistoryOrder(String orderId) {
-        ShopOrder order = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
-        int shopId = order.getShopId();
-        Date historyDate = order.getCreateDate();
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        String datetostr = formatter.format(historyDate);
-        ParsePosition pos = new ParsePosition(0);
-        Date date = formatter.parse(datetostr, pos);
-
-        HistoryOrder ho = orderMapper.selectShopHistory(shopId, date);
-        if (ho != null) {
-            //已存在该日期,直接插订单
-
-            //先判断是否有此历史订单，再插入
-            if (orderMapper.selectCountHistoryOrder(ho.getId(), orderId) > 0) {
-                return false;
-            } else {
-                return orderMapper.insertHistoryOrder(ho.getId(), Long.valueOf(orderId), order.getPayType(),
-                        order.getState()) > 0;
-            }
-        } else {
-            HistoryOrder hon = new HistoryOrder();
-            hon.setShopId(shopId);
-            hon.setHistoryDate(date);
-            int result = orderMapper.insertShopHistory(hon);
-            if (result > 0) {
-                int id = hon.getId();
-                //先判断是否有此历史订单，再插入
-                if (orderMapper.selectCountHistoryOrder(id, orderId) > 0) {
-                    return false;
-                } else {
-                    return orderMapper.insertHistoryOrder(id, Long.valueOf(orderId), order.getPayType(),
-                            order.getState()) > 0;
-                }
-            } else {
-                return false;
-            }
-        }
-    }
-
-    /**
-     * 获取历史订单列表
-     * <p>
-     * 获取订单管理和经营数据中历史订单列表
-     *
-     * @param shopId
-     * @param type     获取历史订单种类
-     * @param pageable
-     * @return
-     */
-    @Transactional
-    @Override
-    public PageImpl<HistoryOrder> getHistoryOrderList(int shopId, int type, Pageable pageable) {
-        List<HistoryOrder> list = orderMapper.selectHistoryOrderList(shopId, pageable);
-        if (list.size() > 0) {
-            for (HistoryOrder ho : list) {
-                List<Order> orderList;
-                if (type == 0) { //经营数据中 全部已付款订单
-                    orderList = orderMapper.selectDateOrderList(ho.getId());
-                } else if (type == 1) { //经营数据中 在线付款订单
-                    orderList = orderMapper.selectDateOrderListByPayType(ho.getId(), 0);
-                } else if (type == 2) { //经营数据中 二维码付款订单
-                    orderList = orderMapper.selectDateOrderListByPayType(ho.getId(), 1);
-                } else { //订单管理模块的历史订单  已完成订单
-                    orderList = orderMapper.selectDateOrderListByState(ho.getId(), 3);
-                }
-                for (Order order : orderList) {
-                    order.setOrderCoList(getOrderCoList(order.getOrderId().toString()));
-                }
-                ho.setOrderList(orderList);
-            }
-        }
-
-        int count = orderMapper.countHistoryOrderList(shopId);
-        return new PageImpl<>(list, pageable, count);
     }
 
     /**
