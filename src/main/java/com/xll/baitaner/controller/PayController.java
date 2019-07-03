@@ -3,11 +3,8 @@ package com.xll.baitaner.controller;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.xll.baitaner.service.PayService;
-import com.xll.baitaner.utils.LogUtils;
-import com.xll.baitaner.utils.QfWxPay;
-import com.xll.baitaner.utils.ResponseResult;
-import com.xll.baitaner.utils.SerialUtils;
-import com.xll.baitaner.utils.WXPayConfigImpl;
+import com.xll.baitaner.service.WalletService;
+import com.xll.baitaner.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -39,6 +36,9 @@ public class PayController {
 
     @Resource
     private PayService payService;
+
+    @Resource
+    WalletService walletService;
 
     private WXPayConfigImpl config;
 
@@ -258,6 +258,22 @@ public class PayController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseResult.result(1, "企业付款接口出错", null);
+        }
+    }
+
+    /**
+     * 查询提现状态
+     *
+     * @param openId
+     * @return
+     */
+    @GetMapping("querywithdrawrestatus")
+    public ResponseResult queryWithdrawRecords(String openId) {
+        try {
+            walletService.queryWithdrawResultRecords(openId);
+            return ResponseResult.result(0, "查询提现状态成功", true);
+        } catch (Exception e) {
+            return ResponseResult.result(1, "查询提现状态出错", false);
         }
     }
 }

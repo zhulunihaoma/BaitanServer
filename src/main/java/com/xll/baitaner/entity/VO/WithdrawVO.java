@@ -16,4 +16,10 @@ public class WithdrawVO {
     private Date date;
 
     private String amount;
+
+    private String status;
+
+    private String remarks;
+
+    private String reason;
 }

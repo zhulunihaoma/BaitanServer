@@ -6,6 +6,7 @@ import com.xll.baitaner.entity.ShopWallet;
 import com.xll.baitaner.entity.VO.WithdrawVO;
 import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.WalletService;
+import com.xll.baitaner.utils.Constant;
 import com.xll.baitaner.utils.WXPayConfigImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,8 @@ public class WalletServiceImpl implements WalletService {
 
     private WXPayConfigImpl config; //微信支付配置文件
 
+    private WXPay wxPay;
+
     /**
      * 根据日期查询提现记录
      *
@@ -50,6 +53,9 @@ public class WalletServiceImpl implements WalletService {
             WithdrawVO vo = new WithdrawVO();
             vo.setAmount(wallet.getAmount());
             vo.setDate(wallet.getCreateDate());
+            vo.setReason(wallet.getReason());
+            vo.setStatus(wallet.getStatus());
+            vo.setRemarks(wallet.getDescRemarks());
             result.add(vo);
         }
         return result;
@@ -73,6 +79,9 @@ public class WalletServiceImpl implements WalletService {
             WithdrawVO vo = new WithdrawVO();
             vo.setAmount(wallet.getAmount());
             vo.setDate(wallet.getCreateDate());
+            vo.setReason(wallet.getReason());
+            vo.setStatus(wallet.getStatus());
+            vo.setRemarks(wallet.getDescRemarks());
             result.add(vo);
         }
         return result;
@@ -101,20 +110,54 @@ public class WalletServiceImpl implements WalletService {
         return amount;
     }
 
+    /**
+     * 查询提现记录
+     *
+     * @param openId
+     */
     @Override
     public void queryWithdrawResultRecords(String openId) {
         List<ShopWallet> shopWallets = walletMapper.queryWithdrawRecords(openId);
-        String nonceStr = WXPayUtil.generateNonceStr();//随机串
+        queryWithdrawByOpenId(shopWallets);
+    }
+
+    private void queryWithdrawByOpenId(List<ShopWallet> shopWallets) {
         try {
             if (config == null) {
                 config = WXPayConfigImpl.getInstance();
             }
-            Map<String, String> inputMap = new HashMap<>();
-            inputMap.put("nonce_str", WXPayUtil.generateNonceStr());
-            inputMap.put("partner_trade_no", openId);
-            inputMap.put("mch_id", config.getMchID());
-            inputMap.put("appid", config.getAppID());
-            WXPayUtil.generateSignature(inputMap, config.getKey());
+            if (wxPay == null) {
+                wxPay = new WXPay(config);
+            }
+            for (ShopWallet shopWallet : shopWallets) {
+                //提现成功的不做查询
+                if ("SUCCESS".equals(shopWallet.getStatus())) {
+                    continue;
+                }
+                Map<String, String> inputMap = new HashMap<>();
+                inputMap.put("nonce_str", WXPayUtil.generateNonceStr());
+                inputMap.put("partner_trade_no", String.valueOf(shopWallet.getOrderId()));
+                inputMap.put("mch_id", config.getMchID());
+                inputMap.put("appid", config.getAppID());
+                inputMap.put("sign", WXPayUtil.generateSignature(inputMap, config.getKey()));
+                String respXml = wxPay.requestWithCert(Constant.TRANSFERINFO_URL, inputMap, config.getHttpConnectTimeoutMs(), config.getHttpReadTimeoutMs());
+                Map<String, String> respMap = WXPayUtil.xmlToMap(respXml);
+                if ("SUCCESS".equals(respMap.get("return_code"))) {
+                    ShopWallet sw = new ShopWallet();
+                    sw.setId(shopWallet.getId());
+                    BigDecimal amount = new BigDecimal(shopWallet.getAmount()).multiply(new BigDecimal(100));
+                    if (amount.toString().equals(respMap.get("payment_amount"))) {
+                        sw.setStatus(respMap.get("status"));
+                        if ("FAILED".equals(respMap.get("status"))) {
+                            sw.setReason(respMap.get("reason"));
+                        }
+                        sw.setTransferTime(respMap.get("transfer_time"));
+                        sw.setPaymentTime(respMap.get("payment_time"));
+                        sw.setDescRemarks(respMap.get("desc"));
+                        walletMapper.updateShopWalletWithdraw(sw);
+                    }
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,9 +1,8 @@
 package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.ShopWallet;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.jdbc.SQL;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -60,10 +59,48 @@ public interface WalletMapper {
 
     /**
      * 只能查询30天以内的提现数据
+     *
      * @param openId
      * @return
      */
     @Select("SELECT * FROM `shop_wallet` WHERE open_id=#{openId} " +
             "AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY ) <= DATE(create_date)")
     List<ShopWallet> queryWithdrawRecords(@Param("openId") String openId);
+
+    /**
+     * 查询提现记录更新
+     *
+     * @param wallet
+     * @return
+     */
+    @UpdateProvider(type = ShopWalletProvider.class, method = "updateWithdrawById")
+    @Options(useGeneratedKeys = true, keyProperty = "wallet.id", keyColumn = "id")
+    int updateShopWalletWithdraw(ShopWallet wallet);
+
+    class ShopWalletProvider {
+
+        public String updateWithdrawById(ShopWallet wallet) {
+            return new SQL() {
+                {
+                    UPDATE("`shop_wallet`");
+                    if (wallet.getStatus() != null) {
+                        SET("`status`=#{status}");
+                    }
+                    if (wallet.getReason() != null) {
+                        SET("`reason`=#{reason}");
+                    }
+                    if (wallet.getDescRemarks() != null) {
+                        SET("`desc_remarks`=#{descRemarks}");
+                    }
+                    if (wallet.getPaymentTime() != null) {
+                        SET("`payment_time`=#{paymentTime}");
+                    }
+                    if (wallet.getTransferTime() != null) {
+                        SET("`transfer_time`=#{transferTime}");
+                    }
+                    WHERE("`id`=#{id}");
+                }
+            }.toString();
+        }
+    }
 }
