@@ -1,12 +1,7 @@
 package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.ReceiverAddress;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -104,8 +99,8 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0" +
-            "AND DATEDIFF(Date(NOW()),DATE(create_date)) = 0")
+    @Select("SELECT COUNT(1) FROM `shop_order` WHERE shop_id=#{shopId} AND state > 0 AND del_flag=0 " +
+            "AND DATEDIFF(DATE(NOW()),DATE(create_date))=0")
     int selectTodayReceivedOrderCount(@Param("shopId") int shopId);
 
     /**
@@ -114,8 +109,8 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0" +
-            "AND DATEDIFF(Date(NOW()),DATE(create_date)) = 1")
+    @Select("SELECT COUNT(1) FROM `shop_order` WHERE shop_id=#{shopId} AND state > 0 AND del_flag=0 " +
+            "AND DATEDIFF(DATE(NOW()),DATE(create_date))=1")
     int selectYesterdayReceivedOrderCount(@Param("shopId") int shopId);
 
     /**
