@@ -6,8 +6,10 @@ import com.xll.baitaner.mapper.ProfileMapper;
 import com.xll.baitaner.service.ProfileService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -135,33 +137,49 @@ public class ProfileServiceImpl implements ProfileService {
         int todayReceivedOrder = profileMapper.selectTodayReceivedOrderCount(shopId);
         int yesterdayReceivedOrder = profileMapper.selectYesterdayReceivedOrderCount(shopId);
 
-        float todySales = profileMapper.selectTodaySalesByShop(shopId);
-        float yesterdaySales = profileMapper.selectYesterdaySalesByShop(shopId);
-
-        float thisweekSales = profileMapper.selectThisWeekSalesByShop(shopId);
-        float lastweekSales = profileMapper.selectLastWeekSalesByShop(shopId);
-
-        float thismonthSales = profileMapper.selectThismonthSalesByShop(shopId);
-        float lastmonthSales = profileMapper.selectLastmonthSalesByShop(shopId);
-
-        float totalSales = profileMapper.selectTotalSalesByShop(shopId);
+//        float todySales = profileMapper.selectTodaySalesByShop(shopId);
+//        float yesterdaySales = profileMapper.selectYesterdaySalesByShop(shopId);
+//
+//        float thisweekSales = profileMapper.selectThisWeekSalesByShop(shopId);
+//        float lastweekSales = profileMapper.selectLastWeekSalesByShop(shopId);
+//
+//        float thismonthSales = profileMapper.selectThismonthSalesByShop(shopId);
+//        float lastmonthSales = profileMapper.selectLastmonthSalesByShop(shopId);
+//
+//        float totalSales = profileMapper.selectTotalSalesByShop(shopId);
 
         ShopStatistics statistics = new ShopStatistics();
         statistics.setShopId(shopId);
         statistics.setTodayReceivedOrder(todayReceivedOrder);
         statistics.setYesterdayReceivedOrder(yesterdayReceivedOrder);
 
-        statistics.setTodaySales(todySales);
-        statistics.setYesterdaySales(yesterdaySales);
+        statistics.setTodaySales(calculateStatistics(profileMapper.selectTodaySalesByShopId(shopId)));
+        statistics.setYesterdaySales(calculateStatistics(profileMapper.selectYesterdaySalesByShopId(shopId)));
 
-        statistics.setThisweekSales(thisweekSales);
-        statistics.setLastweekSales(lastweekSales);
+        statistics.setThisweekSales(calculateStatistics(profileMapper.selectThisWeekSalesByShopId(shopId)));
+        statistics.setLastweekSales(calculateStatistics(profileMapper.selectLastWeekSalesByShopId(shopId)));
 
-        statistics.setThismonthSales(thismonthSales);
-        statistics.setLastmonthSales(lastmonthSales);
+        statistics.setThismonthSales(calculateStatistics(profileMapper.selectThismonthSalesByShopId(shopId)));
+        statistics.setLastmonthSales(calculateStatistics(profileMapper.selectLastmonthSalesByShopId(shopId)));
 
-        statistics.setTotalSales(totalSales);
+        statistics.setTotalSales(calculateStatistics(profileMapper.selectTotalSalesByShopId(shopId)));
 
         return statistics;
+    }
+
+    /**
+     * 计算总额
+     * @param totalMoneys
+     * @return
+     */
+    private String calculateStatistics(List<String> totalMoneys) {
+        BigDecimal total = new BigDecimal("0.00");
+        if (CollectionUtils.isEmpty(totalMoneys)) {
+            return total.toString();
+        }
+        for (String money : totalMoneys) {
+            total = total.add(new BigDecimal(money));
+        }
+        return total.toString();
     }
 }

@@ -104,7 +104,7 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0" +
+    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0" +
             "AND DATEDIFF(Date(NOW()),DATE(create_date)) = 0")
     int selectTodayReceivedOrderCount(@Param("shopId") int shopId);
 
@@ -114,7 +114,7 @@ public interface ProfileMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0" +
+    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0" +
             "AND DATEDIFF(Date(NOW()),DATE(create_date)) = 1")
     int selectYesterdayReceivedOrderCount(@Param("shopId") int shopId);
 
@@ -125,8 +125,12 @@ public interface ProfileMapper {
      * @return
      */
     @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
-            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 AND DATEDIFF(Date(NOW()),DATE(create_date)) = 0")
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 AND DATEDIFF(Date(NOW()),DATE(create_date)) = 0")
     float selectTodaySalesByShop(@Param("shopId") int shopId);
+
+    @Select("SELECT total_money FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 AND DATEDIFF(Date(NOW()),DATE(create_date)) = 0")
+    List<String> selectTodaySalesByShopId(@Param("shopId") int shopId);
 
     /**
      * 查询店铺昨日营业额
@@ -135,8 +139,12 @@ public interface ProfileMapper {
      * @return
      */
     @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
-            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 AND DATEDIFF(Date(NOW()),DATE(create_date)) = 1")
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 AND DATEDIFF(Date(NOW()),DATE(create_date)) = 1")
     float selectYesterdaySalesByShop(@Param("shopId") int shopId);
+
+    @Select("SELECT total_money FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 AND DATEDIFF(Date(NOW()),DATE(create_date)) = 1")
+    List<String> selectYesterdaySalesByShopId(@Param("shopId") int shopId);
 
 
     /**
@@ -146,9 +154,14 @@ public interface ProfileMapper {
      * @return
      */
     @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
-            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 " +
             "AND YEARWEEK(DATE_FORMAT(create_date,'%Y-%m-%d')) = YEARWEEK(NOW())")
     float selectThisWeekSalesByShop(@Param("shopId") int shopId);
+
+    @Select("SELECT total_money FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 " +
+            "AND YEARWEEK(DATE_FORMAT(create_date,'%Y-%m-%d')) = YEARWEEK(NOW())")
+    List<String> selectThisWeekSalesByShopId(@Param("shopId") int shopId);
 
     /**
      * 查询店铺上周营业额
@@ -157,9 +170,14 @@ public interface ProfileMapper {
      * @return
      */
     @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
-            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 AND " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 AND " +
             "YEARWEEK(DATE_FORMAT(create_date,'%Y-%m-%d')) = YEARWEEK(NOW()) - 1")
     float selectLastWeekSalesByShop(@Param("shopId") int shopId);
+
+    @Select("SELECT total_money FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 AND " +
+            "YEARWEEK(DATE_FORMAT(create_date,'%Y-%m-%d')) = YEARWEEK(NOW()) - 1")
+    List<String> selectLastWeekSalesByShopId(@Param("shopId") int shopId);
 
     /**
      * 查询店铺本月总营业额
@@ -168,9 +186,14 @@ public interface ProfileMapper {
      * @return
      */
     @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
-            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 AND " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 AND " +
             "PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(create_date,'%Y%m')) = 0")
     float selectThismonthSalesByShop(@Param("shopId") int shopId);
+
+    @Select("SELECT total_money FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 AND " +
+            "PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(create_date,'%Y%m')) = 0")
+    List<String> selectThismonthSalesByShopId(@Param("shopId") int shopId);
 
     /**
      * 查询店铺上个月营业额
@@ -179,9 +202,14 @@ public interface ProfileMapper {
      * @return
      */
     @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
-            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0 AND " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 AND " +
             "PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(create_date,'%Y%m')) = 1")
     float selectLastmonthSalesByShop(@Param("shopId") int shopId);
+
+    @Select("SELECT total_money FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0 AND " +
+            "PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(create_date,'%Y%m')) = 1")
+    List<String> selectLastmonthSalesByShopId(@Param("shopId") int shopId);
 
     /**
      * 查询店铺总营业额
@@ -190,6 +218,10 @@ public interface ProfileMapper {
      * @return
      */
     @Select("SELECT CAST(COALESCE(SUM(TotalMoney),0) AS DECIMAL(8,2)) FROM `shop_order` " +
-            "WHERE shop_id = #{shopId} AND State > 0 AND del_flag=0")
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0")
     float selectTotalSalesByShop(@Param("shopId") int shopId);
+
+    @Select("SELECT total_money FROM `shop_order` " +
+            "WHERE shop_id = #{shopId} AND state > 0 AND del_flag=0")
+    List<String> selectTotalSalesByShopId(@Param("shopId") int shopId);
 }

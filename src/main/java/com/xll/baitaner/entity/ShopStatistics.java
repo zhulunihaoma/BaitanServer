@@ -28,34 +28,34 @@ public class ShopStatistics {
     /**
      * 今日营业额
      */
-    private float todaySales;
+    private String todaySales;
     /**
      * 昨日营业额
      */
-    private float yesterdaySales;
+    private String yesterdaySales;
 
     /**
      * 本周营业额
      */
-    private float thisweekSales;
+    private String thisweekSales;
     /**
      * 上周营业额
      */
-    private float lastweekSales;
+    private String lastweekSales;
 
     /**
      * 本月营业额
      */
-    private float thismonthSales;
+    private String thismonthSales;
     /**
      * 上个月营业额
      */
-    private float lastmonthSales;
+    private String lastmonthSales;
 
     /**
      * 总营业额
      */
-    private float totalSales;
+    private String totalSales;
 
 
 }
