@@ -1,9 +1,12 @@
 package com.xll.baitaner.impl;
 
+import com.github.wxpay.sdk.WXPay;
+import com.github.wxpay.sdk.WXPayUtil;
 import com.xll.baitaner.entity.ShopWallet;
 import com.xll.baitaner.entity.VO.WithdrawVO;
 import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.WalletService;
+import com.xll.baitaner.utils.WXPayConfigImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,7 +14,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 钱包相关服务
@@ -23,6 +28,8 @@ public class WalletServiceImpl implements WalletService {
 
     @Resource
     WalletMapper walletMapper;
+
+    private WXPayConfigImpl config; //微信支付配置文件
 
     /**
      * 根据日期查询提现记录
@@ -42,7 +49,7 @@ public class WalletServiceImpl implements WalletService {
         for (ShopWallet wallet : wallets) {
             WithdrawVO vo = new WithdrawVO();
             vo.setAmount(wallet.getAmount());
-            vo.setDate(wallet.getCreateData());
+            vo.setDate(wallet.getCreateDate());
             result.add(vo);
         }
         return result;
@@ -65,7 +72,7 @@ public class WalletServiceImpl implements WalletService {
         for (ShopWallet wallet : wallets) {
             WithdrawVO vo = new WithdrawVO();
             vo.setAmount(wallet.getAmount());
-            vo.setDate(wallet.getCreateData());
+            vo.setDate(wallet.getCreateDate());
             result.add(vo);
         }
         return result;
@@ -92,5 +99,24 @@ public class WalletServiceImpl implements WalletService {
             }
         }
         return amount;
+    }
+
+    @Override
+    public void queryWithdrawResultRecords(String openId) {
+        List<ShopWallet> shopWallets = walletMapper.queryWithdrawRecords(openId);
+        String nonceStr = WXPayUtil.generateNonceStr();//随机串
+        try {
+            if (config == null) {
+                config = WXPayConfigImpl.getInstance();
+            }
+            Map<String, String> inputMap = new HashMap<>();
+            inputMap.put("nonce_str", WXPayUtil.generateNonceStr());
+            inputMap.put("partner_trade_no", openId);
+            inputMap.put("mch_id", config.getMchID());
+            inputMap.put("appid", config.getAppID());
+            WXPayUtil.generateSignature(inputMap, config.getKey());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

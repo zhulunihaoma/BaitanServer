@@ -23,5 +23,31 @@ public class ShopWallet {
 
     private String operator;
 
-    private Date createData;
+    private Date createDate;
+
+    /**
+     * 转账状态
+     * SUCCESS:转账成功，FAILED:转账失败，PROCESSING:处理中
+     */
+    private String status;
+
+    /**
+     * 失败原因
+     */
+    private String reason;
+
+    /**
+     * 提现备注
+     */
+    private String descRemarks;
+
+    /**
+     * 发起转账的时间
+     */
+    private String transferTime;
+
+    /**
+     * 企业付款成功时间
+     */
+    private String paymentTime;
 }

@@ -57,4 +57,13 @@ public interface WalletMapper {
      */
     @Select("select " + walletFields + " from `shop_wallet` where shop_id=#{shopId}")
     List<ShopWallet> selectAllByShopId(@Param("shopId") Integer shopId);
+
+    /**
+     * 只能查询30天以内的提现数据
+     * @param openId
+     * @return
+     */
+    @Select("SELECT * FROM `shop_wallet` WHERE open_id=#{openId} " +
+            "AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY ) <= DATE(create_date)")
+    List<ShopWallet> queryWithdrawRecords(@Param("openId") String openId);
 }
