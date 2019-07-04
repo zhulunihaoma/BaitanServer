@@ -90,12 +90,12 @@ public class WalletServiceImpl implements WalletService {
     /**
      * 根据shopId查询余额
      *
-     * @param shopId
+     * @param openId
      * @return
      */
     @Override
-    public BigDecimal getShopAmounts(Integer shopId) {
-        List<ShopWallet> shopWallets = walletMapper.selectAllByShopId(shopId);
+    public BigDecimal getShopAmounts(String openId) {
+        List<ShopWallet> shopWallets = walletMapper.selectAllByOpenId(openId);
         BigDecimal amount = new BigDecimal("0.00");
         if (CollectionUtils.isEmpty(shopWallets)) {
             return amount;
@@ -104,7 +104,9 @@ public class WalletServiceImpl implements WalletService {
             if ("ADD".equals(wallet.getOperator())) {
                 amount = amount.add(new BigDecimal(wallet.getAmount()));
             } else {
-                amount = amount.subtract(new BigDecimal(wallet.getAmount()));
+                if ("SUCCESS".equals(wallet.getStatus()) || "PROCESSING".equals(wallet.getStatus())) {
+                    amount = amount.subtract(new BigDecimal(wallet.getAmount()));
+                }
             }
         }
         return amount;

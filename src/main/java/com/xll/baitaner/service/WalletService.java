@@ -35,10 +35,10 @@ public interface WalletService {
     /**
      * 获取店铺余额
      *
-     * @param shopId
+     * @param openId
      * @return
      */
-    BigDecimal getShopAmounts(Integer shopId);
+    BigDecimal getShopAmounts(String openId);
 
     /**
      * 查询提现结果

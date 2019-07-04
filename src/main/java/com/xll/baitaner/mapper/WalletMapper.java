@@ -51,11 +51,11 @@ public interface WalletMapper {
     /**
      * 根据shopId查询流水记录
      *
-     * @param shopId
+     * @param openId
      * @return
      */
-    @Select("select " + walletFields + " from `shop_wallet` where shop_id=#{shopId}")
-    List<ShopWallet> selectAllByShopId(@Param("shopId") Integer shopId);
+    @Select("select " + walletFields + " from `shop_wallet` where open_id=#{openId}")
+    List<ShopWallet> selectAllByOpenId(@Param("openId") String openId);
 
     /**
      * 只能查询30天以内的提现数据

@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -71,20 +72,20 @@ public class WalletController {
     /**
      * 获取店铺余额
      *
-     * @param shopId
+     * @param openId
      * @return
      */
     @ApiOperation(value = "获取店铺余额", httpMethod = "GET", notes = "根据店铺ID获取店铺余额")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "openId", value = "店铺openId", required = true, dataType = "string"),
     })
     @GetMapping("wallet/shopamount")
-    public ResponseResult getShopAmounts(Integer shopId) {
-        if (shopId == null || shopId == 0) {
-            return ResponseResult.result(1, "店铺id为空", null);
+    public ResponseResult getShopAmounts(String openId) {
+        if (StringUtils.isBlank(openId)) {
+            return ResponseResult.result(1, "店铺openId为空", null);
         }
         try {
-            BigDecimal shopAmounts = walletService.getShopAmounts(shopId);
+            BigDecimal shopAmounts = walletService.getShopAmounts(openId);
             return ResponseResult.result(0, "success", shopAmounts);
         } catch (Exception e) {
             e.printStackTrace();
