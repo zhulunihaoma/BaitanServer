@@ -14,7 +14,8 @@ import java.util.List;
 @Repository
 public interface WalletMapper {
 
-    String walletFields = "id,shop_id,order_id,open_id,amount,operator,create_date";
+    String walletFields = "id,shop_id,order_id,open_id,amount,operator,create_date," +
+            "status,reason,desc_remarks,transfer_time,payment_time";
 
     /**
      * 根据日期查询店铺的提现记录
