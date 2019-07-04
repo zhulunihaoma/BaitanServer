@@ -37,14 +37,14 @@ public class WalletController {
      */
     @ApiOperation(value = "分页查询店铺提现记录", httpMethod = "GET", notes = "分页查询店铺提现记录")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "openId", value = "提现用户openId", required = true, dataType = "string"),
             @ApiImplicitParam(name = "date", value = "查询日期", required = true, dataType = "string"),
             @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
     })
     @GetMapping("wallet/withdrawamount")
-    public ResponseResult getWithdrawList(Integer shopId, String date, Pageable page) {
+    public ResponseResult getWithdrawList(String openId, String date, Pageable page) {
         try {
-            List<WithdrawVO> amountVo = walletService.queryWithdrawAmountList(shopId, date, page);
+            List<WithdrawVO> amountVo = walletService.queryWithdrawAmountList(openId, date, page);
             return ResponseResult.result(0, "success", amountVo);
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,13 +54,13 @@ public class WalletController {
 
     @ApiOperation(value = "分页查询店铺所有提现记录", httpMethod = "GET", notes = "分页查询店铺提现记录")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "openId", value = "提现用户openId", required = true, dataType = "string"),
             @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
     })
     @GetMapping("wallet/withdrawallamount")
-    public ResponseResult getWithdrawList(Integer shopId, Pageable page) {
+    public ResponseResult getWithdrawList(String openId, Pageable page) {
         try {
-            List<WithdrawVO> amountVo = walletService.queryWithdrawAmountList(shopId, page);
+            List<WithdrawVO> amountVo = walletService.queryWithdrawAmountList(openId, page);
             return ResponseResult.result(0, "success", amountVo);
         } catch (Exception e) {
             e.printStackTrace();

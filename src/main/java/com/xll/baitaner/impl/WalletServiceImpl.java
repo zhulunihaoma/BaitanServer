@@ -37,15 +37,15 @@ public class WalletServiceImpl implements WalletService {
     /**
      * 根据日期查询提现记录
      *
-     * @param shopId
+     * @param openId
      * @param date
      * @param page
      * @return
      */
     @Override
-    public List<WithdrawVO> queryWithdrawAmountList(Integer shopId, String date, Pageable page) {
+    public List<WithdrawVO> queryWithdrawAmountList(String openId, String date, Pageable page) {
         List<WithdrawVO> result = new ArrayList<>();
-        List<ShopWallet> wallets = walletMapper.getWalletWithAmountByDate(shopId, date, page);
+        List<ShopWallet> wallets = walletMapper.getWalletWithAmountByDate(openId, date, page);
         if (CollectionUtils.isEmpty(wallets)) {
             return result;
         }
@@ -64,14 +64,14 @@ public class WalletServiceImpl implements WalletService {
     /**
      * 查询所有体现记录
      *
-     * @param shopId
+     * @param openId
      * @param page
      * @return
      */
     @Override
-    public List<WithdrawVO> queryWithdrawAmountList(Integer shopId, Pageable page) {
+    public List<WithdrawVO> queryWithdrawAmountList(String openId, Pageable page) {
         List<WithdrawVO> result = new ArrayList<>();
-        List<ShopWallet> wallets = walletMapper.getWalletAllAmount(shopId, page);
+        List<ShopWallet> wallets = walletMapper.getWalletAllAmount(openId, page);
         if (CollectionUtils.isEmpty(wallets)) {
             return result;
         }

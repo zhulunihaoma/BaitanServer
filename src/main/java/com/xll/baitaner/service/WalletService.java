@@ -16,21 +16,21 @@ public interface WalletService {
     /**
      * 根据时间获取提现记录
      *
-     * @param shopId
+     * @param openId
      * @param date
      * @param page
      * @return
      */
-    List<WithdrawVO> queryWithdrawAmountList(Integer shopId, String date, Pageable page);
+    List<WithdrawVO> queryWithdrawAmountList(String openId, String date, Pageable page);
 
     /**
      * 查询所有提现记录
      *
-     * @param shopId
+     * @param openId
      * @param page
      * @return
      */
-    List<WithdrawVO> queryWithdrawAmountList(Integer shopId, Pageable page);
+    List<WithdrawVO> queryWithdrawAmountList(String openId, Pageable page);
 
     /**
      * 获取店铺余额

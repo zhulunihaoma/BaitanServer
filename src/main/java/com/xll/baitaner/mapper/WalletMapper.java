@@ -14,29 +14,29 @@ import java.util.List;
 @Repository
 public interface WalletMapper {
 
-    String walletFields = "id,shop_id,order_id,open_id,amount,operator,create_data";
+    String walletFields = "id,shop_id,order_id,open_id,amount,operator,create_date";
 
     /**
      * 根据日期查询店铺的提现记录
      *
-     * @param shop
+     * @param openId
      * @param dateStr
      * @return
      */
-    @Select("select create_data,amount from `shop_wallet` where shop_id=#{shopId} and operator='DEC' and DATE_FORMAT" +
-            "(create_data,'%Y-%m-%d')=#{dateStr} LIMIT #{page.offset},#{page.size}")
-    List<ShopWallet> getWalletWithAmountByDate(@Param("shopId") Integer shop, @Param("dateStr") String dateStr,
+    @Select("select create_date,amount from `shop_wallet` where open_id=#{openId} and operator='DEC' and DATE_FORMAT" +
+            "(create_date,'%Y-%m-%d')=#{dateStr} LIMIT #{page.offset},#{page.size}")
+    List<ShopWallet> getWalletWithAmountByDate(@Param("openId") String openId, @Param("dateStr") String dateStr,
                                                @Param("page") Pageable page);
 
     /**
      * 查找店铺全部提现记录
      *
-     * @param shop
+     * @param openId
      * @param page
      * @return
      */
-    @Select("select create_data,amount from `shop_wallet` where shop_id=#{shopId} and operator='DEC' LIMIT #{page.offset},#{page.size}")
-    List<ShopWallet> getWalletAllAmount(@Param("shopId") Integer shop, @Param("page") Pageable page);
+    @Select("select create_date,amount from `shop_wallet` where open_id=#{openId} and operator='DEC' LIMIT #{page.offset},#{page.size}")
+    List<ShopWallet> getWalletAllAmount(@Param("openId") String openId, @Param("page") Pageable page);
 
     /**
      * 插入数据

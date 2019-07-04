@@ -1,11 +1,9 @@
 package com.xll.baitaner.mapper;
 
-import com.xll.baitaner.entity.HistoryOrder;
 import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.OrderCommodity;
 import com.xll.baitaner.entity.ShopOrder;
 import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -55,7 +53,7 @@ public interface OrderMapper {
      * @return
      */
     @Select("select" + shopOrder + "from `shop_order` where open_id=#{openId} and del_flag=0 " +
-            "order by create_data desc LIMIT #{page.offset},#{page.size}")
+            "order by create_date desc LIMIT #{page.offset},#{page.size}")
     List<ShopOrder> selectOrdersByOpenId(@Param("openId") String openId, @Param("page") Pageable page);
 
     /**
