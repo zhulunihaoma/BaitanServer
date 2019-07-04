@@ -5,6 +5,7 @@ import com.github.wxpay.sdk.WXPayUtil;
 import com.xll.baitaner.entity.ShopOrder;
 import com.xll.baitaner.entity.ShopWallet;
 import com.xll.baitaner.mapper.OrderMapper;
+import com.xll.baitaner.mapper.ShopMapper;
 import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.PayService;
@@ -37,6 +38,9 @@ public class PayServiceImpl implements PayService {
 
     @Resource
     WalletMapper walletMapper;
+
+    @Resource
+    ShopMapper shopMapper;
 
     private final String TAG = "Baitaner-PayService";
 
@@ -187,13 +191,18 @@ public class PayServiceImpl implements PayService {
                 e.printStackTrace();
             }
             //添加付款记录
-            ShopWallet wallet = new ShopWallet();
-            wallet.setShopId(shopOrder.getShopId());
-            wallet.setOrderId(Long.valueOf(orderId));
-            wallet.setOpenId(shopOrder.getOpenId());
-            wallet.setAmount(money);
-            wallet.setOperator("ADD");
-            walletMapper.insertWalletRecord(wallet);
+            try {
+                ShopWallet wallet = new ShopWallet();
+                wallet.setShopId(shopOrder.getShopId());
+                wallet.setOrderId(Long.valueOf(orderId));
+                //存的是店铺拥有者openId，不是用户openId
+                wallet.setOpenId(shopMapper.getOpenIdByShopId(shopOrder.getShopId()));
+                wallet.setAmount(money);
+                wallet.setOperator("ADD");
+                walletMapper.insertWalletRecord(wallet);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
             LogUtils.debug(TAG, "updateOrderState: " + res);
         }
     }

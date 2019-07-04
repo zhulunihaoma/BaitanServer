@@ -45,6 +45,14 @@ public interface ShopMapper {
     Shop selectShopById(@Param("id") int id);
 
     /**
+     * 根据店铺id查询拥有者openId
+     * @param shopId
+     * @return
+     */
+    @Select("select openId from shop where id=#{shopId}")
+    String getOpenIdByShopId(@Param("shopId") Integer shopId);
+
+    /**
      * 查询用户拥有的店铺信息
      *
      * @param openId
@@ -108,7 +116,7 @@ public interface ShopMapper {
      * 更新支付二维码图片路径
      *
      * @param id
-     * @param state
+     * @param openId
      * @return
      */
     @Update("UPDATE shop SET payQrcodeUrl = #{url} WHERE id = #{id} AND openId = #{openId}")
@@ -145,7 +153,7 @@ public interface ShopMapper {
     /**
      * 删除店铺
      *
-     * @param idsss
+     * @param id
      * @return
      */
     @Delete("DELETE FROM shop WHERE id = #{id}")
@@ -179,4 +187,5 @@ public interface ShopMapper {
      */
     @Select("SELECT s.* FROM shopuser su JOIN shop s ON s.id = su.shopId WHERE su.openId = #{openId}")
     List<Shop> selectShopListForUser(@Param("openId") String openId);
+
 }
