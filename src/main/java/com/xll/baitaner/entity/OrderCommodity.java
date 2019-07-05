@@ -15,6 +15,8 @@ import lombok.Data;
 @ApiModel(value = "订单中商品详情实体类", description = "订单中商品详情实体类，下单时只需填写commodityId, count, specId三个字段")
 public class OrderCommodity {
 
+    private int id;
+
     /**
      * 商品Id
      */
