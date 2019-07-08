@@ -1,8 +1,12 @@
 package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.Commodity;
-import org.apache.ibatis.annotations.*;
-import org.springframework.data.domain.Pageable;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -42,11 +46,10 @@ public interface CommodityMapper {
      *
      * @param shopId
      * @param sortId
-     * @param page
      * @return
      */
-    @Select("SELECT * FROM commodity WHERE shopId = #{shopId} AND sortId = #{sortId} AND activable = 1 ORDER BY turn LIMIT #{page.offset},#{page.size}")
-    List<Commodity> selectSortCoList(@Param("shopId") int shopId, @Param("sortId") int sortId, @Param("page") Pageable page);
+    @Select("SELECT * FROM commodity WHERE shopId = #{shopId} AND sortId = #{sortId} AND activable = 1 ORDER BY turn")
+    List<Commodity> selectSortCoList(@Param("shopId") int shopId, @Param("sortId") int sortId);
 
     /**
      * 查询店铺中对应分类的商品列表（上架）
@@ -84,8 +87,8 @@ public interface CommodityMapper {
             " co.activable = 1  " +
             "ORDER BY " +
             " so.sortOrder, " +
-            " co.turn ASC LIMIT #{page.offset},#{page.size}")
-    List<Commodity> selectAllCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
+            " co.turn ASC")
+    List<Commodity> selectAllCoList(@Param("shopId") int shopId);
 
     /**
      * 查询店铺中所有商品总数
@@ -112,8 +115,8 @@ public interface CommodityMapper {
             " co.activable = 1 AND state = 1 " +
             "ORDER BY " +
             " so.sortOrder, " +
-            " co.turn ASC LIMIT #{page.offset},#{page.size}")
-    List<Commodity> selectCoList(@Param("shopId") int shopId, @Param("page") Pageable page);
+            " co.turn ASC")
+    List<Commodity> selectCoList(@Param("shopId") int shopId);
 
     /**
      * 查询店铺中所有上架商品列表总数

@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -53,8 +52,8 @@ public interface OrderMapper {
      * @return
      */
     @Select("select" + shopOrder + "from `shop_order` where open_id=#{openId} and del_flag=0 " +
-            "order by create_date desc LIMIT #{page.offset},#{page.size}")
-    List<ShopOrder> selectOrdersByOpenId(@Param("openId") String openId, @Param("page") Pageable page);
+            "order by create_date desc")
+    List<ShopOrder> selectOrdersByOpenId(@Param("openId") String openId);
 
     /**
      * 查询对应用户的订单列表总个数
@@ -69,12 +68,11 @@ public interface OrderMapper {
      * 获取店铺的未付款订单 （二维码支付的订单）
      *
      * @param shopId
-     * @param page
      * @return
      */
     @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = 0 AND pay_type = 1 " +
-            "ORDER BY date DESC LIMIT #{page.offset},#{page.size} ")
-    List<ShopOrder> selectNoPayOrdersByShopId(@Param("shopId") int shopId, @Param("page") Pageable page);
+            "ORDER BY date DESC")
+    List<ShopOrder> selectNoPayOrdersByShopId(@Param("shopId") int shopId);
 
     /**
      * 获取店铺的未付款订单 （二维码支付的订单） 总个数
@@ -103,9 +101,8 @@ public interface OrderMapper {
      * @return
      */
     @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = #{state} ORDER BY " +
-            "create_date DESC LIMIT #{page.offset},#{page.size}")
-    List<ShopOrder> selectShopOrdersByShop(@Param("shopId") int shopId, @Param("state") int state,
-                                           @Param("page") Pageable page);
+            "create_date DESC")
+    List<ShopOrder> selectShopOrdersByShop(@Param("shopId") int shopId, @Param("state") int state);
 
     /**
      * 查询店铺所有已接以及历史订单列表
@@ -115,7 +112,7 @@ public interface OrderMapper {
      */
     @Select("SELECT * FROM `order` WHERE shopId = #{shopId} AND state != 0 AND date = #{date} ORDER BY date DESC " +
             "LIMIT #{page.offset},#{page.size}")
-    List<Order> selectOrdersByShopAllAndDate(@Param("shopId") int shopId, @Param("date") Date date, @Param("page") Pageable page);
+    List<Order> selectOrdersByShopAllAndDate(@Param("shopId") int shopId, @Param("date") Date date);
 
 
     /**
@@ -127,7 +124,7 @@ public interface OrderMapper {
      */
     @Select("SELECT * FROM `order` WHERE shopId = #{shopId} AND state != 0 AND payType = #{payType} AND date = #{date} ORDER BY date DESC " +
             "LIMIT #{page.offset},#{page.size}")
-    List<Order> selectOrdersByShopAndPayTypeAndDate(@Param("shopId") int shopId, @Param("payType") int payType, @Param("date") Date date, @Param("page") Pageable page);
+    List<Order> selectOrdersByShopAndPayTypeAndDate(@Param("shopId") int shopId, @Param("payType") int payType, @Param("date") Date date);
 
     /**
      * 查询店铺对应状态的已接以及历史订单订单列表总个数

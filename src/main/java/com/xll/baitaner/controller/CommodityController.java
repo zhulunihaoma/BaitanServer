@@ -9,7 +9,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,11 +78,12 @@ public class CommodityController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
             @ApiImplicitParam(name = "storId", value = "分类storId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
+            @ApiImplicitParam(name = "offset", value = "开始页", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "每页条数", required = true, dataType = "int")
     })
     @GetMapping("getstorcolist")
-    public ResponseResult getStorColist(int shopId, int storId, Pageable pageable) {
-        return ResponseResult.result(0, "success", commodityService.getStorColist(shopId, storId, pageable));
+    public ResponseResult getStorColist(int shopId, int storId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", commodityService.getStorColist(shopId, storId, offset, size));
     }
 
     /**
@@ -99,11 +99,12 @@ public class CommodityController {
             notes = "分页获取店铺中所有商品列表, 上下架均显示，先按分类排序，再按分类内商品排序")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
+            @ApiImplicitParam(name = "offset", value = "开始页", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "每页条数", required = true, dataType = "int")
     })
     @GetMapping("getallcolist")
-    public ResponseResult getAllCoList(int shopId, Pageable pageable) {
-        return ResponseResult.result(0, "success", commodityService.getAllCoList(shopId, pageable));
+    public ResponseResult getAllCoList(int shopId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", commodityService.getAllCoList(shopId, offset, size));
     }
 
     /**
@@ -118,11 +119,12 @@ public class CommodityController {
             notes = "分页获取店铺已上架商品列表，先按分类排序，再按分类内商品排序（店铺首页）")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
+            @ApiImplicitParam(name = "offset", value = "开始页", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "每页条数", required = true, dataType = "int")
     })
     @GetMapping("getcolist")
-    public ResponseResult geCoList(int shopId, Pageable pageable) {
-        return ResponseResult.result(0, "success", commodityService.getCoList(shopId, pageable));
+    public ResponseResult geCoList(int shopId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", commodityService.getCoList(shopId, offset, size));
     }
 
     /**

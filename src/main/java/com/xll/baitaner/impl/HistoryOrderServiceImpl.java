@@ -1,15 +1,16 @@
 package com.xll.baitaner.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.ShopOrder;
 import com.xll.baitaner.entity.ShopOrderDate;
+import com.xll.baitaner.entity.VO.HistoryOrderResultVO;
 import com.xll.baitaner.entity.VO.HistoryOrderVO;
 import com.xll.baitaner.mapper.HistoryOrderMapper;
 import com.xll.baitaner.mapper.OrderMapper;
 import com.xll.baitaner.service.HistoryOrderService;
 import com.xll.baitaner.service.OrderService;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +43,7 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
      * 订单状态state为1时，进入生成历史订单流程
      * 付款成功的订单，先根据日期记录shop_order_date
      * 再根据shop_order_date插入history_order
+     *
      * @param orderId
      * @return
      */
@@ -96,14 +98,14 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
      * 获取订单管理和经营数据中历史订单列表
      *
      * @param shopId
-     * @param type     获取历史订单种类
-     * @param pageable
+     * @param type   获取历史订单种类
      * @return
      */
     @Transactional
     @Override
-    public PageImpl<HistoryOrderVO> getHistoryOrderList(int shopId, int type, Pageable pageable) {
-        List<ShopOrderDate> shopOrderDateList = historyOrderMapper.selectShopOrderDateList(shopId, pageable);
+    public HistoryOrderResultVO getHistoryOrderList(int shopId, int type, Integer offset, Integer size) {
+        Page<ShopOrderDate> page = PageHelper.startPage(offset, size).doSelectPage(() -> historyOrderMapper.selectShopOrderDateList(shopId));
+        List<ShopOrderDate> shopOrderDateList = page.getResult();
         List<HistoryOrderVO> historyOrderVOList = new ArrayList<>();
         if (shopOrderDateList.size() > 0) {
             for (ShopOrderDate shopOrderDate : shopOrderDateList) {
@@ -128,8 +130,9 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
                 historyOrderVOList.add(historyOrderVO);
             }
         }
-
-        int count = historyOrderMapper.countShopOrderDateList(shopId);
-        return new PageImpl<>(historyOrderVOList, pageable, count);
+        HistoryOrderResultVO resultVO = new HistoryOrderResultVO();
+        resultVO.setData(historyOrderVOList);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
     }
 }

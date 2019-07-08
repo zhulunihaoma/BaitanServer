@@ -1,14 +1,11 @@
 package com.xll.baitaner.utils;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-import org.xml.sax.InputSource;
-
-import java.io.StringReader;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -117,14 +114,14 @@ public class SignUtils {
     }
 
 
-    public static Element readerXml(String body, String encode) throws DocumentException {
+    /*public static Element readerXml(String body, String encode) throws DocumentException {
         SAXReader reader = new SAXReader(false);
         InputSource source = new InputSource(new StringReader(body));
         source.setEncoding(encode);
         Document doc = reader.read(source);
         Element element = doc.getRootElement();
         return element;
-    }
+    }*/
 
 }
 

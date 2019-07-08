@@ -4,8 +4,12 @@ import com.xll.baitaner.entity.Activity;
 import com.xll.baitaner.entity.ActivityRecord;
 import com.xll.baitaner.entity.ActivityShopCommodity;
 import com.xll.baitaner.entity.SupportRecord;
-import org.apache.ibatis.annotations.*;
-import org.springframework.data.domain.Pageable;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -147,8 +151,8 @@ public interface ActivityMapper {
      * @param activityId
      * @return
      */
-    @Select("SELECT * FROM activityrecord WHERE activityId  = #{activityId} ORDER BY supportCount DESC  LIMIT #{page.offset},#{page.size}")
-    List<ActivityRecord> selectActivityRecordByOrder(@Param("activityId") int activityId, @Param("page") Pageable page);
+    @Select("SELECT * FROM activityrecord WHERE activityId  = #{activityId} ORDER BY supportCount DESC")
+    List<ActivityRecord> selectActivityRecordByOrder(@Param("activityId") int activityId);
 
     /**
      * 查询一个openId参加过的所有活动
@@ -156,8 +160,8 @@ public interface ActivityMapper {
      * @param openId
      * @return
      */
-    @Select("SELECT * FROM activityrecord WHERE openId  = #{openId} LIMIT #{page.offset},#{page.size}")
-    List<ActivityRecord> selectActivityRecordByOpenId(@Param("openId") String openId, @Param("page") Pageable page);
+    @Select("SELECT * FROM activityrecord WHERE openId  = #{openId}")
+    List<ActivityRecord> selectActivityRecordByOpenId(@Param("openId") String openId);
 
 
     /**

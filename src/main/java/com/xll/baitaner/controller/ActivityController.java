@@ -7,7 +7,6 @@ import com.xll.baitaner.utils.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -218,9 +217,9 @@ public class ActivityController {
      * @return
      */
     @GetMapping("selectActivityRecordByOrder")
-    public ResponseResult selectActivityRecordByOrder(int activityId, Pageable pageable) {
+    public ResponseResult selectActivityRecordByOrder(int activityId, Integer offset, Integer size) {
 
-        return ResponseResult.result(0, "success", activityService.selectActivityRecordByOrder(activityId, pageable));
+        return ResponseResult.result(0, "success", activityService.selectActivityRecordByOrder(activityId, offset, size));
 
     }
 
@@ -231,8 +230,8 @@ public class ActivityController {
      * @return
      */
     @GetMapping("selectActivityRecordByOpenId")
-    public ResponseResult selectActivityRecordByOpenId_ActivityId(String openId, Pageable pageable) {
-        return ResponseResult.result(0, "success", activityService.selectActivityRecordByOpenId(openId, pageable));
+    public ResponseResult selectActivityRecordByOpenId_ActivityId(String openId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", activityService.selectActivityRecordByOpenId(openId, offset, size));
 
     }
 }

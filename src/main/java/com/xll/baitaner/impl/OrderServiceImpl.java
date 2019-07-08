@@ -1,21 +1,21 @@
 package com.xll.baitaner.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.xll.baitaner.entity.Commodity;
 import com.xll.baitaner.entity.CommodityOrder;
-import com.xll.baitaner.entity.HistoryOrder;
-import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.OrderCommodity;
 import com.xll.baitaner.entity.ReceiverAddress;
 import com.xll.baitaner.entity.Shop;
 import com.xll.baitaner.entity.ShopOrder;
 import com.xll.baitaner.entity.Spec;
-import com.xll.baitaner.entity.VO.HistoryOrderVO;
+import com.xll.baitaner.entity.VO.OrderDetailsResultVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import com.xll.baitaner.entity.VO.ShopOrderVO;
 import com.xll.baitaner.mapper.CommodityMapper;
+import com.xll.baitaner.mapper.HistoryOrderMapper;
 import com.xll.baitaner.mapper.OrderCommodityMapper;
 import com.xll.baitaner.mapper.OrderMapper;
-import com.xll.baitaner.mapper.HistoryOrderMapper;
 import com.xll.baitaner.mapper.ProfileMapper;
 import com.xll.baitaner.mapper.ShopMapper;
 import com.xll.baitaner.service.CommodityService;
@@ -26,17 +26,12 @@ import com.xll.baitaner.utils.SerialUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -223,78 +218,89 @@ public class OrderServiceImpl implements OrderService {
      * 获取用户的订单列表
      *
      * @param openId
-     * @param pageable
      * @return
      */
     @Override
-    public PageImpl<OrderDetailsVO> getOrderListByUser(String openId, Pageable pageable) {
-        List<ShopOrder> orderList = orderMapper.selectOrdersByOpenId(openId, pageable);
+    public OrderDetailsResultVO getOrderListByUser(String openId, Integer offset, Integer size) {
+        OrderDetailsResultVO resultVO = new OrderDetailsResultVO();
+        Page<ShopOrder> page =
+                PageHelper.startPage(offset,size).doSelectPage(()->orderMapper.selectOrdersByOpenId(openId));
+        List<ShopOrder> orderList = page.getResult();
         List<OrderDetailsVO> details = new ArrayList<>();
         for (ShopOrder order : orderList) {
             OrderDetailsVO orderDetails = this.getOrderDetails(order.getOrderId().toString());
             details.add(orderDetails);
         }
-        int count = orderMapper.countOrdersByClientId(openId);
-        return new PageImpl<>(details, pageable, count);
+        resultVO.setData(details);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
     }
 
     /**
      * 获取店铺的未付款订单 （二维码支付的订单）
      *
      * @param shopId
-     * @param pageable
      * @return
      */
     @Override
-    public PageImpl<OrderDetailsVO> getNoPayOrderListByShop(int shopId, Pageable pageable) {
-        List<ShopOrder> orderList = orderMapper.selectNoPayOrdersByShopId(shopId, pageable);
+    public OrderDetailsResultVO getNoPayOrderListByShop(int shopId, Integer offset, Integer size) {
+        OrderDetailsResultVO resultVO = new OrderDetailsResultVO();
+        Page<ShopOrder> page = PageHelper.startPage(offset,size).doSelectPage(()->orderMapper.selectNoPayOrdersByShopId(shopId));
+        List<ShopOrder> orderList = page.getResult();
         List<OrderDetailsVO> details = new ArrayList<>();
         for (ShopOrder order : orderList) {
             OrderDetailsVO orderDetails = this.getOrderDetails(order.getOrderId().toString());
             details.add(orderDetails);
         }
-        int count = orderMapper.countNoPayOrdersByShop(shopId);
-        return new PageImpl<>(details, pageable, count);
+        resultVO.setData(details);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
     }
 
     /**
      * 获取店铺待完成订单
      *
      * @param shopId
-     * @param pageable
      * @return
      */
     @Override
-    public PageImpl<OrderDetailsVO> getReadyOrderLisetShop(int shopId, Pageable pageable) {
+    public OrderDetailsResultVO getReadyOrderLisetShop(int shopId, Integer offset, Integer size) {
         //state 0：待支付;  1：已接单;  2：待完成; 3：已完成
-        List<ShopOrder> orderList = orderMapper.selectShopOrdersByShop(shopId, 2, pageable);
+        Page<ShopOrder> page =
+                PageHelper.startPage(offset,size).doSelectPage(()->orderMapper.selectShopOrdersByShop(shopId, 2));
+        List<ShopOrder> orderList = page.getResult();
         List<OrderDetailsVO> details = new ArrayList<>();
         for (ShopOrder order : orderList) {
             OrderDetailsVO orderDetails = this.getOrderDetails(order.getOrderId().toString());
             details.add(orderDetails);
         }
-        int count = orderMapper.countOrdersByShop(shopId, 2);
-        return new PageImpl<>(details, pageable, count);
+        OrderDetailsResultVO resultVO = new OrderDetailsResultVO();
+        resultVO.setData(details);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
     }
 
     /**
      * 获取店铺的已接订单列表(按订单分类)
      *
      * @param shopId
-     * @param pageable
      * @return
      */
     @Override
-    public PageImpl<OrderDetailsVO> getTakenOrderListByShop(int shopId, Pageable pageable) {
+    public OrderDetailsResultVO getTakenOrderListByShop(int shopId, Integer offset, Integer size) {
         //state 0：待支付;  1：已接单;  2：待完成; 3：已完成
-        List<ShopOrder> orderList = orderMapper.selectShopOrdersByShop(shopId, 1, pageable);
+        Page<ShopOrder> page =
+                PageHelper.startPage(offset,size).doSelectPage(()->orderMapper.selectShopOrdersByShop(shopId, 1));
+        List<ShopOrder> orderList = page.getResult();
         List<OrderDetailsVO> details = new ArrayList<>();
         for (ShopOrder order : orderList) {
             OrderDetailsVO orderDetails = this.getOrderDetails(order.getOrderId().toString());
             details.add(orderDetails);
         }
-        int count = orderMapper.countOrdersByShop(shopId, 1);
-        return new PageImpl<>(details, pageable, count);
+        OrderDetailsResultVO resultVO = new OrderDetailsResultVO();
+        resultVO.setData(details);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
     }
 
 
@@ -387,32 +393,33 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 暂时勿删，暂时勿删，暂时勿删
      * 获取店铺除了未支付外的所有订单按照日期和支付方式查询(payType = -1查询所有支付方式订单)
-     *
+     * 暂时勿删，暂时勿删，暂时勿删
      * @param shopId
      * @param pageable
      * @return
      */
-    private PageImpl<Order> selectOrdersByShopAndPayTypeAndDate(int shopId, int payType, Date date, Pageable pageable) {
-        //state 0：待支付;  1：已接单;  2：待完成; 3：已完成
-        List<Order> orderList;
-        int count;
-        if (payType == -1) {
-            orderList = orderMapper.selectOrdersByShopAllAndDate(shopId, date, pageable);
-            count = orderMapper.countOrdersByShopAllAndDate(shopId, date);
-
-        } else {
-            orderList = orderMapper.selectOrdersByShopAndPayTypeAndDate(shopId, payType, date, pageable);
-            count = orderMapper.countOrdersByShopAndPayTypeAndDate(shopId, payType, date);
-
-        }
-
-        for (Order order : orderList) {
-            order.setOrderCoList(getOrderCoList(order.getOrderId().toString()));
-        }
-
-        return new PageImpl<>(orderList, pageable, count);
-    }
+//    private PageImpl<Order> selectOrdersByShopAndPayTypeAndDate(int shopId, int payType, Date date, Pageable pageable) {
+//        //state 0：待支付;  1：已接单;  2：待完成; 3：已完成
+//        List<Order> orderList;
+//        int count;
+//        if (payType == -1) {
+//            orderList = orderMapper.selectOrdersByShopAllAndDate(shopId, date, pageable);
+//            count = orderMapper.countOrdersByShopAllAndDate(shopId, date);
+//
+//        } else {
+//            orderList = orderMapper.selectOrdersByShopAndPayTypeAndDate(shopId, payType, date, pageable);
+//            count = orderMapper.countOrdersByShopAndPayTypeAndDate(shopId, payType, date);
+//
+//        }
+//
+//        for (Order order : orderList) {
+//            order.setOrderCoList(getOrderCoList(order.getOrderId().toString()));
+//        }
+//
+//        return new PageImpl<>(orderList, pageable, count);
+//    }
 
 
     /**

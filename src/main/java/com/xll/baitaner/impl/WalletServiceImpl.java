@@ -1,15 +1,17 @@
 package com.xll.baitaner.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.xll.baitaner.entity.ShopWallet;
+import com.xll.baitaner.entity.VO.WithdrawResultVO;
 import com.xll.baitaner.entity.VO.WithdrawVO;
 import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.WalletService;
 import com.xll.baitaner.utils.Constant;
 import com.xll.baitaner.utils.WXPayConfigImpl;
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -39,15 +41,19 @@ public class WalletServiceImpl implements WalletService {
      *
      * @param openId
      * @param date
-     * @param page
      * @return
      */
     @Override
-    public List<WithdrawVO> queryWithdrawAmountList(String openId, String date, Pageable page) {
+    public WithdrawResultVO queryWithdrawAmountList(String openId, String date, Integer offset, Integer size) {
+        WithdrawResultVO resultVO = new WithdrawResultVO();
         List<WithdrawVO> result = new ArrayList<>();
-        List<ShopWallet> wallets = walletMapper.getWalletWithAmountByDate(openId, date, page);
+        Page<ShopWallet> page =
+                PageHelper.startPage(offset, size).doSelectPage(() -> walletMapper.getWalletWithAmountByDate(openId, date));
+        List<ShopWallet> wallets = page.getResult();
         if (CollectionUtils.isEmpty(wallets)) {
-            return result;
+            resultVO.setData(result);
+            resultVO.setCount(0);
+            return resultVO;
         }
         for (ShopWallet wallet : wallets) {
             WithdrawVO vo = new WithdrawVO();
@@ -58,22 +64,28 @@ public class WalletServiceImpl implements WalletService {
             vo.setRemarks(wallet.getDescRemarks());
             result.add(vo);
         }
-        return result;
+        resultVO.setData(result);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
     }
 
     /**
      * 查询所有体现记录
      *
      * @param openId
-     * @param page
      * @return
      */
     @Override
-    public List<WithdrawVO> queryWithdrawAmountList(String openId, Pageable page) {
+    public WithdrawResultVO queryWithdrawAmountList(String openId, Integer offset, Integer size) {
+        WithdrawResultVO resultVO = new WithdrawResultVO();
         List<WithdrawVO> result = new ArrayList<>();
-        List<ShopWallet> wallets = walletMapper.getWalletAllAmount(openId, page);
+        Page<ShopWallet> page =
+                PageHelper.startPage(offset, size).doSelectPage(() -> walletMapper.getWalletAllAmount(openId));
+        List<ShopWallet> wallets = page.getResult();
         if (CollectionUtils.isEmpty(wallets)) {
-            return result;
+            resultVO.setData(result);
+            resultVO.setCount(0);
+            return resultVO;
         }
         for (ShopWallet wallet : wallets) {
             WithdrawVO vo = new WithdrawVO();
@@ -84,7 +96,9 @@ public class WalletServiceImpl implements WalletService {
             vo.setRemarks(wallet.getDescRemarks());
             result.add(vo);
         }
-        return result;
+        resultVO.setData(result);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
     }
 
     /**

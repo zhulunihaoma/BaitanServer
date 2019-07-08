@@ -1,9 +1,8 @@
 package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.Commodity;
+import com.xll.baitaner.entity.VO.CommodityResultVO;
 import net.sf.json.JSONArray;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 /**
  * @author denghuohuo 2019/6/25
@@ -32,10 +31,9 @@ public interface CommodityService {
      *
      * @param shopId
      * @param storId
-     * @param pageable
      * @return
      */
-    PageImpl<Commodity> getStorColist(int shopId, int storId, Pageable pageable);
+    CommodityResultVO getStorColist(int shopId, int storId, Integer offset, Integer size);
 
     /**
      * 获取店铺中所有商品列表
@@ -44,7 +42,7 @@ public interface CommodityService {
      * @param shopId
      * @return
      */
-    PageImpl<Commodity> getAllCoList(int shopId, Pageable pageable);
+    CommodityResultVO getAllCoList(int shopId, Integer offset, Integer size);
 
     /**
      * 获取店铺已上架商品列表
@@ -52,7 +50,7 @@ public interface CommodityService {
      * @param shopId
      * @return
      */
-    PageImpl<Commodity> getCoList(int shopId, Pageable pageable);
+    CommodityResultVO getCoList(int shopId, Integer offset, Integer size);
 
     /**
      * 查询店铺中的商品列表（上架）,分类包裹

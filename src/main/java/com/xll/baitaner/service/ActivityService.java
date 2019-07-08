@@ -5,7 +5,6 @@ import com.xll.baitaner.entity.ActivityRecord;
 import com.xll.baitaner.entity.ActivityShopCommodity;
 import com.xll.baitaner.entity.SupportRecord;
 import net.sf.json.JSONObject;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -126,17 +125,15 @@ public interface ActivityService {
      * 查询活动record根据排名
      *
      * @param activityId
-     * @param pageable
      * @return
      */
-    List<ActivityRecord> selectActivityRecordByOrder(int activityId, Pageable pageable);
+    List<ActivityRecord> selectActivityRecordByOrder(int activityId, Integer offset, Integer size);
 
     /**
      * 查询一个openId参加过所有活动
      *
      * @param openId
-     * @param pageable
      * @return
      */
-    List<ActivityRecord> selectActivityRecordByOpenId(String openId, Pageable pageable);
+    List<ActivityRecord> selectActivityRecordByOpenId(String openId, Integer offset, Integer size);
 }

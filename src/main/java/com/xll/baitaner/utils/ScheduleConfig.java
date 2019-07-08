@@ -19,8 +19,6 @@ import java.util.Date;
 @Component //service
 @Configuration   //扫描配置
 @EnableScheduling //定时开启
-
-
 public class ScheduleConfig {
     @Autowired
     private ActivityMapper activityMapper;

@@ -1,16 +1,23 @@
 package com.xll.baitaner.impl;
 
-import com.xll.baitaner.entity.*;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.xll.baitaner.entity.Activity;
+import com.xll.baitaner.entity.ActivityRecord;
+import com.xll.baitaner.entity.ActivityShopCommodity;
+import com.xll.baitaner.entity.Commodity;
+import com.xll.baitaner.entity.Shop;
+import com.xll.baitaner.entity.SupportRecord;
 import com.xll.baitaner.mapper.ActivityMapper;
 import com.xll.baitaner.service.ActivityService;
 import com.xll.baitaner.service.CommodityService;
 import com.xll.baitaner.service.ShopManageService;
 import com.xll.baitaner.utils.DateUtils;
 import net.sf.json.JSONObject;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -262,8 +269,14 @@ public class ActivityServiceImpl implements ActivityService {
      * @return
      */
     @Override
-    public List<ActivityRecord> selectActivityRecordByOrder(int activityId, Pageable pageable) {
-        return activityMapper.selectActivityRecordByOrder(activityId, pageable);
+    public List<ActivityRecord> selectActivityRecordByOrder(int activityId, Integer offset, Integer size) {
+        Page<ActivityRecord> page =
+                PageHelper.startPage(offset, size).doSelectPage(() -> activityMapper.selectActivityRecordByOrder(activityId));
+        List<ActivityRecord> result = page.getResult();
+        if (result == null) {
+            return new ArrayList<>();
+        }
+        return result;
     }
 
     /**
@@ -273,14 +286,15 @@ public class ActivityServiceImpl implements ActivityService {
      * @return
      */
     @Override
-    public List<ActivityRecord> selectActivityRecordByOpenId(String openId, Pageable pageable) {
-        List<ActivityRecord> ActivityRecordList = activityMapper.selectActivityRecordByOpenId(openId, pageable);
-//        for (ActivityRecord activityRecord : ActivityRecordList){
-//
-//            activityRecord.setActivity(this.getActivityById2(activityRecord.getActivityId()));
-//        }
+    public List<ActivityRecord> selectActivityRecordByOpenId(String openId, Integer offset, Integer size) {
+        Page<ActivityRecord> page =
+                PageHelper.startPage(offset, size).doSelectPage(() -> activityMapper.selectActivityRecordByOpenId(openId));
+        List<ActivityRecord> result = page.getResult();
+        if (result == null) {
+            return new ArrayList<>();
+        }
         //塞入对应的商品信息
-        return ActivityRecordList;
+        return result;
 
     }
 }

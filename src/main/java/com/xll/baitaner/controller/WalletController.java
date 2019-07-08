@@ -1,6 +1,6 @@
 package com.xll.baitaner.controller;
 
-import com.xll.baitaner.entity.VO.WithdrawVO;
+import com.xll.baitaner.entity.VO.WithdrawResultVO;
 import com.xll.baitaner.service.WalletService;
 import com.xll.baitaner.utils.ResponseResult;
 import io.swagger.annotations.Api;
@@ -8,13 +8,11 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * 钱包相关操作
@@ -31,22 +29,22 @@ public class WalletController {
     /**
      * 根据日期查询提现记录
      *
-     * @param shopId
+     * @param openId
      * @param date
-     * @param page
      * @return
      */
     @ApiOperation(value = "分页查询店铺提现记录", httpMethod = "GET", notes = "分页查询店铺提现记录")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "openId", value = "提现用户openId", required = true, dataType = "string"),
             @ApiImplicitParam(name = "date", value = "查询日期", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
+            @ApiImplicitParam(name = "offset", value = "开始页", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "每页条数", required = true, dataType = "int")
     })
     @GetMapping("wallet/withdrawamount")
-    public ResponseResult getWithdrawList(String openId, String date, Pageable page) {
+    public ResponseResult getWithdrawList(String openId, String date, Integer offset, Integer size) {
         try {
-            List<WithdrawVO> amountVo = walletService.queryWithdrawAmountList(openId, date, page);
-            return ResponseResult.result(0, "success", amountVo);
+            WithdrawResultVO resultVO = walletService.queryWithdrawAmountList(openId, date, offset, size);
+            return ResponseResult.result(0, "success", resultVO);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseResult.result(1, "fail", null);
@@ -56,13 +54,14 @@ public class WalletController {
     @ApiOperation(value = "分页查询店铺所有提现记录", httpMethod = "GET", notes = "分页查询店铺提现记录")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "openId", value = "提现用户openId", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "pageable", value = "分页", required = true, dataType = "Pageable")
+            @ApiImplicitParam(name = "offset", value = "开始页", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "每页条数", required = true, dataType = "int")
     })
     @GetMapping("wallet/withdrawallamount")
-    public ResponseResult getWithdrawList(String openId, Pageable page) {
+    public ResponseResult getWithdrawList(String openId, Integer offset, Integer size) {
         try {
-            List<WithdrawVO> amountVo = walletService.queryWithdrawAmountList(openId, page);
-            return ResponseResult.result(0, "success", amountVo);
+            WithdrawResultVO resultVO = walletService.queryWithdrawAmountList(openId, offset, size);
+            return ResponseResult.result(0, "success", resultVO);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseResult.result(1, "fail", null);

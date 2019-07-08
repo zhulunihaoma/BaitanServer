@@ -1,9 +1,12 @@
 package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.ShopWallet;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.UpdateProvider;
 import org.apache.ibatis.jdbc.SQL;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,19 +28,17 @@ public interface WalletMapper {
      * @return
      */
     @Select("select create_date,amount from `shop_wallet` where open_id=#{openId} and operator='DEC' and DATE_FORMAT" +
-            "(create_date,'%Y-%m-%d')=#{dateStr} LIMIT #{page.offset},#{page.size}")
-    List<ShopWallet> getWalletWithAmountByDate(@Param("openId") String openId, @Param("dateStr") String dateStr,
-                                               @Param("page") Pageable page);
+            "(create_date,'%Y-%m-%d')=#{dateStr}")
+    List<ShopWallet> getWalletWithAmountByDate(@Param("openId") String openId, @Param("dateStr") String dateStr);
 
     /**
      * 查找店铺全部提现记录
      *
      * @param openId
-     * @param page
      * @return
      */
-    @Select("select create_date,amount from `shop_wallet` where open_id=#{openId} and operator='DEC' LIMIT #{page.offset},#{page.size}")
-    List<ShopWallet> getWalletAllAmount(@Param("openId") String openId, @Param("page") Pageable page);
+    @Select("select create_date,amount from `shop_wallet` where open_id=#{openId} and operator='DEC'")
+    List<ShopWallet> getWalletAllAmount(@Param("openId") String openId);
 
     /**
      * 插入数据

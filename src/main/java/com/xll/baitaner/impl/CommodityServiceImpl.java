@@ -1,8 +1,11 @@
 package com.xll.baitaner.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.xll.baitaner.entity.Commodity;
 import com.xll.baitaner.entity.Sort;
 import com.xll.baitaner.entity.Spec;
+import com.xll.baitaner.entity.VO.CommodityResultVO;
 import com.xll.baitaner.mapper.CommodityMapper;
 import com.xll.baitaner.service.CommodityService;
 import com.xll.baitaner.service.SortService;
@@ -10,12 +13,11 @@ import com.xll.baitaner.service.SpecService;
 import com.xll.baitaner.utils.LogUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -88,19 +90,27 @@ public class CommodityServiceImpl implements CommodityService {
      *
      * @param shopId
      * @param storId
-     * @param pageable
      * @return
      */
     @Override
-    public PageImpl<Commodity> getStorColist(int shopId, int storId, Pageable pageable) {
-        List<Commodity> commodityList = commodityMapper.selectSortCoList(shopId, storId, pageable);
+    public CommodityResultVO getStorColist(int shopId, int storId, Integer offset, Integer size) {
+        CommodityResultVO resultVO = new CommodityResultVO();
+        Page<Commodity> page =
+                PageHelper.startPage(offset, size).doSelectPage(() -> commodityMapper.selectSortCoList(shopId, storId));
+        List<Commodity> commodityList = page.getResult();
+        if (commodityList == null) {
+            resultVO.setData(new ArrayList<>());
+            resultVO.setCount(0);
+            return resultVO;
+        }
         for (int i = 0; i < commodityList.size(); i++) {
             Commodity commodity = commodityList.get(i);
             List<Spec> specList = specService.getSpecList(commodity.getId());
             commodity.setSpecList(specList);
         }
-        int count = commodityMapper.countSortCoList(shopId, storId);
-        return new PageImpl<Commodity>(commodityList, pageable, count);
+        resultVO.setData(commodityList);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
     }
 
     /**
@@ -111,15 +121,24 @@ public class CommodityServiceImpl implements CommodityService {
      * @return
      */
     @Override
-    public PageImpl<Commodity> getAllCoList(int shopId, Pageable pageable) {
-        List<Commodity> commodityList = commodityMapper.selectAllCoList(shopId, pageable);
+    public CommodityResultVO getAllCoList(int shopId, Integer offset, Integer size) {
+        CommodityResultVO resultVO = new CommodityResultVO();
+        Page<Commodity> page =
+                PageHelper.startPage(offset, size).doSelectPage(() -> commodityMapper.selectAllCoList(shopId));
+        List<Commodity> commodityList = page.getResult();
+        if (commodityList == null) {
+            resultVO.setData(new ArrayList<>());
+            resultVO.setCount(0);
+            return resultVO;
+        }
         for (int i = 0; i < commodityList.size(); i++) {
             Commodity commodity = commodityList.get(i);
             List<Spec> specList = specService.getSpecList(commodity.getId());
             commodity.setSpecList(specList);
         }
-        int count = commodityMapper.countAllCoList(shopId);
-        return new PageImpl<Commodity>(commodityList, pageable, count);
+        resultVO.setData(commodityList);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
     }
 
     /**
@@ -129,15 +148,23 @@ public class CommodityServiceImpl implements CommodityService {
      * @return
      */
     @Override
-    public PageImpl<Commodity> getCoList(int shopId, Pageable pageable) {
-        List<Commodity> commodityList = commodityMapper.selectCoList(shopId, pageable);
+    public CommodityResultVO getCoList(int shopId, Integer offset, Integer size) {
+        CommodityResultVO resultVO = new CommodityResultVO();
+        Page<Commodity> page = PageHelper.startPage(offset, size).doSelectPage(() -> commodityMapper.selectCoList(shopId));
+        List<Commodity> commodityList = page.getResult();
+        if (commodityList == null) {
+            resultVO.setData(new ArrayList<>());
+            resultVO.setCount(0);
+            return resultVO;
+        }
         for (int i = 0; i < commodityList.size(); i++) {
             Commodity commodity = commodityList.get(i);
             List<Spec> specList = specService.getSpecList(commodity.getId());
             commodity.setSpecList(specList);
         }
-        int count = commodityMapper.countCoList(shopId);
-        return new PageImpl<Commodity>(commodityList, pageable, count);
+        resultVO.setData(commodityList);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
     }
 
     /**
@@ -188,7 +215,7 @@ public class CommodityServiceImpl implements CommodityService {
     public Commodity getCommodity(int commodityId) {
         Commodity commodity = commodityMapper.selectCommodity(commodityId);
         commodity.setSpecList(specService.getSpecList(commodityId));
-            return commodity;
+        return commodity;
     }
 
     /**

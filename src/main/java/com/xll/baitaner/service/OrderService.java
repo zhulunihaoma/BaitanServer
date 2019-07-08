@@ -1,11 +1,11 @@
 package com.xll.baitaner.service;
 
-import com.xll.baitaner.entity.*;
-import com.xll.baitaner.entity.VO.HistoryOrderVO;
+import com.xll.baitaner.entity.CommodityOrder;
+import com.xll.baitaner.entity.OrderCommodity;
+import com.xll.baitaner.entity.ShopOrder;
+import com.xll.baitaner.entity.VO.OrderDetailsResultVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import com.xll.baitaner.entity.VO.ShopOrderVO;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -51,37 +51,33 @@ public interface OrderService {
      * 获取用户的订单列表
      *
      * @param openId
-     * @param pageable
      * @return
      */
-    PageImpl<OrderDetailsVO> getOrderListByUser(String openId, Pageable pageable);
+    OrderDetailsResultVO getOrderListByUser(String openId, Integer offset, Integer size);
 
     /**
      * 获取店铺的未付款订单 （二维码支付的订单）
      *
      * @param shopId
-     * @param pageable
      * @return
      */
-    PageImpl<OrderDetailsVO> getNoPayOrderListByShop(int shopId, Pageable pageable);
+    OrderDetailsResultVO getNoPayOrderListByShop(int shopId, Integer offset, Integer size);
 
     /**
      * 获取店铺待完成订单
      *
      * @param shopId
-     * @param pageable
      * @return
      */
-    PageImpl<OrderDetailsVO> getReadyOrderLisetShop(int shopId, Pageable pageable);
+    OrderDetailsResultVO getReadyOrderLisetShop(int shopId, Integer offset, Integer size);
 
     /**
      * 获取店铺的已接订单列表(按订单分类)
      *
      * @param shopId
-     * @param pageable
      * @return
      */
-    PageImpl<OrderDetailsVO> getTakenOrderListByShop(int shopId, Pageable pageable);
+    OrderDetailsResultVO getTakenOrderListByShop(int shopId, Integer offset, Integer size);
 
     /**
      * 获取店铺的已接订单列表(按商品分类)

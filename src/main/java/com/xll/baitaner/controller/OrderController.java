@@ -9,7 +9,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -156,15 +155,14 @@ public class OrderController {
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("getuserorders")
-    public ResponseResult getOrderListClient(String openId, Pageable pageable) {
-        return ResponseResult.result(0, "success", orderService.getOrderListByUser(openId, pageable));
+    public ResponseResult getOrderListClient(String openId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", orderService.getOrderListByUser(openId, offset, size));
     }
 
     /**
      * 获取店铺的未付款订单 （二维码支付的订单）
      *
      * @param shopId
-     * @param pageable
      * @return
      */
     @ApiOperation(
@@ -177,8 +175,8 @@ public class OrderController {
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("getshopnopayorders")
-    public ResponseResult getNoPayOrderLisetShop(int shopId, Pageable pageable) {
-        return ResponseResult.result(0, "success", orderService.getNoPayOrderListByShop(shopId, pageable));
+    public ResponseResult getNoPayOrderLisetShop(int shopId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", orderService.getNoPayOrderListByShop(shopId, offset, size));
     }
 
     /**
@@ -206,7 +204,6 @@ public class OrderController {
      * 获取店铺的已接单列表（按订单分类）
      *
      * @param shopId
-     * @param pageable
      * @return
      */
     @ApiOperation(
@@ -219,8 +216,8 @@ public class OrderController {
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("getshoptakenorders")
-    public ResponseResult getTakenOrderListShop(int shopId, Pageable pageable) {
-        return ResponseResult.result(0, "success", orderService.getTakenOrderListByShop(shopId, pageable));
+    public ResponseResult getTakenOrderListShop(int shopId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", orderService.getTakenOrderListByShop(shopId, offset, size));
     }
 
     /**
@@ -243,7 +240,6 @@ public class OrderController {
      * 获取店铺待完成订单
      *
      * @param shopId
-     * @param pageable
      * @return
      */
     @ApiOperation(
@@ -256,15 +252,14 @@ public class OrderController {
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("getshopreadyorders")
-    public ResponseResult getReadyOrderLisetShop(int shopId, Pageable pageable) {
-        return ResponseResult.result(0, "success", orderService.getReadyOrderLisetShop(shopId, pageable));
+    public ResponseResult getReadyOrderLisetShop(int shopId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", orderService.getReadyOrderLisetShop(shopId, offset, size));
     }
 
     /**
      * 获取店铺订单管理 历史订单列表
      *
      * @param shopId
-     * @param pageable
      * @return
      */
     @ApiOperation(
@@ -277,8 +272,8 @@ public class OrderController {
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("gethistoryorders")
-    public ResponseResult getHistoryOrderList(int shopId, Pageable pageable) {
-        return ResponseResult.result(0, "success", historyOrderService.getHistoryOrderList(shopId, 3, pageable));
+    public ResponseResult getHistoryOrderList(int shopId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", historyOrderService.getHistoryOrderList(shopId, 3, offset, size));
     }
 
     /**
@@ -286,7 +281,6 @@ public class OrderController {
      *
      * @param shopId
      * @param type
-     * @param pageable
      * @return
      */
     @ApiOperation(
@@ -300,8 +294,8 @@ public class OrderController {
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("getstatisticsorders")
-    public ResponseResult getStatisticsHistoryOrderList(int shopId, int type, Pageable pageable) {
-        return ResponseResult.result(0, "success", historyOrderService.getHistoryOrderList(shopId, type, pageable));
+    public ResponseResult getStatisticsHistoryOrderList(int shopId, int type, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", historyOrderService.getHistoryOrderList(shopId, type, offset, size));
     }
 
     /**

@@ -1,10 +1,8 @@
 package com.xll.baitaner.service;
 
-import com.xll.baitaner.entity.VO.WithdrawVO;
-import org.springframework.data.domain.Pageable;
+import com.xll.baitaner.entity.VO.WithdrawResultVO;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * 钱包相关接口
@@ -18,19 +16,17 @@ public interface WalletService {
      *
      * @param openId
      * @param date
-     * @param page
      * @return
      */
-    List<WithdrawVO> queryWithdrawAmountList(String openId, String date, Pageable page);
+    WithdrawResultVO queryWithdrawAmountList(String openId, String date, Integer offset, Integer size);
 
     /**
      * 查询所有提现记录
      *
      * @param openId
-     * @param page
      * @return
      */
-    List<WithdrawVO> queryWithdrawAmountList(String openId, Pageable page);
+    WithdrawResultVO queryWithdrawAmountList(String openId, Integer offset, Integer size);
 
     /**
      * 获取店铺余额
@@ -42,6 +38,7 @@ public interface WalletService {
 
     /**
      * 查询提现结果
+     *
      * @param openId
      */
     void queryWithdrawResultRecords(String openId);

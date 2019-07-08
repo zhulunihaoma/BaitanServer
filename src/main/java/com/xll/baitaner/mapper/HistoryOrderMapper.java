@@ -2,8 +2,11 @@ package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.ShopOrderDate;
-import org.apache.ibatis.annotations.*;
-import org.springframework.data.domain.Pageable;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
 import java.util.List;
@@ -106,11 +109,10 @@ public interface HistoryOrderMapper {
      * 查询店铺记录的订单日期ShopOrderDate列表
      *
      * @param shopId
-     * @param page
      * @return
      */
-    @Select("SELECT * FROM shop_order_date WHERE shop_id = #{shopId} ORDER BY order_date DESC LIMIT #{page.offset},#{page.size}")
-    List<ShopOrderDate> selectShopOrderDateList(@Param("shopId") int shopId, @Param("page") Pageable page);
+    @Select("SELECT * FROM shop_order_date WHERE shop_id = #{shopId} ORDER BY order_date DESC")
+    List<ShopOrderDate> selectShopOrderDateList(@Param("shopId") int shopId);
 
     /**
      * 查询店铺记录的订单日期ShopOrderDate列表总个数
