@@ -38,8 +38,8 @@ public interface ProfileMapper {
      * @param ad
      * @return
      */
-    @Insert("INSERT INTO receiver_address (openId,Name,Sex,Address,Phone,IsDefault) " +
-            "VALUES (#{ad.openId},#{ad.name},#{ad.sex},#{ad.address},#{ad.phone},#{ad.isDefault})")
+    @Insert("INSERT INTO receiver_address (openId,Name,Sex,Address,Phone,defaultNot) " +
+            "VALUES (#{ad.openId},#{ad.name},#{ad.sex},#{ad.address},#{ad.phone},#{ad.defaultNot})")
     @Options(useGeneratedKeys = true, keyProperty = "ad.id", keyColumn = "id")
     int insertAddress(@Param("ad") ReceiverAddress ad);
 
@@ -50,7 +50,7 @@ public interface ProfileMapper {
      * @return
      */
     @Update("UPDATE receiver_address SET Name = #{ad.name}, Sex = #{ad.sex}, Address = #{ad.address}, " +
-            "Phone = #{ad.phone}, IsDefault = #{ad.isDefault} WHERE Id  = #{ad.id}")
+            "Phone = #{ad.phone}, defaultNot = #{ad.defaultNot} WHERE Id  = #{ad.id}")
     int updateAddress(@Param("ad") ReceiverAddress ad);
 
     /**
@@ -78,7 +78,7 @@ public interface ProfileMapper {
      * @param openId
      * @return
      */
-    @Update("UPDATE receiver_address SET IsDefault = IF(Id=#{id},1,0) WHERE openId = #{openId}")
+    @Update("UPDATE receiver_address SET defaultNot = IF(Id=#{id},1,0) WHERE openId = #{openId}")
     int updateAddressState(@Param("id") int id, @Param("openId") String openId);
 
     /**
@@ -87,7 +87,7 @@ public interface ProfileMapper {
      * @param openId
      * @return
      */
-    @Select("SELECT * FROM receiver_address WHERE openId = #{openId} AND IsDefault = 1 AND Disable = 1")
+    @Select("SELECT * FROM receiver_address WHERE openId = #{openId} AND defaultNot = 1 AND Disable = 1")
     ReceiverAddress selectDefaultAddress(@Param("openId") String openId);
 
 
