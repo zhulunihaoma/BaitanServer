@@ -15,11 +15,6 @@ public class WXUserServiceImpl implements WXUserService {
 
     private final String TAG = "BAITAN-WXUserService";
 
-    /**
-     * 小程序保存的access_token
-     */
-    public static final String access_token = "";
-
     @Resource
     public WXUserMapper wxUserMapper;
 
@@ -46,7 +41,8 @@ public class WXUserServiceImpl implements WXUserService {
      * @param openId
      * @return
      */
-    private boolean isWXUser(String openId) {
+    @Override
+    public boolean isWXUser(String openId) {
         return wxUserMapper.selectCountWXUser(openId) > 0;
     }
 
@@ -59,5 +55,22 @@ public class WXUserServiceImpl implements WXUserService {
     @Override
     public WXUserInfo getWXUserById(String openId) {
         return wxUserMapper.selectWXUser(openId);
+    }
+
+    /**
+     * 设置微信用户的unionid
+     *
+     * @param openId
+     * @param unionid
+     * @return
+     */
+    @Override
+    public String UpdateWXUserUnionid(String openId, String unionid){
+        if (wxUserMapper.updateWXUserUnionid(openId, unionid) > 0){
+            return "设置微信用户的unionid成功";
+        }
+        else {
+            return "设置微信用户的unionid失败";
+        }
     }
 }

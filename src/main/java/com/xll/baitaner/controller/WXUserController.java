@@ -1,6 +1,7 @@
 package com.xll.baitaner.controller;
 
 import com.xll.baitaner.entity.WXUserInfo;
+import com.xll.baitaner.mapper.WXUserMapper;
 import com.xll.baitaner.service.WXUserService;
 import com.xll.baitaner.utils.HttpRequest;
 import com.xll.baitaner.utils.LogUtils;
@@ -69,6 +70,15 @@ public class WXUserController {
             } else if (obj.containsKey("session_key")) {
                 String openId = obj.get("openid").toString();
                 LogUtils.info(TAG, "微信登录成功，返回openId： " + openId);
+
+                /**设置微信用户的unionid**/
+                if(obj.containsKey("unionid")){
+                    if(wxUserService.isWXUser(openId)){
+                        if(wxUserService.getWXUserById(openId).getUnionId() == null){
+                            wxUserService.UpdateWXUserUnionid(openId, obj.get("unionid").toString());
+                        }
+                    }
+                }
 
                 return ResponseResult.result(0, "success", openId);
             }

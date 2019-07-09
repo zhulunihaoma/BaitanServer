@@ -8,10 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -38,7 +35,7 @@ public class ShopManageController {
             httpMethod = "POST",
             notes = "创建店铺数据提交接口")
     @ApiImplicitParam(name = "shop", value = "店铺信息实体类", required = true, dataType = "Shop")
-    @RequestMapping("addshop")
+    @PostMapping("addshop")
     public ResponseResult addShop(Shop shop) {
         String result = shopManageService.addShop(shop);
         if (result == null) {
@@ -55,6 +52,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "根据Id获取店铺信息",
+            httpMethod = "GET",
             notes = "根据Id获取店铺信息")
     @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int")
     @GetMapping("getshopbyid")
@@ -69,6 +67,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "获取用户拥有的店铺信息",
+            httpMethod = "GET",
             notes = "获取用户拥有的店铺信息")
     @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String")
     @GetMapping("getshopbyuser")
@@ -83,6 +82,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "获取店铺banner图",
+            httpMethod = "GET",
             notes = "返回新建店铺时自动创建的空的banner图数据类,可调用修改接口上传图片")
     @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int")
     @GetMapping("getshopbanner")
@@ -100,7 +100,7 @@ public class ShopManageController {
             httpMethod = "POST",
             notes = "修改店铺banner图")
     @ApiImplicitParam(name = "shopBanner", value = "banner图数据类", required = true, dataType = "ShopBanner")
-    @RequestMapping("updateshopbanner")
+    @PostMapping("updateshopbanner")
     public ResponseResult updateShopBanner(ShopBanner shopBanner) {
         boolean result = shopManageService.updateShopBanner(shopBanner);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
@@ -119,7 +119,7 @@ public class ShopManageController {
             notes = "只修改字段：店铺名、店铺简介、店主微信名、店主微信、联系电话、店铺地址、店铺logo、店铺平台支付开启状态、\n" +
                     " 店铺二维码支付开启状态、店铺支付二维码路径、访问人次")
     @ApiImplicitParam(name = "shop", value = "店铺数据类", required = true, dataType = "Shop")
-    @RequestMapping("updateshopinfo")
+    @PostMapping("updateshopinfo")
     public ResponseResult updateShopInfo(Shop shop) {
         boolean result = shopManageService.updateShopInfo(shop);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
@@ -132,6 +132,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "修改小程序内部支付开启状态",
+            httpMethod = "GET",
             notes = "修改小程序内部支付开启状态")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
@@ -158,7 +159,7 @@ public class ShopManageController {
             @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String"),
             @ApiImplicitParam(name = "url", value = "支付二维码图片路径", required = true, dataType = "String")
     })
-    @RequestMapping("updatepayqrcodeurl")
+    @PostMapping("updatepayqrcodeurl")
     public ResponseResult updateShopPayQrcodeUrl(int shopId, String openId, String url) {
         String result = shopManageService.updateShopPayQrcodeUrl(shopId, openId, url);
         return ResponseResult.result(result == null ? 0 : 1, result == null ? "success" : "fail", result);
@@ -171,6 +172,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "获取店铺支付二维码",
+            httpMethod = "GET",
             notes = "获取店铺支付二维码")
     @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int")
     @GetMapping("getpayqrcode")
@@ -185,6 +187,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "修改店铺二维码支付开启状态",
+            httpMethod = "GET",
             notes = "修改店铺二维码支付开启状态")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
@@ -205,6 +208,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "更新店铺状态",
+            httpMethod = "GET",
             notes = "更新店铺状态")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
@@ -224,6 +228,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "增加店铺访问人数",
+            httpMethod = "GET",
             notes = "增加店铺访问人数，每次进入店铺时调用此接口，人数+1")
     @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int")
     @GetMapping("addshopvisits")
@@ -240,6 +245,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "删除店铺",
+            httpMethod = "GET",
             notes = "删除店铺")
     @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int")
     @GetMapping("deleteshop")
@@ -256,6 +262,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "用户浏览店铺记录接口",
+            httpMethod = "GET",
             notes = "用户浏览店铺记录接口，用户访问店铺时调用，记录到用户浏览过店铺数据中")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String"),
@@ -274,6 +281,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "获取用户浏览过的店铺",
+            httpMethod = "GET",
             notes = "获取用户浏览过的店铺，用于首页展示")
     @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String")
     @GetMapping("getshoplistforuser")
@@ -288,6 +296,7 @@ public class ShopManageController {
      */
     @ApiOperation(
             value = "获取用户店铺首页的数据",
+            httpMethod = "GET",
             notes = "获取用户店铺首页的数据用于首页展示,包括用户浏览过的店铺，拥有的店铺，如没有则为空")
     @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String")
     @GetMapping("geshophome")

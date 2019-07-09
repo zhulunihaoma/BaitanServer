@@ -7,10 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -44,7 +41,7 @@ public class SortController {
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
             @ApiImplicitParam(name = "sortName", value = "分类名称", required = true, dataType = "String")
     })
-    @RequestMapping("addsort")
+    @PostMapping("addsort")
     public ResponseResult addSort(int shopId, String sortName) {
         String result = sortService.addSort(shopId, sortName);
         List<Sort> sortList = sortService.getSortList(shopId);
@@ -66,7 +63,7 @@ public class SortController {
             httpMethod = "POST",
             notes = "更新分类名称接口,无论成功与否，都会返回实际的分类列表")
     @ApiImplicitParam(name = "sort", value = "修改的分类实体类", required = true, dataType = "Sort")
-    @RequestMapping("editsortname")
+    @PostMapping("editsortname")
     public ResponseResult updateSortName(Sort sort) {
         String result = sortService.updateSortName(sort);
         List<Sort> sortList = sortService.getSortList(sort.getShopId());
@@ -92,7 +89,7 @@ public class SortController {
             @ApiImplicitParam(name = "sort", value = "修改的分类实体类", required = true, dataType = "Sort"),
             @ApiImplicitParam(name = "order", value = "要移动到的位置，从0开始计数", required = true, dataType = "int")
     })
-    @RequestMapping("editsortorder")
+    @PostMapping("editsortorder")
     public ResponseResult updateSortOrder(Sort sort, int order) {
         boolean result = sortService.updateSortOrder(sort, order);
         List<Sort> sortList = sortService.getSortList(sort.getShopId());
@@ -114,7 +111,7 @@ public class SortController {
             httpMethod = "POST",
             notes = "删除分类接口,无论成功与否，都会返回实际的分类列表")
     @ApiImplicitParam(name = "sort", value = "删除的分类实体类", required = true, dataType = "Sort")
-    @RequestMapping("deletesort")
+    @PostMapping("deletesort")
     public ResponseResult deleteSort(Sort sort) {
         boolean result = sortService.deleteSort(sort);
         List<Sort> sortList = sortService.getSortList(sort.getShopId());

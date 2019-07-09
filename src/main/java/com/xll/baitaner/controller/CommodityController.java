@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +41,7 @@ public class CommodityController {
             httpMethod = "POST",
             notes = "新增商品接口，turn字段不用填，后台自动生成；specs字段为规格数组 例：specs: [1, 2, 3]")
     @ApiImplicitParam(name = "commodity", value = "商品实体类", required = true, dataType = "Commodity")
-    @RequestMapping("addcommodity")
+    @PostMapping("addcommodity")
     public ResponseResult addCommodity(Commodity commodity) {
         LogUtils.info(TAG, JSONObject.fromObject(commodity).toString());
         boolean result = commodityService.addCommodity(commodity);
@@ -58,7 +59,7 @@ public class CommodityController {
             httpMethod = "POST",
             notes = "修改商品信息接口 可改字段 name,price,postage,monthlySales,pictUrl,introduction,stock")
     @ApiImplicitParam(name = "commodity", value = "商品实体类", required = true, dataType = "Commodity")
-    @RequestMapping("updatecommodity")
+    @PostMapping("updatecommodity")
     public ResponseResult updateCommodity(Commodity commodity) {
         boolean result = commodityService.updateCommodity(commodity);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
@@ -170,7 +171,7 @@ public class CommodityController {
             httpMethod = "GET",
             notes = "删除商品接口")
     @ApiImplicitParam(name = "commodityId", value = "商品id", required = true, dataType = "int")
-    @RequestMapping("deletecommodity")
+    @GetMapping("deletecommodity")
     public ResponseResult deleteCommodity(int commodityId) {
         boolean result = commodityService.deleteCommodity(commodityId);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
@@ -187,7 +188,7 @@ public class CommodityController {
             httpMethod = "GET",
             notes = "修改商品上下架状态接口")
     @ApiImplicitParam(name = "commodityId", value = "商品id", required = true, dataType = "int")
-    @RequestMapping("updatecostate")
+    @GetMapping("updatecostate")
     public ResponseResult updateCommodityState(int commodityId) {
         boolean result = commodityService.updateCoState(commodityId);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
@@ -208,7 +209,7 @@ public class CommodityController {
             @ApiImplicitParam(name = "co", value = "商品实体类", required = true, dataType = "Commodity"),
             @ApiImplicitParam(name = "turn", value = "指定位置", required = true, dataType = "int")
     })
-    @RequestMapping("updatecoturn")
+    @GetMapping("updatecoturn")
     public ResponseResult updateCoTurn(Commodity co, int turn) {
         boolean result = commodityService.updateCoTurn(co, turn);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
@@ -225,7 +226,7 @@ public class CommodityController {
             httpMethod = "GET",
             notes = "分类下上移商品")
     @ApiImplicitParam(name = "co", value = "商品实体类", required = true, dataType = "Commodity")
-    @RequestMapping("moveupcoturn")
+    @GetMapping("moveupcoturn")
     public ResponseResult moveUpCoTurn(Commodity co) {
         boolean result = commodityService.updateCoTurn(co, co.getTurn() - 1);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
@@ -242,7 +243,7 @@ public class CommodityController {
             httpMethod = "GET",
             notes = "分类下置顶商品")
     @ApiImplicitParam(name = "co", value = "商品实体类", required = true, dataType = "Commodity")
-    @RequestMapping("toppingcoturn")
+    @GetMapping("toppingcoturn")
     public ResponseResult toppingCoTurn(Commodity co) {
         boolean result = commodityService.updateCoTurn(co, 0);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);

@@ -16,10 +16,27 @@ public interface WXUserService {
     String wxuserinfo(WXUserInfo userInfo);
 
     /**
+     * 查询是否已存在微信用户
+     *
+     * @param openId
+     * @return
+     */
+    boolean isWXUser(String openId);
+
+    /**
      * 获取微信用户信息
      *
      * @param openId
      * @return
      */
     WXUserInfo getWXUserById(String openId);
+
+    /**
+     * 设置微信用户的unionid
+     *
+     * @param openId
+     * @param unionid
+     * @return
+     */
+    String UpdateWXUserUnionid(String openId, String unionid);
 }

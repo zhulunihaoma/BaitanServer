@@ -30,8 +30,6 @@ public class ScheduleConfig {
         Date currenttime = new Date(System.currentTimeMillis());
         System.out.println("每秒钟执行一次===" + currenttime);
         return activityMapper.CheckActivityEndtime(0, currenttime) > 0;
-
-
     }
 
 }
