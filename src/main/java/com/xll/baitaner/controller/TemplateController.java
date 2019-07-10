@@ -23,7 +23,7 @@ public class TemplateController {
     @Autowired
     private TemplateService templateService;
 
-    @ApiOperation(value = "新增formId", notes = "新增formId")
+    @ApiOperation(value = "新增formId", notes = "新增formId 用于发送模板消息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String"),
             @ApiImplicitParam(name = "formId", value = "formId", required = true, dataType = "String")

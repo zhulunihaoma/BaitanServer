@@ -1,7 +1,11 @@
 package com.xll.baitaner.impl;
 
+import com.xll.baitaner.mapper.TemplateMapper;
 import com.xll.baitaner.service.TemplateService;
+import com.xll.baitaner.utils.LogUtils;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * 类名：TemplateServiceImpl
@@ -13,6 +17,9 @@ import org.springframework.stereotype.Service;
 public class TemplateServiceImpl implements TemplateService{
 
     private String TAG = "Baitaner-TemplateServiceImpl";
+
+    @Resource
+    private TemplateMapper templateMapper;
 
     /**
      * 新订单通知
@@ -41,6 +48,12 @@ public class TemplateServiceImpl implements TemplateService{
 
     @Override
     public boolean addFormId(String openId, String formId) {
-        return false;
+        boolean isExisted = templateMapper.selectCountFormid(openId, formId) > 0;
+        if(isExisted){
+            LogUtils.warn(TAG,"addFormId fail："+ formId + "formid已存在");
+            return false;
+        }else {
+            return templateMapper.insertFormid(openId, formId) > 0;
+        }
     }
 }
