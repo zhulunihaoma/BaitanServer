@@ -71,7 +71,7 @@ public interface OrderMapper {
      * @return
      */
     @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = 0 AND pay_type = 1 " +
-            "ORDER BY date DESC")
+            "ORDER BY create_date DESC")
     List<ShopOrder> selectNoPayOrdersByShopId(@Param("shopId") int shopId);
 
     /**
