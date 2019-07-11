@@ -2,11 +2,7 @@ package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.ShopOrderDate;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.Date;
 import java.util.List;
@@ -21,10 +17,11 @@ public interface HistoryOrderMapper {
 
     /**
      * 记录店铺付款成功订单的日期
+     *
      * @param shopOrderDate
      * @return
      */
-    @Insert("INSERT INTO shop_order_date (shop_id,order_date) VALUES (#{shopOrderDate.shopId},#{shopOrderDate.shopOrderDate})")
+    @Insert("INSERT INTO shop_order_date (shop_id,order_date) VALUES (#{shopOrderDate.shopId},#{shopOrderDate.orderDate})")
     @Options(useGeneratedKeys = true, keyProperty = "shopOrderDate.id")
     int insertOrderDate(@Param("shopOrderDate") ShopOrderDate shopOrderDate);
 
@@ -35,7 +32,7 @@ public interface HistoryOrderMapper {
      * @param date
      * @return
      */
-    @Select("SELECT * FROM shop_order_date WHERE shopId = #{shop_id} AND order_date = #{date}")
+    @Select("SELECT * FROM shop_order_date WHERE shop_id = #{shopId} AND order_date = #{date}")
     ShopOrderDate selectShopOrderDate(@Param("shopId") int shopId, @Param("date") Date date);
 
     /**
@@ -45,7 +42,7 @@ public interface HistoryOrderMapper {
      * @param orderId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM history_order WHERE date_id = #{shopOrderDateId} AND order_id = #{orderId}")
+    @Select("SELECT COUNT(1) FROM history_order WHERE date_id = #{shopOrderDateId} AND order_id = #{orderId}")
     int selectCountHistoryOrder(@Param("shopOrderDateId") int shopOrderDateId, @Param("orderId") String orderId);
 
     /**
@@ -76,7 +73,7 @@ public interface HistoryOrderMapper {
      * 从history_order查询具体日期的历史订单列表根据state
      *
      * @param shopOrderDateId
-     * @param state     0：待支付;  1：已接单;  2：待完成; 3：已完成
+     * @param state           0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
     @Select("SELECT o.* FROM history_order ho JOIN `shop_order` o ON o.order_id = ho.order_id " +
@@ -88,7 +85,7 @@ public interface HistoryOrderMapper {
      * 从history_order查询具体日期的历史订单列表根据PayType
      *
      * @param shopOrderDateId
-     * @param payType   0：在线支付  1：二维码支付
+     * @param payType         0：在线支付  1：二维码支付
      * @return
      */
     @Select("SELECT o.* FROM history_order ho JOIN `shop_order` o ON o.order_id = ho.order_id " +
