@@ -17,6 +17,7 @@ import net.sf.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -185,7 +186,8 @@ public class ActivityServiceImpl implements ActivityService {
         //如果supportrecord的数量已经达到要求了这时候要更改状态
 
         if (operateType.equals("maxnum")) {//点赞的数量超过也没事
-            int result = activityMapper.insertSupportrecord(activityId, recordId, 0, openId, nickName, avatarUrl, gender);
+            int result = activityMapper.insertSupportrecord(activityId, recordId, "0.00", openId, nickName, avatarUrl,
+                    gender);
             List<SupportRecord> SupportRecordList = activityMapper.selecSupportRecordList(recordId);
             if (SupportRecordList.size() >= Integer.parseInt(operateContent) && result > 0) {
                 // 改变recordstattus的值为1（可购买）
@@ -197,28 +199,30 @@ public class ActivityServiceImpl implements ActivityService {
             }
         } else if (operateType.equals("kanprice")) {
             //如果为砍价的话，获取当前record里面的currentprice 然后减去一定的价格然后再判断是否到最后了，是则改变状态
-            ActivityShopCommodity activity_shop_commodity = activityMapper.selectActivityById2(activityId);
+            ActivityShopCommodity activityCommodity = activityMapper.selectActivityById2(activityId);
             ActivityRecord activityRecord = activityMapper.selectActivityrecordById(recordId);
             //活动价格和当前价格一致的时候 这时候需要提出提示，而不能再砍价了
-            if (activityRecord.getCurrentPrice() == activity_shop_commodity.getActivityPrice()) {
+            if (new BigDecimal(activityRecord.getCurrentPrice()).compareTo(new BigDecimal(activityCommodity.getActivityPrice())) == 0) {
                 //给出提示已经砍完价格了
                 return 2;
             } else {
 
                 //  砍价计算
-                float perPrice = (activity_shop_commodity.getPrice() - activity_shop_commodity.getActivityPrice()) / Integer.parseInt(operateContent);
-                float newCurrentPrice = activityRecord.getCurrentPrice() - perPrice;
-                int UpdateResult = activityMapper.UpdateCurrentPrice(newCurrentPrice, recordId) > 0 ? 0 : 1;
+                BigDecimal perPrice = (new BigDecimal(activityCommodity.getPrice()).subtract(new BigDecimal(activityCommodity.getActivityPrice()))).divide(new BigDecimal(operateContent));
+                BigDecimal newCurrentPrice = new BigDecimal(activityRecord.getCurrentPrice()).subtract(perPrice);
+                int UpdateResult = activityMapper.UpdateCurrentPrice(newCurrentPrice.toString(), recordId) > 0 ? 0 : 1;
 
 
-                int result = activityMapper.insertSupportrecord(activityId, recordId, perPrice, openId, nickName, avatarUrl, gender);//可以直接返回价格
+                int result = activityMapper.insertSupportrecord(activityId, recordId, perPrice.toString(), openId, nickName,
+                        avatarUrl, gender);//可以直接返回价格
                 return result > 0 ? 0 : 1;
 
             }
 
 
         } else {
-            return activityMapper.insertSupportrecord(activityId, recordId, 0, openId, nickName, avatarUrl, gender) > 0 ? 0 : 1;
+            return activityMapper.insertSupportrecord(activityId, recordId, "0.00", openId, nickName, avatarUrl,
+                    gender) > 0 ? 0 : 1;
 
         }
 

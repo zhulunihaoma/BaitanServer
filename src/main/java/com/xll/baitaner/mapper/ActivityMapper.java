@@ -114,7 +114,9 @@ public interface ActivityMapper {
      */
     @Insert("INSERT INTO supportrecord (activityId,recordId,cutPrice,openId,nickName,avatarUrl,gender) " +
             "VALUES (#{activityId},#{recordId},#{cutPrice},#{openId},#{nickName},#{avatarUrl},#{gender})")
-    int insertSupportrecord(@Param("activityId") int activityId, @Param("recordId") int recordId, @Param("cutPrice") float cutPrice, @Param("openId") String openId, @Param("nickName") String nickName, @Param("avatarUrl") String avatarUrl, @Param("gender") String gender);
+    int insertSupportrecord(@Param("activityId") int activityId, @Param("recordId") int recordId,
+                            @Param("cutPrice") String cutPrice, @Param("openId") String openId,
+                            @Param("nickName") String nickName, @Param("avatarUrl") String avatarUrl, @Param("gender") String gender);
 
     /**
      * 更新 activityrecord supportCount+1
@@ -192,7 +194,7 @@ public interface ActivityMapper {
      * @return
      */
     @Update("UPDATE activityrecord SET currentPrice = #{currentPrice} WHERE recordId = #{recordId}")
-    int UpdateCurrentPrice(@Param("currentPrice") float currentPrice, @Param("recordId") int recordId);
+    int UpdateCurrentPrice(@Param("currentPrice") String currentPrice, @Param("recordId") int recordId);
 
 
 }

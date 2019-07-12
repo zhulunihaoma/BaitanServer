@@ -74,13 +74,13 @@ public class Activity {
      * 商品原价
      */
     @ApiModelProperty(value = "商品原价", name = "originPrice")
-    private float originPrice;
+    private String originPrice;
 
     /**
      * 商品活动价格
      */
     @ApiModelProperty(value = "商品活动价格", name = "activityPrice")
-    private float activityPrice;
+    private String activityPrice;
 
 
     /**
@@ -138,12 +138,12 @@ public class Activity {
      * 商品单价
      */
     @ApiModelProperty(value = "商品单价", name = "price")
-    private float price;
+    private String price;
 
     /**
      * 商品运费
      */
     @ApiModelProperty(value = "商品运费", name = "postage")
-    private float postage;
+    private String postage;
 
 }

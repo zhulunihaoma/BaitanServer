@@ -38,7 +38,7 @@ public class ActivityRecord {
      * 砍价活动有的当前砍到的价格
      */
     @ApiModelProperty(value = "当前砍到的价格", name = "currentPrice")
-    private float currentPrice;
+    private String currentPrice;
 
 
     /**
@@ -84,7 +84,7 @@ public class ActivityRecord {
      * 商品活动价格
      */
     @ApiModelProperty(value = "商品活动价格", name = "activityPrice")
-    private float activityPrice;
+    private String activityPrice;
 
     /**
      * 结束时间

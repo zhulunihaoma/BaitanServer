@@ -40,7 +40,7 @@ public class SupportRecord {
      */
     @ApiModelProperty(value = "每次砍掉的价格", name = "cutPrice")
 
-    private float cutPrice;
+    private String cutPrice;
 
     /**
      * openId
