@@ -124,7 +124,8 @@ public class ActivityController {
      */
     @PostMapping("insertActivityrecord")
     public ResponseResult insertActivityrecord(int activityId, String openId, String nickName, String avatarUrl, String gender, String shopName,
-                                               String shopLogoUrl, String goodname, float activityPrice, Date endTime) {
+                                               String shopLogoUrl, String goodname, String activityPrice,
+                                               Date endTime) {
         ActivityRecord activityRecord = new ActivityRecord();
         activityRecord.setActivityId(activityId);
         activityRecord.setOpenId(openId);
