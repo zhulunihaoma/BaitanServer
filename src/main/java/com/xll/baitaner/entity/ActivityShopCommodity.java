@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -72,7 +73,7 @@ public class ActivityShopCommodity {
      * 商品活动价格
      */
     @ApiModelProperty(value = "商品活动价格", name = "activityPrice")
-    private float activityPrice;
+    private String activityPrice;
 
     /**
      * 集赞方式(rank,maxnum)/砍价方式(rank,maxnum)
@@ -150,6 +151,6 @@ public class ActivityShopCommodity {
      * 商品单价
      */
     @ApiModelProperty(value = "商品单价", name = "price")
-    private float price;
+    private String price;
 
 }

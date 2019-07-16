@@ -193,7 +193,7 @@ public interface ActivityMapper {
      * @param recordId
      * @return
      */
-    @Update("UPDATE activityrecord SET currentPrice = #{currentPrice} WHERE recordId = #{recordId}")
+    @Update("UPDATE activityrecord SET currentPrice = #{currentPrice} WHERE id = #{recordId}")
     int UpdateCurrentPrice(@Param("currentPrice") String currentPrice, @Param("recordId") int recordId);
 
 

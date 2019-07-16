@@ -124,7 +124,7 @@ public class ActivityController {
      */
     @PostMapping("insertActivityrecord")
     public ResponseResult insertActivityrecord(int activityId, String openId, String nickName, String avatarUrl, String gender, String shopName,
-                                               String shopLogoUrl, String goodname, float activityPrice, Date endTime) {
+                                               String shopLogoUrl, String goodname, String currentPrice, String activityPrice, Date endTime) {
         ActivityRecord activityRecord = new ActivityRecord();
         activityRecord.setActivityId(activityId);
         activityRecord.setOpenId(openId);
@@ -135,6 +135,8 @@ public class ActivityController {
         activityRecord.setShopLogoUrl(shopLogoUrl);
         activityRecord.setGoodname(goodname);
         activityRecord.setActivityPrice(activityPrice);
+        activityRecord.setCurrentPrice(currentPrice);
+
         activityRecord.setEndTime(endTime);
 
         int res = activityService.insertActivityRecord(activityRecord);
@@ -180,7 +182,7 @@ public class ActivityController {
     @PostMapping("insertSupportrecord")
     public ResponseResult insertSupportrecord(int activityId, String operateType, String operateContent, int recordId, String openId, String nickName, String avatarUrl, String gender) {
         int result = activityService.insertSupportrecord(activityId, operateType, operateContent, recordId, openId, nickName, avatarUrl, gender);
-        return ResponseResult.result(result, result == 0 ? "success" : "fail", "价格已砍到最低价格");
+        return ResponseResult.result(result, result == 0 ? "success" : "fail", "成功");
 
 
     }
