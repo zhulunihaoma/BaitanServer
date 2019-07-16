@@ -123,8 +123,7 @@ public class ActivityController {
      * @return
      */
     @PostMapping("insertActivityrecord")
-    public ResponseResult insertActivityrecord(int activityId, String openId, String nickName, String avatarUrl, String gender, String shopName,
-                                               String shopLogoUrl, String goodname, String currentPrice, String activityPrice, Date endTime) {
+    public ResponseResult insertActivityrecord(int activityId, String openId, String nickName, String avatarUrl, String gender, String shopName,String shopLogoUrl, String goodname, String currentPrice, String activityPrice, Date endTime) {
         ActivityRecord activityRecord = new ActivityRecord();
         activityRecord.setActivityId(activityId);
         activityRecord.setOpenId(openId);
