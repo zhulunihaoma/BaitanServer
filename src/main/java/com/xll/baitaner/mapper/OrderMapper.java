@@ -104,6 +104,8 @@ public interface OrderMapper {
             "create_date DESC")
     List<ShopOrder> selectShopOrdersByShop(@Param("shopId") int shopId, @Param("state") int state);
 
+
+    //TODO 这部分业务逻辑使用的还是旧表order，新表shop_order对应的方法和逻辑还没写？？？***********************************
     /**
      * 查询店铺所有已接以及历史订单列表
      *
@@ -157,6 +159,7 @@ public interface OrderMapper {
     @Select("SELECT COUNT(*) FROM `order` WHERE shopId = #{shopId} AND payType = #{payType} AND state != 0 AND date = #{date}")
     int countOrdersByShopAndPayTypeAndDate(@Param("shopId") int shopId, @Param("payType") int payType, @Param("date") Date date);
 
+    //TODO 这部分业务逻辑使用的还是旧表order，新表shop_order对应的方法和逻辑还没写？？？***********************************
 
     /**
      * 获取店铺全部已接订单的商品详情

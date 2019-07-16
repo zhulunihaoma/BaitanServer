@@ -18,6 +18,8 @@ import net.sf.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,7 +129,7 @@ public class PayServiceImpl implements PayService {
 
             //返回预支付订单信息，发送给前端
             Map<String, String> result = wxPay.unifiedOrder(data);
-            System.out.print("WXPay unifiedOrder result: " + result.toString());
+            LogUtils.debug(TAG, "WXPay unifiedOrder result: " + result.toString());
             if (result.get("return_code").equals("FAIL")) {
                 return ResponseResult.result(1, result.get("return_msg"), null);
             }
@@ -178,12 +180,19 @@ public class PayServiceImpl implements PayService {
      */
     @Override
     public void PayResuleCheck(String orderId, String totalFee) {
-//        Order order = orderService.getOrder(orderId);
+
         ShopOrder shopOrder = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
-        String money = shopOrder.getTotalMoney();
+        if (shopOrder.getState() == 1){
+            LogUtils.debug(TAG, "\nout_trade_no: " + orderId +  " 状态已经是支付成功");
+            return;
+        }
+
+        BigDecimal money = new BigDecimal(shopOrder.getTotalMoney()).multiply(new BigDecimal(100));
+
         LogUtils.debug(TAG, "\nout_trade_no: " + orderId + "\ntotal_fee : " + totalFee + "\nMoney: "
                 + money);
-        if (totalFee.equals(money)) {
+        money = new BigDecimal(1); //todo 测试用1分钱
+        if (money.toString().equals(totalFee)) {
             boolean res = false;
             try {
                 res = orderService.updateOrderState(orderId, 1);
@@ -197,7 +206,7 @@ public class PayServiceImpl implements PayService {
                 wallet.setOrderId(Long.valueOf(orderId));
                 //存的是店铺拥有者openId，不是用户openId
                 wallet.setOpenId(shopMapper.getOpenIdByShopId(shopOrder.getShopId()));
-                wallet.setAmount(money);
+                wallet.setAmount(money.toString());
                 wallet.setOperator("ADD");
                 walletMapper.insertWalletRecord(wallet);
             } catch (NumberFormatException e) {

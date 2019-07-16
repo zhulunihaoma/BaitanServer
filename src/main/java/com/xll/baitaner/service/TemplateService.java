@@ -16,5 +16,17 @@ public interface TemplateService {
      */
     public boolean addFormId(String openId, String formId);
 
+    /**
+     * 获取用户的fromId用于发送模板消息
+     * @param openId
+     * @return
+     */
+    public String getFormId(String openId);
 
+    /**
+     * 将已用过的formid状态更新为不可用
+     * @param formId
+     * @return
+     */
+    public boolean updateFormidUsed(String openId, String formId);
 }

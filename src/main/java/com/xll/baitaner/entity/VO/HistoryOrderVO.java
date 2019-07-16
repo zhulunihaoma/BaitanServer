@@ -19,5 +19,5 @@ public class HistoryOrderVO {
     /**
      * 订单列表
      */
-    private List<Order> orderList;
+    private List<OrderDetailsVO> orderList;
 }

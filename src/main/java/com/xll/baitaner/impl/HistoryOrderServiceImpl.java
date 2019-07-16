@@ -7,6 +7,8 @@ import com.xll.baitaner.entity.ShopOrder;
 import com.xll.baitaner.entity.ShopOrderDate;
 import com.xll.baitaner.entity.VO.HistoryOrderResultVO;
 import com.xll.baitaner.entity.VO.HistoryOrderVO;
+import com.xll.baitaner.entity.VO.OrderDetailsVO;
+import com.xll.baitaner.entity.VO.ShopOrderVO;
 import com.xll.baitaner.mapper.HistoryOrderMapper;
 import com.xll.baitaner.mapper.OrderMapper;
 import com.xll.baitaner.service.HistoryOrderService;
@@ -20,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.xll.baitaner.mapper.OrderMapper.shopOrder;
 
 /**
  * 类名：HistoryOrderServiceImpl
@@ -55,9 +59,7 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
         Date historyDate = order.getCreateDate();
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        String datetostr = formatter.format(historyDate);
-        ParsePosition pos = new ParsePosition(0);
-        Date date = formatter.parse(datetostr, pos);
+        String date = formatter.format(historyDate);
 
         //判断shop_order_date是否包含对应的记录
         ShopOrderDate shopOrderDate = historyOrderMapper.selectShopOrderDate(shopId, date);
@@ -107,20 +109,27 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
         Page<ShopOrderDate> page = PageHelper.startPage(offset, size).doSelectPage(() -> historyOrderMapper.selectShopOrderDateList(shopId));
         List<ShopOrderDate> shopOrderDateList = page.getResult();
         List<HistoryOrderVO> historyOrderVOList = new ArrayList<>();
+
         if (shopOrderDateList.size() > 0) {
             for (ShopOrderDate shopOrderDate : shopOrderDateList) {
-                List<Order> orderList;
+                List<String> orderIdList;
                 if (type == 0) { //经营数据中 全部已付款订单
-                    orderList = historyOrderMapper.selectDateOrderList(shopOrderDate.getId());
+                    orderIdList = historyOrderMapper.selectDateOrderList(shopOrderDate.getId());
                 } else if (type == 1) { //经营数据中 在线付款订单
-                    orderList = historyOrderMapper.selectDateOrderListByPayType(shopOrderDate.getId(), 0);
+                    orderIdList = historyOrderMapper.selectDateOrderListByPayType(shopOrderDate.getId(), 0);
                 } else if (type == 2) { //经营数据中 二维码付款订单
-                    orderList = historyOrderMapper.selectDateOrderListByPayType(shopOrderDate.getId(), 1);
+                    orderIdList = historyOrderMapper.selectDateOrderListByPayType(shopOrderDate.getId(), 1);
                 } else { //订单管理模块的历史订单  已完成订单
-                    orderList = historyOrderMapper.selectDateOrderListByState(shopOrderDate.getId(), 3);
+                    orderIdList = historyOrderMapper.selectDateOrderListByState(shopOrderDate.getId(), 3);
                 }
-                for (Order order : orderList) {
-                    order.setOrderCoList(orderService.getOrderCoList(order.getOrderId().toString()));
+
+                if (orderIdList.size() <= 0)
+                    continue;
+
+                List<OrderDetailsVO> orderList = new ArrayList<>();
+                for (String orderId : orderIdList) {
+                    OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
+                    orderList.add(orderDetailsVO);
                 }
 
                 HistoryOrderVO historyOrderVO = new HistoryOrderVO();

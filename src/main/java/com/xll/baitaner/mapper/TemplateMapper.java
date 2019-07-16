@@ -41,9 +41,8 @@ public interface TemplateMapper {
             "LIMIT 1  ")
     String selectFormId(@Param("openId") String openId);
 
-
     /**
-     * 将已用过的formid状态
+     * 将已用过的formid状态更新为不可用
      * @param openId
      * @param formId
      * @return

@@ -1,6 +1,7 @@
 package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.Order;
+import com.xll.baitaner.entity.ShopOrder;
 import com.xll.baitaner.entity.ShopOrderDate;
 import org.apache.ibatis.annotations.*;
 
@@ -33,7 +34,7 @@ public interface HistoryOrderMapper {
      * @return
      */
     @Select("SELECT * FROM shop_order_date WHERE shop_id = #{shopId} AND order_date = #{date}")
-    ShopOrderDate selectShopOrderDate(@Param("shopId") int shopId, @Param("date") Date date);
+    ShopOrderDate selectShopOrderDate(@Param("shopId") int shopId, @Param("date") String date);
 
     /**
      * 判断历史订单是否已存在
@@ -64,9 +65,9 @@ public interface HistoryOrderMapper {
      * @param shopOrderDateId
      * @return
      */
-    @Select("SELECT o.* FROM history_order ho JOIN `shop_order` o ON o.order_id = ho.order_id " +
+    @Select("SELECT o.order_id FROM history_order ho JOIN `shop_order` o ON o.order_id = ho.order_id " +
             "WHERE ho.date_id = #{shopOrderDateId} ORDER BY o.create_date DESC")
-    List<Order> selectDateOrderList(@Param("shopOrderDateId") int shopOrderDateId);
+    List<String> selectDateOrderList(@Param("shopOrderDateId") int shopOrderDateId);
 
 
     /**
@@ -76,9 +77,9 @@ public interface HistoryOrderMapper {
      * @param state           0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
-    @Select("SELECT o.* FROM history_order ho JOIN `shop_order` o ON o.order_id = ho.order_id " +
+    @Select("SELECT o.order_id FROM history_order ho JOIN `shop_order` o ON o.order_id = ho.order_id " +
             "WHERE ho.date_id = #{shopOrderDateId} AND ho.state = #{state} ORDER BY o.create_date DESC")
-    List<Order> selectDateOrderListByState(@Param("shopOrderDateId") int shopOrderDateId, @Param("state") int state);
+    List<String> selectDateOrderListByState(@Param("shopOrderDateId") int shopOrderDateId, @Param("state") int state);
 
 
     /**
@@ -88,9 +89,9 @@ public interface HistoryOrderMapper {
      * @param payType         0：在线支付  1：二维码支付
      * @return
      */
-    @Select("SELECT o.* FROM history_order ho JOIN `shop_order` o ON o.order_id = ho.order_id " +
+    @Select("SELECT o.order_id FROM history_order ho JOIN `shop_order` o ON o.order_id = ho.order_id " +
             "WHERE ho.date_id = #{shopOrderDateId} AND ho.pay_type = #{payType} ORDER BY o.create_date DESC")
-    List<Order> selectDateOrderListByPayType(@Param("shopOrderDateId") int shopOrderDateId, @Param("payType") int payType);
+    List<String> selectDateOrderListByPayType(@Param("shopOrderDateId") int shopOrderDateId, @Param("payType") int payType);
 
     /**
      * 更改history_order的state 通过orderId

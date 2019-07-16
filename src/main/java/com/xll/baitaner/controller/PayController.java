@@ -138,6 +138,11 @@ public class PayController {
     }
 
 
+    /**
+     * 钱方平台支付结果通知回调
+     * @param request
+     * @param response
+     */
     @PostMapping("/qfpay/notify")
     public void getqfpaynotify(HttpServletRequest request, HttpServletResponse response) {
         String tt = "QFPay--Notify:  ";
@@ -218,15 +223,22 @@ public class PayController {
      * @param fee
      * @return
      */
+    @ApiOperation(
+            value = "微信企业付款 提现到个人",
+            httpMethod = "GET",
+            notes = "微信企业付款 提现到个人")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderId", value = "订单号", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "fee", value = "金额", required = true, dataType = "String")
+    })
     @GetMapping("wxpayforper")
-    public ResponseResult wxpayforper(String appId, String openId, String fee) {
+    public ResponseResult wxpayforper( String openId, String fee) {
         String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
         try {
             config = WXPayConfigImpl.getInstance();
             wxPay = new WXPay(config);
 
-//            String mch_appid = config.getAppID();
-            String mch_appid = appId;
+            String mch_appid = config.getAppID();
             String mchid = config.getMchID();
             String nonce_str = WXPayUtil.generateNonceStr();//随机串
             String partner_trade_no = SerialUtils.getSerialId();

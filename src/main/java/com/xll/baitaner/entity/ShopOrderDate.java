@@ -1,5 +1,6 @@
 package com.xll.baitaner.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -18,6 +19,6 @@ public class ShopOrderDate {
 
     private Integer shopId;
 
-    private Date orderDate;
+    private String orderDate;
 }
 
