@@ -1,6 +1,7 @@
 package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.VO.WithdrawResultVO;
+import com.xll.baitaner.entity.VO.WithdrawVO;
 
 import java.math.BigDecimal;
 
@@ -42,4 +43,13 @@ public interface WalletService {
      * @param openId
      */
     void queryWithdrawResultRecords(String openId);
+
+    /**
+     * 提现
+     *
+     * @param openId
+     * @param fee
+     * @return
+     */
+    WithdrawVO withdrawFromWx(String openId, String fee, String desc);
 }

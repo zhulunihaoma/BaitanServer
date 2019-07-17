@@ -10,8 +10,11 @@ import com.xll.baitaner.entity.VO.WithdrawVO;
 import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.WalletService;
 import com.xll.baitaner.utils.Constant;
+import com.xll.baitaner.utils.ResponseResult;
+import com.xll.baitaner.utils.SerialUtils;
 import com.xll.baitaner.utils.WXPayConfigImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -135,6 +138,63 @@ public class WalletServiceImpl implements WalletService {
     public void queryWithdrawResultRecords(String openId) {
         List<ShopWallet> shopWallets = walletMapper.queryWithdrawRecords(openId);
         queryWithdrawByOpenId(shopWallets);
+    }
+
+    /**
+     * 提现
+     *
+     * @param openId
+     * @param fee
+     * @return
+     */
+    @Override
+    public WithdrawVO withdrawFromWx(String openId, String fee, String desc) {
+        WithdrawVO withVo = new WithdrawVO();
+        try {
+            if (config == null) {
+                config = WXPayConfigImpl.getInstance();
+            }
+            if (wxPay == null) {
+                wxPay = new WXPay(config);
+            }
+            Map<String, String> data = new HashMap<>();
+            data.put("mch_appid", config.getAppID());
+            data.put("mchid", config.getMchID());
+            data.put("nonce_str", config.getAppID());
+            data.put("partner_trade_no", SerialUtils.getSerialId());
+            data.put("openid", openId);
+            data.put("check_name", "NO_CHECK");
+            //换算成分
+            String amount = new BigDecimal(fee).multiply(new BigDecimal("100")).stripTrailingZeros().toPlainString();
+            data.put("amount", amount);
+            //付款备注
+            if (StringUtils.isBlank(desc)) {
+                desc = "提现";
+            }
+            data.put("desc", desc);
+            data.put("spbill_create_ip", "111.231.114.159");
+            //MD5签名
+            String sign = WXPayUtil.generateSignature(data, config.getKey());
+            data.put("sign", sign);
+            String respXml = wxPay.requestWithCert(Constant.TRANSFERS_URL, data, config.getHttpConnectTimeoutMs(),
+                    config.getHttpReadTimeoutMs());
+            Map<String, String> respMap = WXPayUtil.xmlToMap(respXml);
+            if ("SUCCESS".equals(respMap.get("return_code"))) {
+                if ("SUCCESS".equals(respMap.get("result_code"))) {
+                    ShopWallet sw = new ShopWallet();
+                    sw.setAmount(fee);
+                    sw.setOpenId(openId);
+                    sw.setDescRemarks(desc);
+                    sw.setOperator("DEC");
+                    sw.setStatus("SUCCESS");
+                    sw.setPaymentTime(respMap.get("payment_time"));
+                }
+            }
+            return withVo;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return withVo;
+        }
     }
 
     private void queryWithdrawByOpenId(List<ShopWallet> shopWallets) {

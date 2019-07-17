@@ -6,6 +6,11 @@ package com.xll.baitaner.utils;
 public class Constant {
 
     /**
+     * 提现接口
+     */
+    public static final String TRANSFERS_URL = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
+
+    /**
      * 提现查询接口
      */
     public static final String TRANSFERINFO_URL = "https://api.mch.weixin.qq.com/mmpaymkttransfers/gettransferinfo";
@@ -16,5 +21,6 @@ public class Constant {
      * @return
      */
     public static final String APPLET_APP_ID = "wxdea72e3ef1d40e45";
+
     public static final String APPLET_APP_SECRET = "381b235396907b0519127e13370918ad";
 }

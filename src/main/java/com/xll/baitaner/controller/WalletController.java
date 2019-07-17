@@ -91,4 +91,20 @@ public class WalletController {
             return ResponseResult.result(1, "fail", null);
         }
     }
+
+    /**
+     * 查询提现状态
+     *
+     * @param openId
+     * @return
+     */
+    @GetMapping("querywithdrawrestatus")
+    public ResponseResult queryWithdrawRecords(String openId) {
+        try {
+            walletService.queryWithdrawResultRecords(openId);
+            return ResponseResult.result(0, "查询提现状态成功", true);
+        } catch (Exception e) {
+            return ResponseResult.result(1, "查询提现状态出错", false);
+        }
+    }
 }

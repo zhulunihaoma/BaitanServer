@@ -240,7 +240,6 @@ public class PayController {
 
             String mch_appid = config.getAppID();
             String mchid = config.getMchID();
-            String nonce_str = WXPayUtil.generateNonceStr();//随机串
             String partner_trade_no = SerialUtils.getSerialId();
             String check_name = "NO_CHECK";
             String amount = fee;
@@ -270,22 +269,6 @@ public class PayController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseResult.result(1, "企业付款接口出错", null);
-        }
-    }
-
-    /**
-     * 查询提现状态
-     *
-     * @param openId
-     * @return
-     */
-    @GetMapping("querywithdrawrestatus")
-    public ResponseResult queryWithdrawRecords(String openId) {
-        try {
-            walletService.queryWithdrawResultRecords(openId);
-            return ResponseResult.result(0, "查询提现状态成功", true);
-        } catch (Exception e) {
-            return ResponseResult.result(1, "查询提现状态出错", false);
         }
     }
 }
