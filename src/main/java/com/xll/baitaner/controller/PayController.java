@@ -220,52 +220,52 @@ public class PayController {
      * @param fee
      * @return
      */
-    @ApiOperation(
-            value = "微信企业付款 提现到个人",
-            httpMethod = "GET",
-            notes = "微信企业付款 提现到个人")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "orderId", value = "订单号", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "fee", value = "金额", required = true, dataType = "String")
-    })
-    @GetMapping("wxpayforper")
-    public ResponseResult wxpayforper( String openId, String fee) {
-        String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
-        try {
-            config = WXPayConfigImpl.getInstance();
-            wxPay = new WXPay(config);
-
-            String mch_appid = config.getAppID();
-            String mchid = config.getMchID();
-            String partner_trade_no = SerialUtils.getSerialId();
-            String check_name = "NO_CHECK";
-            String amount = fee;
-            String desc = "提现测试";
-            String spbill_create_ip = "111.231.114.159";
-
-            HashMap<String, String> data = new HashMap<>();
-            data.put("mch_appid", mch_appid);
-            data.put("mchid", mchid);
-            data.put("nonce_str", mch_appid);
-            data.put("partner_trade_no", partner_trade_no);
-            data.put("openid", openId);
-            data.put("check_name", check_name);
-            data.put("amount", amount);
-            data.put("desc", desc);
-            data.put("spbill_create_ip", spbill_create_ip);
-
-            //MD5签名
-            String sign = WXPayUtil.generateSignature(data, config.getKey());
-            data.put("sign", sign);
-
-            String respXml = wxPay.requestWithCert(url, data, config.getHttpConnectTimeoutMs(), config.getHttpReadTimeoutMs());
-
-            LogUtils.info(TAG, "wxpayforper 返回XML: " + respXml);
-
-            return ResponseResult.result(0, "返回数据", respXml);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseResult.result(1, "企业付款接口出错", null);
-        }
-    }
+//    @ApiOperation(
+//            value = "微信企业付款 提现到个人",
+//            httpMethod = "GET",
+//            notes = "微信企业付款 提现到个人")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "orderId", value = "订单号", required = true, dataType = "int"),
+//            @ApiImplicitParam(name = "fee", value = "金额", required = true, dataType = "String")
+//    })
+//    @GetMapping("wxpayforper")
+//    public ResponseResult wxpayforper( String openId, String fee) {
+//        String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
+//        try {
+//            config = WXPayConfigImpl.getInstance();
+//            wxPay = new WXPay(config);
+//
+//            String mch_appid = config.getAppID();
+//            String mchid = config.getMchID();
+//            String partner_trade_no = SerialUtils.getSerialId();
+//            String check_name = "NO_CHECK";
+//            String amount = fee;
+//            String desc = "提现测试";
+//            String spbill_create_ip = "111.231.114.159";
+//
+//            HashMap<String, String> data = new HashMap<>();
+//            data.put("mch_appid", mch_appid);
+//            data.put("mchid", mchid);
+//            data.put("nonce_str", mch_appid);
+//            data.put("partner_trade_no", partner_trade_no);
+//            data.put("openid", openId);
+//            data.put("check_name", check_name);
+//            data.put("amount", amount);
+//            data.put("desc", desc);
+//            data.put("spbill_create_ip", spbill_create_ip);
+//
+//            //MD5签名
+//            String sign = WXPayUtil.generateSignature(data, config.getKey());
+//            data.put("sign", sign);
+//
+//            String respXml = wxPay.requestWithCert(url, data, config.getHttpConnectTimeoutMs(), config.getHttpReadTimeoutMs());
+//
+//            LogUtils.info(TAG, "wxpayforper 返回XML: " + respXml);
+//
+//            return ResponseResult.result(0, "返回数据", respXml);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseResult.result(1, "企业付款接口出错", null);
+//        }
+//    }
 }

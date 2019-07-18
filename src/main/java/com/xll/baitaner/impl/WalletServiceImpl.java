@@ -59,6 +59,12 @@ public class WalletServiceImpl implements WalletService {
             resultVO.setCount(0);
             return resultVO;
         }
+        try {
+            //再次查询状态，更新数据
+            queryWithdrawByOrder(wallets);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         for (ShopWallet wallet : wallets) {
             WithdrawVO vo = new WithdrawVO();
             vo.setAmount(wallet.getAmount());
@@ -90,6 +96,12 @@ public class WalletServiceImpl implements WalletService {
             resultVO.setData(result);
             resultVO.setCount(0);
             return resultVO;
+        }
+        try {
+            //再次查询状态，更新数据
+            queryWithdrawByOrder(wallets);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         for (ShopWallet wallet : wallets) {
             WithdrawVO vo = new WithdrawVO();
@@ -128,17 +140,6 @@ public class WalletServiceImpl implements WalletService {
             }
         }
         return amount;
-    }
-
-    /**
-     * 查询提现记录
-     *
-     * @param openId
-     */
-    @Override
-    public void queryWithdrawResultRecords(String openId) {
-        List<ShopWallet> shopWallets = walletMapper.queryWithdrawRecords(openId);
-        queryWithdrawByOrder(shopWallets);
     }
 
     /**

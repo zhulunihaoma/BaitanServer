@@ -40,13 +40,6 @@ public interface WalletService {
     BigDecimal getShopAmounts(String openId);
 
     /**
-     * 查询提现结果
-     *
-     * @param openId
-     */
-    void queryWithdrawResultRecords(String openId);
-
-    /**
      * 提现
      *
      * @param input

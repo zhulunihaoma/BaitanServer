@@ -1,8 +1,11 @@
 package com.xll.baitaner.controller;
 
+import com.xll.baitaner.entity.VO.WithdrawInputVo;
 import com.xll.baitaner.entity.VO.WithdrawResultVO;
+import com.xll.baitaner.entity.VO.WithdrawVO;
 import com.xll.baitaner.service.WalletService;
 import com.xll.baitaner.utils.ResponseResult;
+import com.xll.baitaner.utils.SerialUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -93,18 +96,29 @@ public class WalletController {
     }
 
     /**
-     * 查询提现状态
+     * 提现
      *
-     * @param openId
+     * @param input
      * @return
      */
-    @GetMapping("querywithdrawrestatus")
-    public ResponseResult queryWithdrawRecords(String openId) {
+    @ApiOperation(
+            value = "微信企业付款 提现到个人",
+            httpMethod = "GET",
+            notes = "微信企业付款 提现到个人")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "openId", value = "openId", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "desc", value = "提现备注", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "fee", value = "金额", required = true, dataType = "String")
+    })
+    @GetMapping("wxpayforper")
+    public ResponseResult wxpayforper(WithdrawInputVo input) {
         try {
-            walletService.queryWithdrawResultRecords(openId);
-            return ResponseResult.result(0, "查询提现状态成功", true);
+            //提现订单号
+            input.setPartnerTradeNo(SerialUtils.getSerialId());
+            WithdrawVO withdrawVO = walletService.withdrawTransfer(input);
+            return ResponseResult.result(0, "查询提现状态成功", withdrawVO);
         } catch (Exception e) {
-            return ResponseResult.result(1, "查询提现状态出错", false);
+            return ResponseResult.result(1, "查询提现状态出错", null);
         }
     }
 }
