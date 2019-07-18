@@ -37,9 +37,6 @@ public class PayController {
     @Resource
     private PayService payService;
 
-    @Resource
-    WalletService walletService;
-
     private WXPayConfigImpl config;
 
     private WXPay wxPay;

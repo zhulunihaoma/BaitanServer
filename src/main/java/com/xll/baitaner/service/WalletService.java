@@ -1,9 +1,11 @@
 package com.xll.baitaner.service;
 
+import com.xll.baitaner.entity.VO.WithdrawInputVo;
 import com.xll.baitaner.entity.VO.WithdrawResultVO;
 import com.xll.baitaner.entity.VO.WithdrawVO;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * 钱包相关接口
@@ -47,9 +49,16 @@ public interface WalletService {
     /**
      * 提现
      *
-     * @param openId
-     * @param fee
+     * @param input
      * @return
      */
-    WithdrawVO withdrawFromWx(String openId, String fee, String desc);
+    WithdrawVO withdrawTransfer(WithdrawInputVo input);
+
+    /**
+     * 提现查询
+     *
+     * @param orderId
+     * @return
+     */
+    Map<String, String> withdrawTransferInfo(String orderId);
 }

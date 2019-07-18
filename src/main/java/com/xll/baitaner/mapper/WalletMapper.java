@@ -1,7 +1,7 @@
 package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.ShopWallet;
-import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -46,9 +46,9 @@ public interface WalletMapper {
      * @param wallet
      * @return
      */
-    @Insert("insert into `shop_wallet` (shop_id,order_id,open_id,amount,operator) " +
-            "values (#{wallet.shopId},#{wallet.orderId},#{wallet.userId},#{wallet.amount},#{wallet.operator})")
-    int insertWalletRecord(@Param("wallet") ShopWallet wallet);
+    @InsertProvider(type = ShopWalletProvider.class, method = "insertShopWallet")
+    @Options(useGeneratedKeys = true, keyProperty = "wallet.id", keyColumn = "id")
+    int insertWalletRecord(ShopWallet wallet);
 
     /**
      * 根据shopId查询流水记录
@@ -58,6 +58,15 @@ public interface WalletMapper {
      */
     @Select("select " + walletFields + " from `shop_wallet` where open_id=#{openId}")
     List<ShopWallet> selectAllByOpenId(@Param("openId") String openId);
+
+    /**
+     * 根据orderId查询一条记录
+     *
+     * @param orderId
+     * @return
+     */
+    @Select("select " + walletFields + " from `shop_wallet` where order_id=#{orderId} and operator=#{operator} limit 1")
+    ShopWallet selectOneByOrderId(@Param("orderId") Long orderId, @Param("operator") String operator);
 
     /**
      * 只能查询30天以内的提现数据
@@ -103,6 +112,42 @@ public interface WalletMapper {
                     WHERE("`id`=#{id}");
                 }
             }.toString();
+        }
+
+        public String insertShopWallet(ShopWallet wallet) {
+            return new SQL() {{
+                INSERT_INTO("");
+                if (wallet.getOpenId() != null) {
+                    VALUES("open_id", "#{openId}");
+                }
+                if (wallet.getShopId() != null) {
+                    VALUES("shop_id", "#{shopId}");
+                }
+                if (wallet.getStatus() != null) {
+                    VALUES("status", "#{status}");
+                }
+                if (wallet.getAmount() != null) {
+                    VALUES("amount", "#{amount}");
+                }
+                if (wallet.getOrderId() != null) {
+                    VALUES("order_id", "#{orderId}");
+                }
+                if (wallet.getOperator() != null) {
+                    VALUES("operator", "#{operator}");
+                }
+                if (wallet.getDescRemarks() != null) {
+                    VALUES("desc_remarks", "#{descRemarks}");
+                }
+                if (wallet.getReason() != null) {
+                    VALUES("reason", "#{reason}");
+                }
+                if (wallet.getPaymentTime() != null) {
+                    VALUES("payment_time", "#{paymentTime}");
+                }
+                if (wallet.getTransferTime() != null) {
+                    VALUES("transfer_time", "#{transferTime}");
+                }
+            }}.toString();
         }
     }
 }

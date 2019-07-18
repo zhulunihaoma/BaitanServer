@@ -15,22 +15,25 @@ import java.util.Random;
 public class SerialUtils {
 
     /**
-     * 生成不重复的订单号
+     * 生成不重复的商户号
      * 生成规则：
-     * 年月日+系统时间戳+随机四位数
+     * 年月日+系统时间戳+随机三位数
      *
      * @return
      */
     public synchronized static String getSerialId() {
-        Random rand = new Random();
         StringBuffer sbf = new StringBuffer();
-        SimpleDateFormat sfm = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat sfm = new SimpleDateFormat("yyMMddmmssSSS");
         sbf.append(sfm.format(new Date()));
-        sbf.append(rand.nextInt(9999) % 9000 + 1000);
-        System.err.println(sbf);
+        sbf.append(RandomStringUtils.random(3,false,true));
         return sbf.toString();
     }
 
+    /**
+     * 生成订单
+     * @param shopId
+     * @return
+     */
     public synchronized static Long getSerialOrderId(Integer shopId) {
         StringBuffer sbf = new StringBuffer();
         sbf.append(shopId);

@@ -5,14 +5,14 @@ import com.github.pagehelper.PageHelper;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.xll.baitaner.entity.ShopWallet;
+import com.xll.baitaner.entity.VO.WithdrawInputVo;
 import com.xll.baitaner.entity.VO.WithdrawResultVO;
 import com.xll.baitaner.entity.VO.WithdrawVO;
 import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.WalletService;
 import com.xll.baitaner.utils.Constant;
-import com.xll.baitaner.utils.ResponseResult;
-import com.xll.baitaner.utils.SerialUtils;
 import com.xll.baitaner.utils.WXPayConfigImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -29,6 +29,7 @@ import java.util.Map;
  *
  * @author denghuohuo 2019/6/29
  */
+@Slf4j
 @Service
 public class WalletServiceImpl implements WalletService {
 
@@ -73,7 +74,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     /**
-     * 查询所有体现记录
+     * 查询所有提现记录
      *
      * @param openId
      * @return
@@ -137,18 +138,17 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public void queryWithdrawResultRecords(String openId) {
         List<ShopWallet> shopWallets = walletMapper.queryWithdrawRecords(openId);
-        queryWithdrawByOpenId(shopWallets);
+        queryWithdrawByOrder(shopWallets);
     }
 
     /**
      * 提现
      *
-     * @param openId
-     * @param fee
+     * @param input
      * @return
      */
     @Override
-    public WithdrawVO withdrawFromWx(String openId, String fee, String desc) {
+    public WithdrawVO withdrawTransfer(WithdrawInputVo input) {
         WithdrawVO withVo = new WithdrawVO();
         try {
             if (config == null) {
@@ -161,13 +161,15 @@ public class WalletServiceImpl implements WalletService {
             data.put("mch_appid", config.getAppID());
             data.put("mchid", config.getMchID());
             data.put("nonce_str", config.getAppID());
-            data.put("partner_trade_no", SerialUtils.getSerialId());
-            data.put("openid", openId);
+            data.put("partner_trade_no", input.getPartnerTradeNo());
+            data.put("openid", input.getOpenId());
             data.put("check_name", "NO_CHECK");
             //换算成分
-            String amount = new BigDecimal(fee).multiply(new BigDecimal("100")).stripTrailingZeros().toPlainString();
+            String amount =
+                    new BigDecimal(input.getFee()).multiply(new BigDecimal("100")).stripTrailingZeros().toPlainString();
             data.put("amount", amount);
             //付款备注
+            String desc = input.getDesc();
             if (StringUtils.isBlank(desc)) {
                 desc = "提现";
             }
@@ -182,22 +184,133 @@ public class WalletServiceImpl implements WalletService {
             if ("SUCCESS".equals(respMap.get("return_code"))) {
                 if ("SUCCESS".equals(respMap.get("result_code"))) {
                     ShopWallet sw = new ShopWallet();
-                    sw.setAmount(fee);
-                    sw.setOpenId(openId);
+                    sw.setOrderId(Long.valueOf(input.getPartnerTradeNo()));
+                    sw.setAmount(input.getFee());
+                    sw.setOpenId(input.getOpenId());
                     sw.setDescRemarks(desc);
                     sw.setOperator("DEC");
                     sw.setStatus("SUCCESS");
                     sw.setPaymentTime(respMap.get("payment_time"));
+                    upInsertWalletRecord(input.getPartnerTradeNo(), sw);
+                    withVo.setStatus("SUCCESS");
+                    withVo.setOperator("DEC");
+                    withVo.setReason("成功");
+                    return withVo;
+                } else {
+                    //SYSTEMERROR时，需要调查询付款接口，查询付款状态
+                    if ("SYSTEMERROR".equals(respMap.get("err_code"))) {
+                        return dealWithResultByTransferInfo(this.withdrawTransferInfo(input.getPartnerTradeNo()), true);
+                    }
+                    withVo.setStatus("FAIL");
+                    withVo.setOperator("DEC");
+                    withVo.setReason(respMap.get("err_code_des"));
+                    log.error("查询提现错误，错误码:{}, 错误信息:{}", respMap.get("err_code"), respMap.get("err_code_des"));
+                    return withVo;
                 }
+            } else {
+                withVo.setStatus("FAIL");
+                withVo.setOperator("DEC");
+                String returnMsg = respMap.get("return_msg");
+                if (StringUtils.isBlank(returnMsg)) {
+                    returnMsg = "系统繁忙，请稍后再试";
+                }
+                withVo.setReason(returnMsg);
+                return withVo;
             }
-            return withVo;
         } catch (Exception e) {
             e.printStackTrace();
             return withVo;
         }
     }
 
-    private void queryWithdrawByOpenId(List<ShopWallet> shopWallets) {
+    /**
+     * 提现查询
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Map<String, String> withdrawTransferInfo(String orderId) {
+        try {
+            Map<String, String> inputMap = new HashMap<>();
+            inputMap.put("nonce_str", WXPayUtil.generateNonceStr());
+            //需要提现时的orderId
+            inputMap.put("partner_trade_no", orderId);
+            inputMap.put("mch_id", config.getMchID());
+            inputMap.put("appid", config.getAppID());
+            inputMap.put("sign", WXPayUtil.generateSignature(inputMap, config.getKey()));
+            String respXml = wxPay.requestWithCert(Constant.TRANSFERINFO_URL, inputMap, config.getHttpConnectTimeoutMs(), config.getHttpReadTimeoutMs());
+            Map<String, String> respMap = WXPayUtil.xmlToMap(respXml);
+            return respMap;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new HashMap<>();
+    }
+
+    /**
+     * 提现查询后的处理
+     *
+     * @param respMap
+     * @param isPayQuery true:是提现支付情景， false:查询提现记录及余额情景
+     * @return
+     */
+    private WithdrawVO dealWithResultByTransferInfo(Map<String, String> respMap, boolean isPayQuery) {
+        WithdrawVO withdraw = new WithdrawVO();
+        if ("SUCCESS".equals(respMap.get("return_code"))) {
+            if ("SUCCESS".equals(respMap.get("result_code"))) {
+                String partnerTradeNo = respMap.get("partner_trade_no");
+                withdraw.setOperator("DEC");
+                withdraw.setStatus(respMap.get("status"));
+                withdraw.setReason(respMap.get("reason") == null ? "" : respMap.get("reason"));
+                //确定失败，不存数据库
+                if ("FAILED".equals(respMap.get("status")) && isPayQuery) {
+                    return withdraw;
+                }
+                ShopWallet shopWallet = new ShopWallet();
+                shopWallet.setOrderId(Long.valueOf(partnerTradeNo));
+                shopWallet.setStatus(respMap.get("status"));
+                shopWallet.setOperator("DEC");
+                shopWallet.setOpenId(respMap.get("openid"));
+                String payment_amount = new BigDecimal(respMap.get("payment_amount")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toPlainString();
+                shopWallet.setAmount(payment_amount);
+                shopWallet.setDescRemarks(respMap.get("desc"));
+                shopWallet.setPaymentTime(respMap.get("payment_time"));
+                shopWallet.setTransferTime(respMap.get("transfer_time"));
+                shopWallet.setReason(respMap.get("reason") == null ? "" : respMap.get("reason"));
+                upInsertWalletRecord(partnerTradeNo, shopWallet);
+                return withdraw;
+            } else {
+                withdraw.setOperator("DEC");
+                withdraw.setStatus("PROCESSING");
+                withdraw.setReason(respMap.get("err_code_des"));
+                log.error("查询提现错误，错误码:{}, 错误信息:{}", respMap.get("err_code"), respMap.get("err_code_des"));
+                return withdraw;
+            }
+        } else {
+            //通信标识失败
+            withdraw.setOperator("DEC");
+            withdraw.setStatus("FAIL");
+            withdraw.setReason(respMap.get("return_msg"));
+            return withdraw;
+        }
+    }
+
+    private void upInsertWalletRecord(String orderId, ShopWallet shopWallet) {
+        try {
+            ShopWallet wallet = walletMapper.selectOneByOrderId(Long.valueOf(orderId), "DEC");
+            if (wallet == null) {
+                walletMapper.insertWalletRecord(shopWallet);
+            } else {
+                shopWallet.setId(wallet.getId());
+                walletMapper.updateShopWalletWithdraw(shopWallet);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void queryWithdrawByOrder(List<ShopWallet> shopWallets) {
         try {
             if (config == null) {
                 config = WXPayConfigImpl.getInstance();
@@ -206,32 +319,9 @@ public class WalletServiceImpl implements WalletService {
                 wxPay = new WXPay(config);
             }
             for (ShopWallet shopWallet : shopWallets) {
-                //提现成功的不做查询
-                if ("SUCCESS".equals(shopWallet.getStatus())) {
-                    continue;
-                }
-                Map<String, String> inputMap = new HashMap<>();
-                inputMap.put("nonce_str", WXPayUtil.generateNonceStr());
-                inputMap.put("partner_trade_no", String.valueOf(shopWallet.getOrderId()));
-                inputMap.put("mch_id", config.getMchID());
-                inputMap.put("appid", config.getAppID());
-                inputMap.put("sign", WXPayUtil.generateSignature(inputMap, config.getKey()));
-                String respXml = wxPay.requestWithCert(Constant.TRANSFERINFO_URL, inputMap, config.getHttpConnectTimeoutMs(), config.getHttpReadTimeoutMs());
-                Map<String, String> respMap = WXPayUtil.xmlToMap(respXml);
-                if ("SUCCESS".equals(respMap.get("return_code"))) {
-                    ShopWallet sw = new ShopWallet();
-                    sw.setId(shopWallet.getId());
-                    BigDecimal amount = new BigDecimal(shopWallet.getAmount()).multiply(new BigDecimal(100));
-                    if (amount.toString().equals(respMap.get("payment_amount"))) {
-                        sw.setStatus(respMap.get("status"));
-                        if ("FAILED".equals(respMap.get("status"))) {
-                            sw.setReason(respMap.get("reason"));
-                        }
-                        sw.setTransferTime(respMap.get("transfer_time"));
-                        sw.setPaymentTime(respMap.get("payment_time"));
-                        sw.setDescRemarks(respMap.get("desc"));
-                        walletMapper.updateShopWalletWithdraw(sw);
-                    }
+                //处理中的再次查询状态
+                if ("PROCESSING".equals(shopWallet.getStatus())) {
+                    dealWithResultByTransferInfo(this.withdrawTransferInfo(String.valueOf(shopWallet.getOrderId())), false);
                 }
             }
         } catch (Exception e) {
