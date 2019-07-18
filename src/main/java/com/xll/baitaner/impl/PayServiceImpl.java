@@ -9,6 +9,7 @@ import com.xll.baitaner.mapper.ShopMapper;
 import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.PayService;
+import com.xll.baitaner.service.TemplateService;
 import com.xll.baitaner.utils.DateUtils;
 import com.xll.baitaner.utils.LogUtils;
 import com.xll.baitaner.utils.QfWxPay;
@@ -34,6 +35,9 @@ public class PayServiceImpl implements PayService {
 
     @Resource
     private OrderService orderService;
+
+    @Resource
+    private TemplateService templateService;
 
     @Resource
     OrderMapper orderMapper;
@@ -212,6 +216,10 @@ public class PayServiceImpl implements PayService {
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
+
+            //线上支付订单支付成功后 向商户发送模板消息
+            templateService.sendNewOrderMessage(String.valueOf(orderId));
+
             LogUtils.debug(TAG, "updateOrderState: " + res);
         }
     }

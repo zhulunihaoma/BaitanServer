@@ -18,10 +18,7 @@ import com.xll.baitaner.mapper.OrderCommodityMapper;
 import com.xll.baitaner.mapper.OrderMapper;
 import com.xll.baitaner.mapper.ProfileMapper;
 import com.xll.baitaner.mapper.ShopMapper;
-import com.xll.baitaner.service.CommodityService;
-import com.xll.baitaner.service.HistoryOrderService;
-import com.xll.baitaner.service.OrderService;
-import com.xll.baitaner.service.SpecService;
+import com.xll.baitaner.service.*;
 import com.xll.baitaner.utils.SerialUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -70,6 +67,9 @@ public class OrderServiceImpl implements OrderService {
     private HistoryOrderService historyOrderService;
 
     @Resource
+    private TemplateService templateService;
+
+    @Resource
     ProfileMapper profileMapper;
 
     @Resource
@@ -116,6 +116,10 @@ public class OrderServiceImpl implements OrderService {
         //下单
         boolean result = this.addOrder(order, commodityList);
         if (result) {
+            //二维码支付订单下单成功后 向商户发送模板消息
+            if (order.getPayType() == 1){
+                templateService.sendNewOrderMessage(String.valueOf(orderId));
+            }
             return orderId;
         }
         return 0L;

@@ -1,5 +1,8 @@
 package com.xll.baitaner.service;
 
+import com.xll.baitaner.entity.ShopOrder;
+import com.xll.baitaner.entity.VO.OrderDetailsVO;
+
 /**
  * 接口名：TemplateService
  * 描述：微信模板消息业务
@@ -29,4 +32,20 @@ public interface TemplateService {
      * @return
      */
     public boolean updateFormidUsed(String openId, String formId);
+
+    /**
+     * 新订单通知  发送给商户
+     * 线上支付成功 以及二维码支付订单
+     *
+     订单号     {{keyword1.DATA}}
+     订单总价   {{keyword2.DATA}}
+     支付时间   {{keyword3.DATA}}
+     商品名称   {{keyword4.DATA}}
+     数量       {{keyword5.DATA}}
+     收货地址   {{keyword6.DATA}}
+     支付状态   {{keyword7.DATA}}
+     * @param orderId
+     * @return
+     */
+    public boolean sendNewOrderMessage(String orderId);
 }

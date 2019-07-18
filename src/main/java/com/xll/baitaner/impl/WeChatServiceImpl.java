@@ -135,10 +135,10 @@ public class WeChatServiceImpl implements WeChatService {
             JSONObject resq_json = JSONObject.fromObject(resp);
             if(resq_json.getInt("errcode") == 0){
                 LogUtils.info(TAG,"sendTemplateMessage success");
-                return null;
+                return "0";
             }else {
                 LogUtils.warn(TAG,"sendTemplateMessage fail: " + resq_json.get("errcode") + "__" + resq_json.get("errmsg"));
-                return "发送模板洗消息失败：" + resq_json.get("errcode") + "__" + resq_json.get("errmsg");
+                return resq_json.get("errcode").toString();
             }
         }catch (Exception e){
             e.printStackTrace();

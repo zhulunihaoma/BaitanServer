@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 描述：订单实体类
+ * 描述：订单实体类 (已不使用 替换成ShopOrder)
  * 创建者：xie
  * 日期：2019
  **/
