@@ -6,6 +6,7 @@ import com.xll.baitaner.mapper.TemplateMapper;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.TemplateService;
 import com.xll.baitaner.service.WeChatService;
+import com.xll.baitaner.utils.DateUtils;
 import com.xll.baitaner.utils.LogUtils;
 import net.sf.json.JSONObject;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -153,7 +154,7 @@ public class TemplateServiceImpl implements TemplateService{
         }
         message.put("data", data);
 
-        return data;
+        return message;
     }
 
     /**
@@ -182,7 +183,7 @@ public class TemplateServiceImpl implements TemplateService{
         }
 
         String totalMoney = orderDetailsVO.getShopOrder().getTotalMoney();
-        String creatDate = orderDetailsVO.getShopOrder().getCreateDate().toString();
+        String creatDate = DateUtils.toStringtime(orderDetailsVO.getShopOrder().getCreateDate());
 
         List<OrderCommodity> orderCommodityList = orderDetailsVO.getCommoditys();
         String commodityName = orderCommodityList.get(0).getName();
@@ -190,7 +191,7 @@ public class TemplateServiceImpl implements TemplateService{
         for (OrderCommodity oc : orderCommodityList ){
             count += oc.getCount();
         }
-        commodityName += orderCommodityList.size() > 0 ?  "等" : "";
+        commodityName += orderCommodityList.size() > 1 ?  "等" : "";
         String address = orderDetailsVO.getAddress().getAddress();
         String state = orderDetailsVO.getShopOrder().getState() > 0 ? "已支付" : "待支付";
 
@@ -206,6 +207,11 @@ public class TemplateServiceImpl implements TemplateService{
         JSONObject message = getTemplateMessage(shopOwerOpenId, NewOrderMessageId, NewOrderGoPage, fromId, values);
         String result = weChatService.sendTemplateMessage(message, 1);
         LogUtils.info(TAG, "sendNewOrderMessage orderId: " + orderId + "  result code " +result);
+
+        if (result.equals("0")){
+            //发送成功后 更新fromid
+            this.updateFormidUsed(shopOwerOpenId, fromId);
+        }
         return result.equals("0");
     }
 }
