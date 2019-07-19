@@ -1,6 +1,5 @@
 package com.xll.baitaner.mapper;
 
-import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.OrderCommodity;
 import com.xll.baitaner.entity.ShopOrder;
 import org.apache.ibatis.annotations.Insert;
@@ -9,7 +8,6 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,15 +54,6 @@ public interface OrderMapper {
     List<ShopOrder> selectOrdersByOpenId(@Param("openId") String openId);
 
     /**
-     * 查询对应用户的订单列表总个数
-     *
-     * @param openId
-     * @return
-     */
-    @Select("SELECT COUNT(*) FROM `shop_order` WHERE open_id = #{openId}")
-    int countOrdersByClientId(@Param("openId") String openId);
-
-    /**
      * 获取店铺的未付款订单 （二维码支付的订单）
      *
      * @param shopId
@@ -73,15 +62,6 @@ public interface OrderMapper {
     @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = 0 AND pay_type = 1 " +
             "ORDER BY create_date DESC")
     List<ShopOrder> selectNoPayOrdersByShopId(@Param("shopId") int shopId);
-
-    /**
-     * 获取店铺的未付款订单 （二维码支付的订单） 总个数
-     *
-     * @param shopId
-     * @return
-     */
-    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND state = 0 AND pay_type = 1")
-    int countNoPayOrdersByShop(@Param("shopId") int shopId);
 
     /**
      * 更新订单状态
@@ -103,63 +83,6 @@ public interface OrderMapper {
     @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = #{state} ORDER BY " +
             "create_date DESC")
     List<ShopOrder> selectShopOrdersByShop(@Param("shopId") int shopId, @Param("state") int state);
-
-
-    //TODO 这部分业务逻辑使用的还是旧表order，新表shop_order对应的方法和逻辑还没写？？？***********************************
-    /**
-     * 查询店铺所有已接以及历史订单列表
-     *
-     * @param shopId
-     * @return
-     */
-    @Select("SELECT * FROM `order` WHERE shopId = #{shopId} AND state != 0 AND date = #{date} ORDER BY date DESC " +
-            "LIMIT #{page.offset},#{page.size}")
-    List<Order> selectOrdersByShopAllAndDate(@Param("shopId") int shopId, @Param("date") Date date);
-
-
-    /**
-     * 查询店铺所有已接不同支付方式订单列表
-     *
-     * @param shopId
-     * @param payType 0：在线;  1：二维码;
-     * @return
-     */
-    @Select("SELECT * FROM `order` WHERE shopId = #{shopId} AND state != 0 AND payType = #{payType} AND date = #{date} ORDER BY date DESC " +
-            "LIMIT #{page.offset},#{page.size}")
-    List<Order> selectOrdersByShopAndPayTypeAndDate(@Param("shopId") int shopId, @Param("payType") int payType, @Param("date") Date date);
-
-    /**
-     * 查询店铺对应状态的已接以及历史订单订单列表总个数
-     *
-     * @param shopId
-     * @param state  0：待支付;  1：已接单;  2：待完成; 3：已完成
-     * @return
-     */
-    @Select("SELECT COUNT(*) FROM `shop_order` WHERE shop_id = #{shopId} AND state = #{state}")
-    int countOrdersByShop(@Param("shopId") int shopId, @Param("state") int state);
-
-
-    /**
-     * 查询店铺的订单列表总个数
-     *
-     * @param shopId
-     * @return
-     */
-    @Select("SELECT COUNT(*) FROM `order` WHERE shopId = #{shopId} AND state != 0 AND date = #{date}")
-    int countOrdersByShopAllAndDate(@Param("shopId") int shopId, @Param("date") Date date);
-
-
-    /**
-     * 查询店铺对应支付方式的已接以及历史订单列表总个数
-     *
-     * @param shopId
-     * @param payType 0：在线支付  1：二维码支付
-     * @return
-     */
-    @Select("SELECT COUNT(*) FROM `order` WHERE shopId = #{shopId} AND payType = #{payType} AND state != 0 AND date = #{date}")
-    int countOrdersByShopAndPayTypeAndDate(@Param("shopId") int shopId, @Param("payType") int payType, @Param("date") Date date);
-
-    //TODO 这部分业务逻辑使用的还是旧表order，新表shop_order对应的方法和逻辑还没写？？？***********************************
 
     /**
      * 获取店铺全部已接订单的商品详情

@@ -1,7 +1,6 @@
 package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.Commodity;
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -91,15 +90,6 @@ public interface CommodityMapper {
     List<Commodity> selectAllCoList(@Param("shopId") int shopId);
 
     /**
-     * 查询店铺中所有商品总数
-     *
-     * @param shopId
-     * @return
-     */
-    @Select("SELECT COUNT(*) FROM commodity WHERE shopId = #{shopId} AND activable = 1")
-    int countAllCoList(@Param("shopId") int shopId);
-
-    /**
      * 查询店铺中所有上架商品列表
      * 先按分类排序，再按分类内商品排序
      *
@@ -119,15 +109,6 @@ public interface CommodityMapper {
     List<Commodity> selectCoList(@Param("shopId") int shopId);
 
     /**
-     * 查询店铺中所有上架商品列表总数
-     *
-     * @param shopId
-     * @return
-     */
-    @Select("SELECT COUNT(*) FROM commodity WHERE shopId = #{shopId} AND state = 1 AND activable = 1")
-    int countCoList(@Param("shopId") int shopId);
-
-    /**
      * 获取单个商品详情数据
      *
      * @param id
@@ -135,15 +116,6 @@ public interface CommodityMapper {
      */
     @Select("SELECT * FROM commodity WHERE Id = #{id}")
     Commodity selectCommodity(@Param("id") int id);
-
-    /**
-     * 删除商品信息
-     *
-     * @param id
-     * @return
-     */
-    @Delete("DELETE FROM commodity WHERE Id = #{id}")
-    int deleteCommodity(@Param("id") int id);
 
     /**
      * 更新商品的disable状态，替代删除方法

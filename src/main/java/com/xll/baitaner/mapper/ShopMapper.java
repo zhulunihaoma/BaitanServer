@@ -2,7 +2,12 @@ package com.xll.baitaner.mapper;
 
 import com.xll.baitaner.entity.Shop;
 import com.xll.baitaner.entity.ShopBanner;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -46,6 +51,7 @@ public interface ShopMapper {
 
     /**
      * 根据店铺id查询拥有者openId
+     *
      * @param shopId
      * @return
      */
@@ -101,16 +107,6 @@ public interface ShopMapper {
      */
     @Update("UPDATE shop SET payPlatform = #{state} WHERE id = #{id}")
     int updateShopPayPlatform(@Param("id") int id, @Param("state") int state);
-
-    /**
-     * 更新店铺二维码支付开启状态
-     *
-     * @param id
-     * @param state
-     * @return
-     */
-    @Update("UPDATE shop SET payQrcode = #{state} WHERE id = #{id}")
-    int updateShopPayQrcode(@Param("id") int id, @Param("state") int state);
 
     /**
      * 更新支付二维码图片路径

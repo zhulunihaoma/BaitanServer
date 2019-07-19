@@ -2,13 +2,11 @@ package com.xll.baitaner.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.ShopOrder;
 import com.xll.baitaner.entity.ShopOrderDate;
 import com.xll.baitaner.entity.VO.HistoryOrderResultVO;
 import com.xll.baitaner.entity.VO.HistoryOrderVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
-import com.xll.baitaner.entity.VO.ShopOrderVO;
 import com.xll.baitaner.mapper.HistoryOrderMapper;
 import com.xll.baitaner.mapper.OrderMapper;
 import com.xll.baitaner.service.HistoryOrderService;
@@ -17,13 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static com.xll.baitaner.mapper.OrderMapper.shopOrder;
 
 /**
  * 类名：HistoryOrderServiceImpl

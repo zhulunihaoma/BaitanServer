@@ -1,6 +1,5 @@
 package com.xll.baitaner.entity.VO;
 
-import com.xll.baitaner.entity.Order;
 import com.xll.baitaner.entity.ShopOrderDate;
 import lombok.Data;
 
