@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -186,17 +185,17 @@ public class PayServiceImpl implements PayService {
     public void PayResuleCheck(String orderId, String totalFee) {
 
         ShopOrder shopOrder = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
-        if (shopOrder.getState() == 1){
-            LogUtils.debug(TAG, "\nout_trade_no: " + orderId +  " 状态已经是支付成功");
+        if (shopOrder.getState() == 1) {
+            LogUtils.debug(TAG, "\nout_trade_no: " + orderId + " 状态已经是支付成功");
             return;
         }
-
-        BigDecimal money = new BigDecimal(shopOrder.getTotalMoney()).multiply(new BigDecimal(100));
+        //去掉bigdecimal的小数点
+        BigDecimal money = new BigDecimal(shopOrder.getTotalMoney()).multiply(new BigDecimal(100)).stripTrailingZeros();
 
         LogUtils.debug(TAG, "\nout_trade_no: " + orderId + "\ntotal_fee : " + totalFee + "\nMoney: "
                 + money);
         money = new BigDecimal(1); //todo 测试用1分钱
-        if (money.toString().equals(totalFee)) {
+        if (money.toPlainString().equals(totalFee)) {
             boolean res = false;
             try {
                 res = orderService.updateOrderState(orderId, 1);
@@ -210,15 +209,16 @@ public class PayServiceImpl implements PayService {
                 wallet.setOrderId(Long.valueOf(orderId));
                 //存的是店铺拥有者openId，不是用户openId
                 wallet.setOpenId(shopMapper.getOpenIdByShopId(shopOrder.getShopId()));
-                wallet.setAmount(money.toString());
+                //分转元，存入
+                String amoney = money.divide(new BigDecimal(100), BigDecimal.ROUND_HALF_UP).toPlainString();
+                wallet.setAmount(amoney);
                 wallet.setOperator("ADD");
                 walletMapper.insertWalletRecord(wallet);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-
             //线上支付订单支付成功后 向商户发送模板消息
-            templateService.sendNewOrderMessage(String.valueOf(orderId));
+            templateService.sendNewOrderMessage(orderId);
 
             LogUtils.debug(TAG, "updateOrderState: " + res);
         }
