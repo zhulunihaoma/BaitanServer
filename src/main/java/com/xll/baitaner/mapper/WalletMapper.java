@@ -27,7 +27,7 @@ public interface WalletMapper {
      * @param dateStr
      * @return
      */
-    @Select("select create_date,amount from `shop_wallet` where open_id=#{openId} and operator='DEC' and DATE_FORMAT" +
+    @Select("select " + walletFields + " from `shop_wallet` where open_id=#{openId} and operator='DEC' and DATE_FORMAT" +
             "(create_date,'%Y-%m-%d')=#{dateStr}")
     List<ShopWallet> getWalletWithAmountByDate(@Param("openId") String openId, @Param("dateStr") String dateStr);
 
@@ -37,7 +37,7 @@ public interface WalletMapper {
      * @param openId
      * @return
      */
-    @Select("select create_date,amount from `shop_wallet` where open_id=#{openId} and operator='DEC'")
+    @Select("select " + walletFields + " from `shop_wallet` where open_id=#{openId} and operator='DEC'")
     List<ShopWallet> getWalletAllAmount(@Param("openId") String openId);
 
     /**

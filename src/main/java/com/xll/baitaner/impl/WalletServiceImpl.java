@@ -72,6 +72,7 @@ public class WalletServiceImpl implements WalletService {
             vo.setReason(wallet.getReason());
             vo.setStatus(wallet.getStatus());
             vo.setRemarks(wallet.getDescRemarks());
+            vo.setOperator("DEC");
             result.add(vo);
         }
         resultVO.setData(result);
@@ -109,7 +110,7 @@ public class WalletServiceImpl implements WalletService {
             vo.setDate(wallet.getCreateDate());
             vo.setReason(wallet.getReason());
             vo.setStatus(wallet.getStatus());
-            vo.setRemarks(wallet.getDescRemarks());
+            vo.setOperator("DEC");
             result.add(vo);
         }
         resultVO.setData(result);
@@ -233,6 +234,12 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public Map<String, String> withdrawTransferInfo(String orderId) {
         try {
+            if (config == null) {
+                config = WXPayConfigImpl.getInstance();
+            }
+            if (wxPay == null) {
+                wxPay = new WXPay(config);
+            }
             Map<String, String> inputMap = new HashMap<>();
             inputMap.put("nonce_str", WXPayUtil.generateNonceStr());
             //需要提现时的orderId
@@ -313,12 +320,6 @@ public class WalletServiceImpl implements WalletService {
 
     private void queryWithdrawByOrder(List<ShopWallet> shopWallets) {
         try {
-            if (config == null) {
-                config = WXPayConfigImpl.getInstance();
-            }
-            if (wxPay == null) {
-                wxPay = new WXPay(config);
-            }
             for (ShopWallet shopWallet : shopWallets) {
                 //处理中的再次查询状态
                 if ("PROCESSING".equals(shopWallet.getStatus())) {
