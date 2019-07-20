@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.xml.soap.SAAJResult;
 import java.util.List;
 
 /**
@@ -58,7 +59,7 @@ public class TemplateServiceImpl implements TemplateService{
     public static final  String OrderDeliverPage = "pages/order/orderlist/orderlist";
 
     /**
-     * 订单待支付提醒（二维码支付） 发送给用户  二维码支付订单
+     * 订单（二维码支付）待支付提醒 发送给用户  二维码支付订单
      */
     public static final String PendingPaymentMessageId = "czhVdoQz1X4lwfHETBg0mKyGPpnj8UBYDho12ojJYKA";
     //跳转小程序页面地址
@@ -158,6 +159,69 @@ public class TemplateServiceImpl implements TemplateService{
     }
 
     /**
+     * 封装订单相关模板消息 values数组数据
+     * 防止重复实现
+     * @param orderId
+     * @param type  0: 新订单通知 1: 订单（二维码支付）待支付 2: 订单支付成功
+     * @return
+     */
+    private String[] getOrderDataValues(String orderId, int type){
+        String[] values = null;
+        OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
+
+        String totalMoney = orderDetailsVO.getShopOrder().getTotalMoney();
+        String creatDate = DateUtils.toStringtime(orderDetailsVO.getShopOrder().getCreateDate());
+
+        List<OrderCommodity> orderCommodityList = orderDetailsVO.getCommoditys();
+        String commodityName = orderCommodityList.get(0).getName();
+        int count = 0;
+        for (OrderCommodity oc : orderCommodityList ){
+            count += oc.getCount();
+        }
+        commodityName += orderCommodityList.size() > 1 ?  "等" : "";
+        String address = orderDetailsVO.getAddress().getAddress();
+
+        if(type == 0){         //新订单通知
+            String state = orderDetailsVO.getShopOrder().getState() > 0 ? "已支付" : "待支付(二维码支付)";
+            values = new String[]{
+                    orderId,                        //订单号     {{keyword1.DATA}}
+                    totalMoney,                     //订单总价   {{keyword2.DATA}}
+                    creatDate,                      //支付时间   {{keyword3.DATA}}
+                    commodityName,                  //商品名称   {{keyword4.DATA}}
+                    String.valueOf(count),          //数量       {{keyword5.DATA}
+                    address,                        //收货地址   {{keyword6.DATA}}
+                    state                           //支付状态   {{keyword7.DATA}}
+            };
+        }
+        else if (type == 1){    //订单（二维码支付）待支付提醒
+            String remark = orderDetailsVO.getShopOrder().getRemarks();
+            values = new String[]{
+                    orderId,                        //订单号     {{keyword1.DATA}}
+                    totalMoney,                     //订单总价   {{keyword2.DATA}}
+                    creatDate,                      //下单时间   {{keyword3.DATA}}
+                    commodityName,                  //商品详情   {{keyword4.DATA}}
+                    "扫描二维码支付",                //付款类型   {{keyword4.DATA}}
+                    totalMoney,                     //待付金额   {{keyword6.DATA}}
+                    remark,                         //备注       {{keyword7.DATA}}
+                    address                         //收货地址   {{keyword8.DATA}}
+            };
+        }
+        else if (type == 2){    //订单支付成功
+            String payType = orderDetailsVO.getShopOrder().getPayType() == 0 ? "微信支付" : "扫描二维码支付";
+            values = new String[]{
+                    orderId,                        //订单号     {{keyword1.DATA}}
+                    creatDate,                      //支付时间   {{keyword2.DATA}}
+                    totalMoney,                     //订单金额   {{keyword3.DATA}}
+                    commodityName,                  //商品名称   {{keyword4.DATA}}
+                    String.valueOf(count),          //数量       {{keyword5.DATA}
+                    payType,                        //支付方式   {{keyword6.DATA}}
+                    address                         //收货地址   {{keyword7.DATA}}
+            };
+        }
+        return values;
+    }
+
+    /**
      * 新订单通知  发送给商户
      * 线上支付成功 以及二维码支付订单
      *
@@ -175,42 +239,96 @@ public class TemplateServiceImpl implements TemplateService{
     public boolean sendNewOrderMessage(String orderId) {
         OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
 
-        String shopOwerOpenId = orderDetailsVO.getShop().getOpenId();
-        String fromId = this.getFormId(shopOwerOpenId);
+        String sendOpenId = orderDetailsVO.getShop().getOpenId(); //商户
+        String fromId = this.getFormId(sendOpenId);
         if (fromId == null){
             LogUtils.info(TAG, "sendNewOrderMessage orderId: " + orderId + "  fromId is null");
             return false;
         }
 
-        String totalMoney = orderDetailsVO.getShopOrder().getTotalMoney();
-        String creatDate = DateUtils.toStringtime(orderDetailsVO.getShopOrder().getCreateDate());
-
-        List<OrderCommodity> orderCommodityList = orderDetailsVO.getCommoditys();
-        String commodityName = orderCommodityList.get(0).getName();
-        int count = 0;
-        for (OrderCommodity oc : orderCommodityList ){
-            count += oc.getCount();
-        }
-        commodityName += orderCommodityList.size() > 1 ?  "等" : "";
-        String address = orderDetailsVO.getAddress().getAddress();
-        String state = orderDetailsVO.getShopOrder().getState() > 0 ? "已支付" : "待支付";
-
-        String[] values = new String[]{
-                orderId,
-                totalMoney,
-                creatDate,
-                commodityName,
-                String.valueOf(count),
-                address,
-                state
-        };
-        JSONObject message = getTemplateMessage(shopOwerOpenId, NewOrderMessageId, NewOrderGoPage, fromId, values);
+        String[] values = this.getOrderDataValues(orderId, 0);
+        JSONObject message = getTemplateMessage(sendOpenId, NewOrderMessageId, NewOrderGoPage, fromId, values);
         String result = weChatService.sendTemplateMessage(message, 1);
         LogUtils.info(TAG, "sendNewOrderMessage orderId: " + orderId + "  result code " +result);
 
         if (result.equals("0")){
             //发送成功后 更新fromid
-            this.updateFormidUsed(shopOwerOpenId, fromId);
+            this.updateFormidUsed(sendOpenId, fromId);
+        }
+        return result.equals("0");
+    }
+
+    /**
+     * 订单（二维码支付）待支付提醒 发送给用户  二维码支付订单
+     * 二维码支付订单
+     *
+     订单号     {{keyword1.DATA}}
+     订单总价   {{keyword2.DATA}}
+     下单时间   {{keyword3.DATA}}
+     商品详情   {{keyword4.DATA}}
+     付款类型   {{keyword4.DATA}}
+     待付金额   {{keyword6.DATA}}
+     备注       {{keyword7.DATA}}
+     收货地址   {{keyword8.DATA}}
+     * @param orderId
+     * @return
+     */
+    @Override
+    public boolean sendPendingPaymentMessage(String orderId) {
+        OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
+
+        String sendOpenId = orderDetailsVO.getShopOrder().getOpenId(); //用户
+        String fromId = this.getFormId(sendOpenId);
+        if (fromId == null){
+            LogUtils.info(TAG, "senPendingPaymentMessage orderId: " + orderId + "  fromId is null");
+            return false;
+        }
+
+        String[] values = this.getOrderDataValues(orderId, 1);
+        JSONObject message = getTemplateMessage(sendOpenId, PendingPaymentMessageId, PendingPaymentPage, fromId, values);
+        String result = weChatService.sendTemplateMessage(message, 1);
+        LogUtils.info(TAG, "senPendingPaymentMessage orderId: " + orderId + "  result code " +result);
+
+        if (result.equals("0")){
+            //发送成功后 更新fromid
+            this.updateFormidUsed(sendOpenId, fromId);
+        }
+        return result.equals("0");
+    }
+
+    /**
+     * 订单支付成功  发送给用户  线上支付订单
+     * 线上支付订单
+     *
+     订单号     {{keyword1.DATA}}
+     支付时间   {{keyword2.DATA}}
+     订单金额   {{keyword3.DATA}}
+     商品名称   {{keyword4.DATA}}
+     数量       {{keyword5.DATA}
+     支付方式   {{keyword6.DATA}}
+     收货地址   {{keyword87.DATA}}
+     * @param orderId
+     * @return
+     */
+    @Override
+    public boolean sendPaySuccessfulMessage(String orderId) {
+        OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
+
+        String sendOpenId = orderDetailsVO.getShopOrder().getOpenId(); //用户
+        String fromId = this.getFormId(sendOpenId);
+        if (fromId == null){
+            LogUtils.info(TAG, "sendPaySuccessfulMessage orderId: " + orderId + "  fromId is null");
+            return false;
+        }
+
+        String[] values = this.getOrderDataValues(orderId, 2);
+        JSONObject message = getTemplateMessage(sendOpenId, PaySuccessfulMessageId, PaySuccessfulPage, fromId, values);
+        String result = weChatService.sendTemplateMessage(message, 1);
+        LogUtils.info(TAG, "sendPaySuccessfulMessage orderId: " + orderId + "  result code " +result);
+
+        if (result.equals("0")){
+            //发送成功后 更新fromid
+            this.updateFormidUsed(sendOpenId, fromId);
         }
         return result.equals("0");
     }

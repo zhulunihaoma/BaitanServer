@@ -36,16 +36,22 @@ public interface TemplateService {
     /**
      * 新订单通知  发送给商户
      * 线上支付成功 以及二维码支付订单
-     *
-     订单号     {{keyword1.DATA}}
-     订单总价   {{keyword2.DATA}}
-     支付时间   {{keyword3.DATA}}
-     商品名称   {{keyword4.DATA}}
-     数量       {{keyword5.DATA}}
-     收货地址   {{keyword6.DATA}}
-     支付状态   {{keyword7.DATA}}
      * @param orderId
      * @return
      */
     public boolean sendNewOrderMessage(String orderId);
+
+    /**
+     * 订单（二维码支付）待支付提醒 发送给用户  二维码支付订单
+     * @param orderId
+     * @return
+     */
+    public boolean sendPendingPaymentMessage(String orderId);
+
+    /**
+     * 订单支付成功  发送给用户  线上支付订单
+     * @param orderId
+     * @return
+     */
+    public boolean sendPaySuccessfulMessage(String orderId);
 }

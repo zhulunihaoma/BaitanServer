@@ -217,8 +217,11 @@ public class PayServiceImpl implements PayService {
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-            //线上支付订单支付成功后 向商户发送模板消息
+            //线上支付订单支付成功后
+            //向商户发送 新订单通知模板消息
             templateService.sendNewOrderMessage(orderId);
+            //向用户发送 订单支付成功模板消息
+            templateService.sendPaySuccessfulMessage(orderId);
 
             LogUtils.debug(TAG, "updateOrderState: " + res);
         }

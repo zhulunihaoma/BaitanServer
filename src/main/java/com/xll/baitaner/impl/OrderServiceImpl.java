@@ -116,9 +116,12 @@ public class OrderServiceImpl implements OrderService {
         //下单
         boolean result = this.addOrder(order, commodityList);
         if (result) {
-            //二维码支付订单下单成功后 向商户发送模板消息
+            //二维码支付订单下单成功后
             if (order.getPayType() == 1){
+                //向商户发送 新订单通知模板消息
                 templateService.sendNewOrderMessage(String.valueOf(orderId));
+                //向用户发送 订单（二维码支付）待支付模板消息
+                templateService.sendPendingPaymentMessage(String.valueOf(orderId));
             }
             return orderId;
         }
