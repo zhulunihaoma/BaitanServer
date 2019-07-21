@@ -1,10 +1,7 @@
 package com.xll.baitaner.impl;
 
 import com.xll.baitaner.service.WeChatService;
-import com.xll.baitaner.utils.Constant;
-import com.xll.baitaner.utils.HttpRequest;
-import com.xll.baitaner.utils.LogUtils;
-import com.xll.baitaner.utils.WXPayConfigImpl;
+import com.xll.baitaner.utils.*;
 import net.sf.json.JSONObject;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -12,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 类名：WeChatServiceImpl
@@ -89,7 +88,7 @@ public class WeChatServiceImpl implements WeChatService {
         }
 
         try {
-            //POST请求小程序二维码生成
+            //POST请求
             String UTF8 = "UTF-8";
             URL httpUrl = new URL(strUrl);
             HttpURLConnection httpURLConnection = (HttpURLConnection) httpUrl.openConnection();
@@ -140,6 +139,71 @@ public class WeChatServiceImpl implements WeChatService {
                 LogUtils.warn(TAG,"sendTemplateMessage fail: " + resq_json.get("errcode") + "__" + resq_json.get("errmsg"));
                 return resq_json.get("errcode").toString();
             }
+        }catch (Exception e){
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
+    /**
+     * 生成小程序码并储存到服务器中，返回路径地址 使用微信wxacode.getUnlimited接口
+     * @param sceneStr
+     * @param page
+     * @return
+     */
+    @Override
+    public String creatWXacodeUnlimited(String sceneStr, String page) {
+        String strUrl = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=" + access_token_applet;
+        Map<String, String> reqData =new HashMap<>();
+        reqData.put("scene", sceneStr);
+        reqData.put("page", page);
+        try {
+            //POST请求小程序二维码生成
+            String UTF8 = "UTF-8";
+            URL httpUrl = new URL(strUrl);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) httpUrl.openConnection();
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setUseCaches(false);
+            httpURLConnection.connect();
+
+            JSONObject jsonObject = JSONObject.fromObject(reqData);
+            LogUtils.info(TAG, "getQRCode reqBody：" + jsonObject.toString());
+
+            OutputStream outputStream = httpURLConnection.getOutputStream();
+            // 注意编码格式
+            outputStream.write(jsonObject.toString().getBytes(UTF8));
+            outputStream.close();
+
+            //获取返回内容
+            InputStream inputStream = httpURLConnection.getInputStream();
+
+            //返回数据流生成二维码图片并保存
+            String fileName = java.util.UUID.randomUUID().toString();
+            FileOutputStream fileOut = new FileOutputStream(PathUtil.getUploadPath(fileName,true));
+            byte[] buffer = new byte[1024];
+            int read;
+            while(true){
+                read = inputStream.read(buffer,0,1024);
+                if(read<1)
+                    break;
+                fileOut.write(buffer,0,read);
+            }
+            fileOut.flush();
+            fileOut.close();
+
+            File file = new File(PathUtil.getUploadPath(fileName,true));
+            if (file.exists() && file.isFile()){
+                if (file.length() < 5120){ //文件过小 说明保存失败
+                    return "";
+                }
+            }else{
+                return "";
+            }
+
+            return "https://www.eastzebra.cn/servicepicture/" + fileName;
+
         }catch (Exception e){
             e.printStackTrace();
             return e.getMessage();

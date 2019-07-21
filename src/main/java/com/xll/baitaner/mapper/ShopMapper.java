@@ -25,9 +25,9 @@ public interface ShopMapper {
      * @return
      */
     @Insert("INSERT INTO shop (openId,shopName,shopIntroduction,ownerName,wxNumber,contactNumber,shopAddress,shopLogoUrl" +
-            ",payPlatform,payQrcode,payQrcodeUrl,shopState,number) VALUES (#{shop.openId},#{shop.shopName}," +
+            ",payPlatform,payQrcode,payQrcodeUrl,shopState,number,shopWxacode) VALUES (#{shop.openId},#{shop.shopName}," +
             "#{shop.shopIntroduction},#{shop.ownerName},#{shop.wxNumber},#{shop.contactNumber},#{shop.shopAddress}," +
-            "#{shop.shopLogoUrl},#{shop.payPlatform},#{shop.payQrcode},#{shop.payQrcodeUrl},#{shop.shopState},#{shop.number})")
+            "#{shop.shopLogoUrl},#{shop.payPlatform},#{shop.payQrcode},#{shop.payQrcodeUrl},#{shop.shopState},#{shop.number},#{shop.shopWxacode})")
     @Options(useGeneratedKeys = true, keyProperty = "shop.id")
     int insertShop(@Param("shop") Shop shop);
 
@@ -95,7 +95,8 @@ public interface ShopMapper {
     @Update("UPDATE shop SET shopName = #{shop.shopName}, shopIntroduction = #{shop.shopIntroduction}, " +
             "ownerName = #{shop.ownerName}, wxNumber = #{shop.wxNumber}, contactNumber = #{shop.contactNumber}, " +
             "shopAddress = #{shop.shopAddress}, shopLogoUrl = #{shop.shopLogoUrl},payPlatform = #{shop.payPlatform}," +
-            "payQrcode = #{shop.payQrcode},payQrcodeUrl = #{shop.payQrcodeUrl}, number = #{shop.number} WHERE id  = #{shop.id}")
+            "payQrcode = #{shop.payQrcode},payQrcodeUrl = #{shop.payQrcodeUrl}, number = #{shop.number}, shopWxacode = #{shop.shopWxacode} " +
+            "WHERE id  = #{shop.id}")
     int updateShopInfo(@Param("shop") Shop shop);
 
     /**
@@ -183,5 +184,26 @@ public interface ShopMapper {
      */
     @Select("SELECT s.* FROM shopuser su JOIN shop s ON s.id = su.shopId WHERE su.openId = #{openId}")
     List<Shop> selectShopListForUser(@Param("openId") String openId);
+
+    /**
+     * 根据shop_id、wxacode_scene、wxacode_page查询二维码路径
+     * @param shopid
+     * @param scene
+     * @param page
+     * @return
+     */
+    @Select("SELECT wxacode_path FROM shop_wxacode WHERE shop_id = #{shopid} AND wxacode_scene = #{scene} AND wxacode_page = #{page}")
+    String selectShapWXacodePath(@Param("shopid") int shopid, @Param("scene") String scene, @Param("page") String page);
+
+    /**
+     * 插入shop_id、wxacode_scene、wxacode_page、wxacode_path 二维码路径数据
+     * @param shopid
+     * @param scene
+     * @param page
+     * @param path
+     * @return
+     */
+    @Insert("INSERT INTO shop_wxacode (shop_id, wxacode_scene, wxacode_page, wxacode_path) VALUES(#{shopid}, #{scene}, #{page}, #{path})")
+    int insertShapWXacode(@Param("shopid") int shopid, @Param("scene") String scene, @Param("page") String page, @Param("path") String path);
 
 }

@@ -9,6 +9,7 @@ import com.xll.baitaner.entity.VO.WithdrawInputVo;
 import com.xll.baitaner.entity.VO.WithdrawResultVO;
 import com.xll.baitaner.entity.VO.WithdrawVO;
 import com.xll.baitaner.mapper.WalletMapper;
+import com.xll.baitaner.service.TemplateService;
 import com.xll.baitaner.service.WalletService;
 import com.xll.baitaner.utils.Constant;
 import com.xll.baitaner.utils.WXPayConfigImpl;
@@ -35,6 +36,9 @@ public class WalletServiceImpl implements WalletService {
 
     @Resource
     WalletMapper walletMapper;
+
+    @Resource
+    private TemplateService templateService;
 
     private WXPayConfigImpl config; //微信支付配置文件
 
@@ -313,6 +317,9 @@ public class WalletServiceImpl implements WalletService {
                 shopWallet.setId(wallet.getId());
                 walletMapper.updateShopWalletWithdraw(shopWallet);
             }
+
+            //提现申请通知 发送给商户
+            templateService.sendWithdrawMessage(shopWallet);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }

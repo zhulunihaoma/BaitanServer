@@ -94,4 +94,10 @@ public class Shop {
      */
     @ApiModelProperty(value = "店铺访问人数，自动累加  可手动更新，也有", name = "number")
     private int number;
+
+    /**
+     * 店铺的小程序二维码
+     */
+    @ApiModelProperty(value = "店铺的小程序二维码", name = "shopWxacode")
+    private String shopWxacode;
 }

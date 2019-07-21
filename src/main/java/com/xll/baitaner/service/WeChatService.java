@@ -23,4 +23,12 @@ public interface WeChatService {
      * @return
      */
     public String sendTemplateMessage(JSONObject jsonObject, int  type);
+
+    /**
+     * 获取小程序码 使用微信wxacode.getUnlimited接口
+     * @param sceneStr
+     * @param page
+     * @return
+     */
+    public String creatWXacodeUnlimited(String sceneStr, String page);
 }

@@ -144,4 +144,13 @@ public interface ShopManageService {
      * @return
      */
     JSONObject getShopHomeData(String openId);
+
+    /**
+     * 获取店铺下各类二维码存储路径
+     * @param shopid        店铺id
+     * @param scene         二维码携带的参数
+     * @param page          二维码跳转的页面
+     * @return
+     */
+    String getWXacodePath(int shopId, String scene, String page);
 }

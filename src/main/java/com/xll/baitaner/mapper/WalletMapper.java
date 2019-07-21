@@ -116,7 +116,7 @@ public interface WalletMapper {
 
         public String insertShopWallet(ShopWallet wallet) {
             return new SQL() {{
-                INSERT_INTO("");
+                INSERT_INTO("`shop_wallet`");
                 if (wallet.getOpenId() != null) {
                     VALUES("open_id", "#{openId}");
                 }

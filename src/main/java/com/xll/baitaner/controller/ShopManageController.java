@@ -303,4 +303,26 @@ public class ShopManageController {
     public ResponseResult getShopHomeData(String openId) {
         return ResponseResult.result(0, "success", shopManageService.getShopHomeData(openId));
     }
+
+
+    /**
+     * 获取店铺下各类二维码存储路径 根据传参返回二维码地址
+     *
+     * @param shopId
+     * @return
+     */
+    @ApiOperation(
+            value = "获取店铺下各类二维码存储路径",
+            httpMethod = "GET",
+            notes = "获取店铺下各类二维码存储路径 根据传参返回二维码地址")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "scene", value = "二维码携带的参数", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "page", value = "二维码跳转的页面", required = true, dataType = "String")
+    })
+    @GetMapping("getwxacode")
+    public ResponseResult getWXacodePath(int shopId, String scene, String page) {
+        String result = shopManageService.getWXacodePath(shopId, scene, page);
+        return ResponseResult.result(result == null ? 0 : 1, result == null ? "success" : "fail", result);
+    }
 }

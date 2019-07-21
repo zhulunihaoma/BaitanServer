@@ -4,6 +4,8 @@ import com.xll.baitaner.entity.Shop;
 import com.xll.baitaner.entity.ShopBanner;
 import com.xll.baitaner.mapper.ShopMapper;
 import com.xll.baitaner.service.ShopManageService;
+import com.xll.baitaner.service.WeChatService;
+import com.xll.baitaner.utils.LogUtils;
 import net.sf.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +18,13 @@ import java.util.List;
 @Service
 public class ShopManageServiceImpl implements ShopManageService {
 
+    private String TAG = "Baitaner-ShopManageServiceImpl";
+
     @Resource
     private ShopMapper shopMapper;
+
+    @Resource
+    private WeChatService weChatService;
 
     /**
      * 创建店铺
@@ -230,5 +237,27 @@ public class ShopManageServiceImpl implements ShopManageService {
         jsonObject.put("shopList", shopList);
 
         return jsonObject;
+    }
+
+    /**
+     * 获取店铺下各二维码存储文件名， 根据sceneStr和page先查询数据库是否存在，避免重复生成
+     * @param shopid        店铺id
+     * @param scene         二维码携带的信息
+     * @param page          二维码跳转的页面
+     * @return  二维码文件名
+     */
+    @Override
+    public String getWXacodePath(int shopId, String scene, String page) {
+        //判断数据库中是否存储该参数生成额二维码  防止重复生成
+        String path = shopMapper.selectShapWXacodePath(shopId, scene, page);
+        if (path == null || page == ""){
+            //生成二维码
+            path = weChatService.creatWXacodeUnlimited(scene, page);
+            if (path == null || page == ""){
+                LogUtils.info(TAG, "生成二维码  scene： " + scene + " page: " + page + "  失败!");
+                return null;
+            }
+        }
+        return path;
     }
 }

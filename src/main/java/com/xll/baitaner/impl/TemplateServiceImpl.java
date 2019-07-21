@@ -1,11 +1,15 @@
 package com.xll.baitaner.impl;
 
 import com.xll.baitaner.entity.OrderCommodity;
+import com.xll.baitaner.entity.ShopWallet;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import com.xll.baitaner.mapper.TemplateMapper;
+import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.OrderService;
 import com.xll.baitaner.service.TemplateService;
+import com.xll.baitaner.service.WXUserService;
 import com.xll.baitaner.service.WeChatService;
+import com.xll.baitaner.service.ShopManageService;
 import com.xll.baitaner.utils.DateUtils;
 import com.xll.baitaner.utils.LogUtils;
 import net.sf.json.JSONObject;
@@ -34,7 +38,16 @@ public class TemplateServiceImpl implements TemplateService{
     private WeChatService weChatService;
 
     @Resource
+    private WXUserService wxUserService;
+
+    @Resource
+    private ShopManageService shopManageService;
+
+    @Resource
     private TemplateMapper templateMapper;
+
+    @Resource
+    private WalletMapper walletMapper;
 
     /**
      * 新订单通知  发送给商户
@@ -331,5 +344,62 @@ public class TemplateServiceImpl implements TemplateService{
             this.updateFormidUsed(sendOpenId, fromId);
         }
         return result.equals("0");
+    }
+
+    /**
+     * 提现申请通知 发送给商户 提现详情
+     *
+     提现金额   {{keyword1.DATA}}
+     提现时间   {{keyword2.DATA}}
+     姓名       {{keyword3.DATA}}
+     帐号       {{keyword4.DATA}}
+     到账类型   {{keyword5.DATA}}
+     备注       {{keyword6.DATA}}
+     * @param wallet
+     * @return
+     */
+    @Override
+    public boolean sendWithdrawMessage(ShopWallet wallet) {
+        String sendOpenId = wallet.getOpenId();
+        String fromId = this.getFormId(sendOpenId);
+        if (fromId == null){
+            LogUtils.info(TAG, "sendWithdrawMessage walletId: " + wallet.getOrderId() + "  fromId is null");
+            return false;
+        }
+
+        String amount = wallet.getAmount();
+        String date = DateUtils.toStringtime(wallet.getCreateDate());
+        String name = wxUserService.getWXUserById(sendOpenId).getNickName();
+        String shopName = shopManageService.getShopByUser(sendOpenId).getShopName();
+        String type = "零钱";
+        String remark = "如有疑问请查阅【更多】-【个人中心】-【使用帮助】";
+        String[] values = new String[]{
+                amount,
+                date,
+                name,
+                shopName,
+                type,
+                remark,
+        };
+
+        JSONObject message = getTemplateMessage(sendOpenId, WithdrawMessageId, WithdrawGoPage, fromId, values);
+        String result = weChatService.sendTemplateMessage(message, 1);
+        LogUtils.info(TAG, "sendWithdrawMessage walletId: " + wallet.getOrderId() + "  result code " +result);
+
+        if (result.equals("0")){
+            //发送成功后 更新fromid
+            this.updateFormidUsed(sendOpenId, fromId);
+        }
+        return false;
+    }
+
+    /**
+     * 订单发货提醒 发送给用户
+     * @return
+     */
+    @Override
+    public boolean sendOrderDeliverMessage() {
+        //TODO 物流模块
+        return false;
     }
 }

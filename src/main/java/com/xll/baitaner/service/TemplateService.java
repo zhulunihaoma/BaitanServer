@@ -1,6 +1,7 @@
 package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.ShopOrder;
+import com.xll.baitaner.entity.ShopWallet;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 
 /**
@@ -54,4 +55,17 @@ public interface TemplateService {
      * @return
      */
     public boolean sendPaySuccessfulMessage(String orderId);
+
+    /**
+     * 提现申请通知 发送给商户 提现详情
+     * @param wallet
+     * @return
+     */
+    public boolean sendWithdrawMessage(ShopWallet wallet);
+
+    /**
+     * 订单发货提醒 发送给用户
+     * @return
+     */
+    public boolean sendOrderDeliverMessage();
 }
