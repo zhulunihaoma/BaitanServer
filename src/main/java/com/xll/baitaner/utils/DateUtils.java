@@ -3,6 +3,10 @@ package com.xll.baitaner.utils;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -11,6 +15,40 @@ import java.util.GregorianCalendar;
  * 日期类
  */
 public class DateUtils {
+
+    /**
+     * 获取当前24小时前时间
+     *
+     * @return
+     */
+    public static Date dayBefore24HoursFromNow() {
+        ZoneId zoneId = ZoneId.systemDefault();
+        //当前时间的24小时前
+        ZonedDateTime zonedDateTime = LocalDateTime.now().minusHours(24).atZone(zoneId);
+        //转成Date
+        return Date.from(zonedDateTime.toInstant());
+    }
+
+    /**
+     * 当前时间。前7个工作日
+     *
+     * @return
+     */
+    public static Date dayBefore7WorkDaysFromNow() {
+        LocalDateTime nowTime = LocalDateTime.now();
+        int inc = 1;
+        int workDay = 0;
+        while (workDay < 7) {
+            if (!nowTime.minusDays(inc).getDayOfWeek().equals(DayOfWeek.SUNDAY) &&
+                    !nowTime.minusDays(inc).getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+                workDay++;
+            }
+            inc++;
+        }
+        ZoneId zoneId = ZoneId.systemDefault();
+        ZonedDateTime zonedDateTime = nowTime.minusDays(inc).atZone(zoneId);
+        return Date.from(zonedDateTime.toInstant());
+    }
 
     /**
      * Date转换成String。

@@ -13,6 +13,7 @@ import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.TemplateService;
 import com.xll.baitaner.service.WalletService;
 import com.xll.baitaner.utils.Constant;
+import com.xll.baitaner.utils.DateUtils;
 import com.xll.baitaner.utils.WXPayConfigImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -21,11 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,72 +137,67 @@ public class WalletServiceImpl implements WalletService {
         if (CollectionUtils.isEmpty(shopWallets)) {
             return balance;
         }
-        //FIXME 暂时只有钱方到账金额
-        balance.setBalance(calculateQfAmounts(shopWallets).subtract(calculateWithdrawAmounts(shopWallets)));
+        balance.setBalance(calculateAmounts(shopWallets));
         //FIXME 暂时只有钱方未到账金额
-        balance.setUnBalance(calculateQfWithoutAmounts(openId));
+        balance.setUnBalance(calculateWithoutAccountAmounts(shopWallets));
         return balance;
     }
 
     /**
-     * 计算钱方到账总金额
+     * 计算到账总金额
      *
      * @param shopWallets
      * @return
      */
-    private BigDecimal calculateQfAmounts(List<ShopWallet> shopWallets) {
-        BigDecimal amount = new BigDecimal("0.00");
+    private BigDecimal calculateAmounts(List<ShopWallet> shopWallets) {
+        BigDecimal qfAmount = new BigDecimal("0.00");
+        BigDecimal wxAmount = new BigDecimal("0.00");
+        BigDecimal withdrawamount = new BigDecimal("0.00");
         if (CollectionUtils.isEmpty(shopWallets)) {
-            return amount;
+            return qfAmount;
         }
-        ZoneId zoneId = ZoneId.systemDefault();
-        //当前时间的24小时前
-        ZonedDateTime zonedDateTime = LocalDateTime.now().minusHours(24).atZone(zoneId);
-        //转成Date
-        Date before24Hours = Date.from(zonedDateTime.toInstant());
-        for (ShopWallet qf : shopWallets) {
-            if ("ADD".equals(qf.getOperator()) && (qf.getPayChannel() == 0) &&
-                    qf.getCreateDate().before(before24Hours)) {
-                amount = amount.add(new BigDecimal(qf.getAmount()));
+        for (ShopWallet wallet : shopWallets) {
+            //钱方到账
+            if (("ADD".equals(wallet.getOperator())) && (wallet.getPayChannel() == 0) &&
+                    (wallet.getCreateDate().compareTo(DateUtils.dayBefore24HoursFromNow()) < 0)) {
+                qfAmount = qfAmount.add(new BigDecimal(wallet.getAmount()));
+            }
+            //微信到账
+            if (("ADD".equals(wallet.getOperator())) && (wallet.getPayChannel() == 1) &&
+                    (wallet.getCreateDate().compareTo(DateUtils.dayBefore7WorkDaysFromNow()) < 0)) {
+                wxAmount = wxAmount.add(new BigDecimal(wallet.getAmount()));
+            }
+            //提现总金额
+            if ("DEC".equals(wallet.getOperator()) &&
+                    ("SUCCESS".equals(wallet.getStatus()) || "PROCESSING".equals(wallet.getStatus()))) {
+                withdrawamount = withdrawamount.add(new BigDecimal(wallet.getAmount()));
             }
         }
-        return amount;
+        return qfAmount.add(wxAmount).subtract(withdrawamount);
     }
 
     /**
-     * 计算所有提现总金额
+     * 计算未到账余额
      *
      * @param shopWallets
      * @return
      */
-    private BigDecimal calculateWithdrawAmounts(List<ShopWallet> shopWallets) {
+    private BigDecimal calculateWithoutAccountAmounts(List<ShopWallet> shopWallets) {
         BigDecimal amount = new BigDecimal("0.00");
         if (CollectionUtils.isEmpty(shopWallets)) {
             return amount;
         }
         for (ShopWallet wallet : shopWallets) {
-            if ("DEC".equals(wallet.getOperator()) &&
-                    ("SUCCESS".equals(wallet.getStatus()) || "PROCESSING".equals(wallet.getStatus()))) {
+            //钱方未到账
+            if (("ADD".equals(wallet.getOperator())) && (wallet.getPayChannel() == 0) &&
+                    (wallet.getCreateDate().compareTo(DateUtils.dayBefore24HoursFromNow()) >= 0)) {
                 amount = amount.add(new BigDecimal(wallet.getAmount()));
             }
-        }
-        return amount;
-    }
-
-    /**
-     * 计算钱方未到账金额
-     *
-     * @param openId
-     * @return
-     */
-    private BigDecimal calculateQfWithoutAmounts(String openId) {
-        List<ShopWallet> shopWallets = walletMapper.selectBetween24HoursByOpenIdToQF(openId);
-        BigDecimal amount = new BigDecimal("0.00");
-        if (CollectionUtils.isEmpty(shopWallets)) {
-            return amount;
-        }
-        for (ShopWallet sw : shopWallets) {
-            amount = amount.add(new BigDecimal(sw.getAmount()));
+            //微信未到账
+            if (("ADD".equals(wallet.getOperator())) && (wallet.getPayChannel() == 1) &&
+                    (wallet.getCreateDate().compareTo(DateUtils.dayBefore7WorkDaysFromNow()) >= 0)) {
+                amount = amount.add(new BigDecimal(wallet.getAmount()));
+            }
         }
         return amount;
     }
