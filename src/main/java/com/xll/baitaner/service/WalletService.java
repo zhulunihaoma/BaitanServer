@@ -1,10 +1,10 @@
 package com.xll.baitaner.service;
 
+import com.xll.baitaner.entity.VO.AccountBalanceVO;
 import com.xll.baitaner.entity.VO.WithdrawInputVo;
 import com.xll.baitaner.entity.VO.WithdrawResultVO;
 import com.xll.baitaner.entity.VO.WithdrawVO;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 /**
@@ -37,7 +37,7 @@ public interface WalletService {
      * @param openId
      * @return
      */
-    BigDecimal getShopAmounts(String openId);
+    AccountBalanceVO getShopAmounts(String openId);
 
     /**
      * 提现

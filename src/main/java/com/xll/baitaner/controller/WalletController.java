@@ -1,5 +1,6 @@
 package com.xll.baitaner.controller;
 
+import com.xll.baitaner.entity.VO.AccountBalanceVO;
 import com.xll.baitaner.entity.VO.WithdrawInputVo;
 import com.xll.baitaner.entity.VO.WithdrawResultVO;
 import com.xll.baitaner.entity.VO.WithdrawVO;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 
 /**
  * 钱包相关操作
@@ -87,7 +87,7 @@ public class WalletController {
             return ResponseResult.result(1, "店铺openId为空", null);
         }
         try {
-            BigDecimal shopAmounts = walletService.getShopAmounts(openId);
+            AccountBalanceVO shopAmounts = walletService.getShopAmounts(openId);
             return ResponseResult.result(0, "success", shopAmounts);
         } catch (Exception e) {
             e.printStackTrace();

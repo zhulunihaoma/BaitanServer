@@ -178,11 +178,12 @@ public class PayServiceImpl implements PayService {
     /**
      * 根据支付异步通知结果验证支付是否成功，并更改订单状态 //TODO 增加流水记录
      *
-     * @param orderId  订单号
-     * @param totalFee 订单金额
+     * @param orderId    订单号
+     * @param totalFee   订单金额
+     * @param payChannel 0:钱方支付，1：微信支付
      */
     @Override
-    public void PayResuleCheck(String orderId, String totalFee) {
+    public void PayResuleCheck(String orderId, String totalFee, Integer payChannel) {
 
         ShopOrder shopOrder = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
         if (shopOrder.getState() == 1) {
@@ -213,6 +214,7 @@ public class PayServiceImpl implements PayService {
                 String amoney = money.divide(new BigDecimal(100), BigDecimal.ROUND_HALF_UP).toPlainString();
                 wallet.setAmount(amoney);
                 wallet.setOperator("ADD");
+                wallet.setPayChannel(payChannel);
                 walletMapper.insertWalletRecord(wallet);
             } catch (NumberFormatException e) {
                 e.printStackTrace();

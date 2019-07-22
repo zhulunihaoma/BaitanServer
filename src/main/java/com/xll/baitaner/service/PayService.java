@@ -22,6 +22,7 @@ public interface PayService {
      *
      * @param orderId   订单号
      * @param total_fee 订单金额
+     * @param payChannel 0:钱方支付，1：微信支付
      */
-    void PayResuleCheck(String orderId, String total_fee);
+    void PayResuleCheck(String orderId, String total_fee, Integer payChannel);
 }

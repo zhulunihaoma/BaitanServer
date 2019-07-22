@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public interface WalletMapper {
 
-    String walletFields = "id,shop_id,order_id,open_id,amount,operator,create_date," +
+    String walletFields = "id,shop_id,order_id,open_id,amount,operator,pay_channel,create_date," +
             "status,reason,desc_remarks,transfer_time,payment_time";
 
     /**
@@ -79,6 +79,26 @@ public interface WalletMapper {
     List<ShopWallet> queryWithdrawRecords(@Param("openId") String openId);
 
     /**
+     * 查找钱方支付中24小时以前的数据，可提现
+     *
+     * @param openId
+     * @return
+     */
+    @Select("select " + walletFields + " from `shop_wallet` where open_id=#{openId} and operator='ADD' and " +
+            "pay_channel=0 and (create_date < (NOW()- INTERVAL 24 HOUR))")
+    List<ShopWallet> selectBefore24HoursByOpenIdToQF(@Param("openId") String openId);
+
+    /**
+     * 钱方支付24小时以内的数据 不可提现
+     *
+     * @param openId
+     * @return
+     */
+    @Select("select " + walletFields + " from `shop_wallet` where open_id=#{openId} and operator='ADD' and " +
+            "pay_channel=0 and (create_date between (NOW()- INTERVAL 24 HOUR) and NOW())")
+    List<ShopWallet> selectBetween24HoursByOpenIdToQF(@Param("openId") String openId);
+
+    /**
      * 查询提现记录更新
      *
      * @param wallet
@@ -108,6 +128,9 @@ public interface WalletMapper {
                     }
                     if (wallet.getShopId() != null) {
                         SET("shop_id=#{shopId}");
+                    }
+                    if (wallet.getPayChannel() != null) {
+                        SET("pay_channel=#{payChannel}");
                     }
                     if (wallet.getStatus() != null) {
                         SET("status=#{status}");
@@ -143,6 +166,9 @@ public interface WalletMapper {
                 }
                 if (wallet.getAmount() != null) {
                     VALUES("amount", "#{amount}");
+                }
+                if (wallet.getPayChannel() != null) {
+                    VALUES("pay_channel", "#{payChannel}");
                 }
                 if (wallet.getOrderId() != null) {
                     VALUES("order_id", "#{orderId}");

@@ -23,6 +23,11 @@ public class ShopWallet {
 
     private String operator;
 
+    /**
+     * 付款渠道 0:钱方支付 1:微信支付
+     */
+    private Integer payChannel;
+
     private Date createDate;
 
     /**

@@ -3,14 +3,15 @@ package com.xll.baitaner.controller;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.xll.baitaner.service.PayService;
-import com.xll.baitaner.service.WalletService;
-import com.xll.baitaner.utils.*;
+import com.xll.baitaner.utils.LogUtils;
+import com.xll.baitaner.utils.QfWxPay;
+import com.xll.baitaner.utils.ResponseResult;
+import com.xll.baitaner.utils.WXPayConfigImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -112,7 +113,7 @@ public class PayController {
                         LogUtils.debug(TAG, tt + "支付结果: SUCCESS");
                         String out_trade_no = resultMap.get("out_trade_no");// 订单号
                         String total_fee = resultMap.get("total_fee"); //支付金额
-                        payService.PayResuleCheck(out_trade_no, total_fee);
+                        payService.PayResuleCheck(out_trade_no, total_fee, 1);
                     } else {
                         LogUtils.debug(TAG, tt + "支付结果: FAIL");
                     }
@@ -137,6 +138,7 @@ public class PayController {
 
     /**
      * 钱方平台支付结果通知回调
+     *
      * @param request
      * @param response
      */
@@ -171,7 +173,7 @@ public class PayController {
                     LogUtils.debug(TAG, tt + "支付结果: SUCCESS");
                     String out_trade_no = res.getString("out_trade_no");// 订单号
                     String total_fee = res.getString("txamt"); //支付金额
-                    payService.PayResuleCheck(out_trade_no, total_fee);
+                    payService.PayResuleCheck(out_trade_no, total_fee, 0);
                 }
             }
         } catch (Exception e) {
