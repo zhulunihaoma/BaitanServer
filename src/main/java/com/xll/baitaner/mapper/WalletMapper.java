@@ -93,23 +93,38 @@ public interface WalletMapper {
         public String updateWithdrawById(ShopWallet wallet) {
             return new SQL() {
                 {
-                    UPDATE("`shop_wallet`");
+                    UPDATE("shop_wallet");
+                    if (wallet.getOpenId() != null) {
+                        SET("open_id=#{openId}");
+                    }
+                    if (wallet.getOperator() != null) {
+                        SET("operator=#{operator}");
+                    }
+                    if (wallet.getAmount() != null) {
+                        SET("amount=#{amount}");
+                    }
+                    if (wallet.getOrderId() != null) {
+                        SET("order_id=#{orderId}");
+                    }
+                    if (wallet.getShopId() != null) {
+                        SET("shop_id=#{shopId}");
+                    }
                     if (wallet.getStatus() != null) {
-                        SET("`status`=#{status}");
+                        SET("status=#{status}");
                     }
                     if (wallet.getReason() != null) {
-                        SET("`reason`=#{reason}");
+                        SET("reason=#{reason}");
                     }
                     if (wallet.getDescRemarks() != null) {
-                        SET("`desc_remarks`=#{descRemarks}");
+                        SET("desc_remarks=#{descRemarks}");
                     }
                     if (wallet.getPaymentTime() != null) {
-                        SET("`payment_time`=#{paymentTime}");
+                        SET("payment_time=#{paymentTime}");
                     }
                     if (wallet.getTransferTime() != null) {
-                        SET("`transfer_time`=#{transferTime}");
+                        SET("transfer_time=#{transferTime}");
                     }
-                    WHERE("`id`=#{id}");
+                    WHERE("id=#{id}");
                 }
             }.toString();
         }
