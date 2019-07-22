@@ -47,7 +47,7 @@ public interface WalletMapper {
      * @return
      */
     @InsertProvider(type = ShopWalletProvider.class, method = "insertShopWallet")
-    @Options(useGeneratedKeys = true, keyProperty = "wallet.id", keyColumn = "id")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insertWalletRecord(ShopWallet wallet);
 
     /**
