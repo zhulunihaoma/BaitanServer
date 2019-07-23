@@ -80,7 +80,7 @@ public class PayServiceImpl implements PayService {
             //支付金额
             String totalFee = order.getTotalMoney();
             //todo 测试用1分钱
-            totalFee = "1";
+//            totalFee = "1";
 
             //商户订单号
             String outTradeNo = order.getOrderId().toString();
@@ -194,7 +194,7 @@ public class PayServiceImpl implements PayService {
         String money = MoneyUtil.changeY2F(shopOrder.getTotalMoney());
         LogUtils.debug(TAG, "\nout_trade_no: " + orderId + "\ntotal_fee : " + totalFee + "\nMoney: "
                 + money);
-        money = "1"; //todo 测试用1分钱
+//        money = "1"; //todo 测试用1分钱
         if (money.equals(totalFee)) {
             boolean res = false;
             try {

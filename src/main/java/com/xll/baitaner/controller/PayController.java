@@ -157,7 +157,7 @@ public class PayController {
             InputStream inputStream = request.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF8));
             final StringBuffer stringBuffer = new StringBuffer();
-            String line = null;
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuffer.append(line);
             }
