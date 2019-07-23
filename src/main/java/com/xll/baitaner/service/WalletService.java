@@ -1,6 +1,7 @@
 package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.VO.AccountBalanceVO;
+import com.xll.baitaner.entity.VO.WithdrawAllResultVO;
 import com.xll.baitaner.entity.VO.WithdrawInputVo;
 import com.xll.baitaner.entity.VO.WithdrawResultVO;
 import com.xll.baitaner.entity.VO.WithdrawVO;
@@ -29,7 +30,7 @@ public interface WalletService {
      * @param openId
      * @return
      */
-    WithdrawResultVO queryWithdrawAmountList(String openId, Integer offset, Integer size);
+    WithdrawAllResultVO queryWithdrawAmountList(String openId, Integer offset, Integer size);
 
     /**
      * 获取店铺余额

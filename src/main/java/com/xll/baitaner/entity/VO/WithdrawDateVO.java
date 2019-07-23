@@ -6,12 +6,12 @@ import java.util.List;
 
 /**
  * @author dengyy
- * @date 19-7-8
+ * @date 19-7-23
  */
 @Data
-public class WithdrawResultVO {
+public class WithdrawDateVO {
 
-    private List<WithdrawVO> data;
+    private String date;
 
-    private long count;
+    private List<WithdrawVO> list;
 }

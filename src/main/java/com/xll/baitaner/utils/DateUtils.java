@@ -1,6 +1,7 @@
 package com.xll.baitaner.utils;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -15,6 +16,11 @@ import java.util.GregorianCalendar;
  * 日期类
  */
 public class DateUtils {
+
+    private static ThreadLocal<DateFormat> dateTimeLocal =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+
+    private static ThreadLocal<DateFormat> dateLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
 
     /**
      * 获取当前24小时前时间
@@ -51,27 +57,31 @@ public class DateUtils {
     }
 
     /**
-     * Date转换成String。
+     * Date转换成String。yyyy-MM-dd
      *
      * @param date
      * @return
      */
-    public static String toString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-        return sdf.format(date);
+    public static String dateToString(Date date) {
+        return dateLocal.get().format(date);
     }
 
     /**
-     * Date转换成String yyyy-MM-dd。
+     * Date转换成String yyyy-MM-dd HH:mm:ss
      *
      * @param date
      * @return
      */
-    public static String toStringtime(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static String dateTimetoString(Date date) {
+        return dateTimeLocal.get().format(date);
+    }
 
-        return sdf.format(date);
+    /**
+     * 获取当前时间
+     */
+    public static String getCurrentDate() {
+        Date date = new Date(System.currentTimeMillis());
+        return dateTimeLocal.get().format(date);
     }
 
     /**
@@ -159,16 +169,6 @@ public class DateUtils {
     public static String getNowDate() {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        String time = sdf.format(date);
-        return time;
-    }
-
-    /**
-     * 获取当前时间
-     */
-    public static String getCurrentDate() {
-        Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = sdf.format(date);
         return time;
     }

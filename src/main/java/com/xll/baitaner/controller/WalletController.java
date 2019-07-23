@@ -63,8 +63,7 @@ public class WalletController {
     @GetMapping("wallet/withdrawallamount")
     public ResponseResult getWithdrawList(String openId, Integer offset, Integer size) {
         try {
-            WithdrawResultVO resultVO = walletService.queryWithdrawAmountList(openId, offset, size);
-            return ResponseResult.result(0, "success", resultVO);
+            return ResponseResult.result(0, "success", walletService.queryWithdrawAmountList(openId, offset, size));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseResult.result(1, "fail", null);

@@ -6,6 +6,8 @@ import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.xll.baitaner.entity.ShopWallet;
 import com.xll.baitaner.entity.VO.AccountBalanceVO;
+import com.xll.baitaner.entity.VO.WithdrawAllResultVO;
+import com.xll.baitaner.entity.VO.WithdrawDateVO;
 import com.xll.baitaner.entity.VO.WithdrawInputVo;
 import com.xll.baitaner.entity.VO.WithdrawResultVO;
 import com.xll.baitaner.entity.VO.WithdrawVO;
@@ -94,9 +96,9 @@ public class WalletServiceImpl implements WalletService {
      * @return
      */
     @Override
-    public WithdrawResultVO queryWithdrawAmountList(String openId, Integer offset, Integer size) {
-        WithdrawResultVO resultVO = new WithdrawResultVO();
-        List<WithdrawVO> result = new ArrayList<>();
+    public WithdrawAllResultVO queryWithdrawAmountList(String openId, Integer offset, Integer size) {
+        WithdrawAllResultVO resultVO = new WithdrawAllResultVO();
+        List<WithdrawDateVO> result = new ArrayList<>();
         Page<ShopWallet> page =
                 PageHelper.startPage(offset, size).doSelectPage(() -> walletMapper.getWalletAllAmount(openId));
         List<ShopWallet> wallets = page.getResult();
@@ -111,6 +113,8 @@ public class WalletServiceImpl implements WalletService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //放入map,按照日期归类
+        Map<String, List<WithdrawVO>> map = new HashMap<>();
         for (ShopWallet wallet : wallets) {
             WithdrawVO vo = new WithdrawVO();
             vo.setAmount(wallet.getAmount());
@@ -118,7 +122,15 @@ public class WalletServiceImpl implements WalletService {
             vo.setReason(wallet.getReason());
             vo.setStatus(wallet.getStatus());
             vo.setOperator("DEC");
-            result.add(vo);
+            map.computeIfAbsent(DateUtils.dateToString(wallet.getCreateDate()), k -> new ArrayList<>());
+            map.get(DateUtils.dateToString(wallet.getCreateDate())).add(vo);
+        }
+        //整合成大日期下，按小日期时间
+        for (Map.Entry<String, List<WithdrawVO>> entry : map.entrySet()) {
+            WithdrawDateVO dateVO = new WithdrawDateVO();
+            dateVO.setDate(entry.getKey());
+            dateVO.setList(entry.getValue());
+            result.add(dateVO);
         }
         resultVO.setData(result);
         resultVO.setCount(page.getTotal());
