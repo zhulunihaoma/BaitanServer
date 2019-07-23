@@ -68,6 +68,7 @@ public class PayServiceImpl implements PayService {
      */
     @Override
     public ResponseResult payMent(String orderId, String openId, int payType) {
+        LogUtils.info("******qf pay start******. orderId:{},openId:{},payType:{}", orderId + ";" + openId + ";" + payType);
         ShopOrder order = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
         if (order.getState() != 0) {
             return ResponseResult.result(1, "订单不是未支付订单", null);
@@ -75,13 +76,11 @@ public class PayServiceImpl implements PayService {
         if (!order.getOpenId().equals(openId)) {
             return ResponseResult.result(1, "订单用户和当前发起支付用户不匹配", null);
         }
-
         try {
             //支付金额
-            String totalFee = order.getTotalMoney();
+            String totalFee = MoneyUtil.changeY2F(order.getTotalMoney());
             //todo 测试用1分钱
 //            totalFee = "1";
-
             //商户订单号
             String outTradeNo = order.getOrderId().toString();
 
@@ -91,14 +90,17 @@ public class PayServiceImpl implements PayService {
             } else if (payType == 1) {
                 //钱方支付
                 String txdtm = DateUtils.getCurrentDate();
+                LogUtils.info("qf input:{}", totalFee + ";" + outTradeNo + ";" + txdtm + ";" + openId);
                 JSONObject payObj = QfWxPay.QfPayMent(totalFee, outTradeNo, txdtm, openId);
                 LogUtils.info(TAG, "qfwxpay 返回数据中的pay_params: \n" + payObj);
+                LogUtils.info("××××××qf pay end××××××. orderId:{},openId:{},pay_params:{}", orderId + ";" + openId + ";" + payObj);
                 return ResponseResult.result(0, "success", payObj);
             }
         } catch (Exception e) {
+            LogUtils.info("××××××qf pay end error××××××. orderId:{},openId:{},error:{}", orderId + ";" + openId + ";" + e);
             e.printStackTrace();
         }
-
+        LogUtils.info("××××××qf pay end error××××××. orderId:{},openId:{}", orderId + ";" + openId);
         return null;
     }
 
