@@ -257,6 +257,9 @@ public class ShopManageServiceImpl implements ShopManageService {
                 LogUtils.info(TAG, "生成二维码  scene： " + scene + " page: " + page + "  失败!");
                 return null;
             }
+            if (shopMapper.insertShapWXacode(shopId, scene, page, path) <= 0){
+                LogUtils.info(TAG, "储存二维码  scene： " + scene + " page: " + page + "  失败!");
+            }
         }
         return path;
     }
