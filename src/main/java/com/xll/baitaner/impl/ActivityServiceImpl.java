@@ -100,7 +100,7 @@ public class ActivityServiceImpl implements ActivityService {
         Activity activity = activityMapper.selectActivityById(activityId);
         Shop shopinfo = shopManageService.getShopById(activity.getShopId());//后面改成根据shopId获取，活动和店铺绑定而不是个人
         Commodity commodity = commodityService.getCommodity(activity.getCommodityId());
-        activity.setEndTimeString(DateUtils.toStringtime(activity.getEndTime()));
+        activity.setEndTimeString(DateUtils.dateTimetoString(activity.getEndTime()));
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("activity", activity);
@@ -119,9 +119,6 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public ActivityShopCommodity getActivityById2(int activityId) {
         ActivityShopCommodity activity_shop_commodity = activityMapper.selectActivityById2(activityId);
-
-//        jsonObject.put(DateUtils.toStringtime());
-
         return activity_shop_commodity;
 
     }
