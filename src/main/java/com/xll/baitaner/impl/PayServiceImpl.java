@@ -12,6 +12,7 @@ import com.xll.baitaner.service.PayService;
 import com.xll.baitaner.service.TemplateService;
 import com.xll.baitaner.utils.DateUtils;
 import com.xll.baitaner.utils.LogUtils;
+import com.xll.baitaner.utils.MoneyUtil;
 import com.xll.baitaner.utils.QfWxPay;
 import com.xll.baitaner.utils.ResponseResult;
 import com.xll.baitaner.utils.WXPayConfigImpl;
@@ -19,7 +20,6 @@ import net.sf.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -190,13 +190,12 @@ public class PayServiceImpl implements PayService {
             LogUtils.debug(TAG, "\nout_trade_no: " + orderId + " 状态已经是支付成功");
             return;
         }
-        //去掉bigdecimal的小数点
-        BigDecimal money = new BigDecimal(shopOrder.getTotalMoney()).multiply(new BigDecimal(100)).stripTrailingZeros();
-
+        //元转分
+        String money = MoneyUtil.changeY2F(shopOrder.getTotalMoney());
         LogUtils.debug(TAG, "\nout_trade_no: " + orderId + "\ntotal_fee : " + totalFee + "\nMoney: "
                 + money);
-        money = new BigDecimal(1); //todo 测试用1分钱
-        if (money.toPlainString().equals(totalFee)) {
+        money = "1"; //todo 测试用1分钱
+        if (money.equals(totalFee)) {
             boolean res = false;
             try {
                 res = orderService.updateOrderState(orderId, 1);
@@ -211,8 +210,7 @@ public class PayServiceImpl implements PayService {
                 //存的是店铺拥有者openId，不是用户openId
                 wallet.setOpenId(shopMapper.getOpenIdByShopId(shopOrder.getShopId()));
                 //分转元，存入
-                String amoney = money.divide(new BigDecimal(100), BigDecimal.ROUND_HALF_UP).toPlainString();
-                wallet.setAmount(amoney);
+                wallet.setAmount(MoneyUtil.changeF2Y(money));
                 wallet.setOperator("ADD");
                 wallet.setPayChannel(payChannel);
                 walletMapper.insertWalletRecord(wallet);

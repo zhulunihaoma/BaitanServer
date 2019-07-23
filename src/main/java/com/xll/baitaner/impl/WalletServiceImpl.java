@@ -14,6 +14,7 @@ import com.xll.baitaner.service.TemplateService;
 import com.xll.baitaner.service.WalletService;
 import com.xll.baitaner.utils.Constant;
 import com.xll.baitaner.utils.DateUtils;
+import com.xll.baitaner.utils.MoneyUtil;
 import com.xll.baitaner.utils.WXPayConfigImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -226,9 +227,7 @@ public class WalletServiceImpl implements WalletService {
             data.put("openid", input.getOpenId());
             data.put("check_name", "NO_CHECK");
             //换算成分
-            String amount =
-                    new BigDecimal(input.getFee()).multiply(new BigDecimal("100")).stripTrailingZeros().toPlainString();
-            data.put("amount", amount);
+            data.put("amount", MoneyUtil.changeY2F(input.getFee()));
             //付款备注
             String desc = input.getDesc();
             if (StringUtils.isBlank(desc)) {
@@ -307,8 +306,7 @@ public class WalletServiceImpl implements WalletService {
             inputMap.put("appid", config.getAppID());
             inputMap.put("sign", WXPayUtil.generateSignature(inputMap, config.getKey()));
             String respXml = wxPay.requestWithCert(Constant.TRANSFERINFO_URL, inputMap, config.getHttpConnectTimeoutMs(), config.getHttpReadTimeoutMs());
-            Map<String, String> respMap = WXPayUtil.xmlToMap(respXml);
-            return respMap;
+            return WXPayUtil.xmlToMap(respXml);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -339,8 +337,8 @@ public class WalletServiceImpl implements WalletService {
                 shopWallet.setStatus(respMap.get("status"));
                 shopWallet.setOperator("DEC");
                 shopWallet.setOpenId(respMap.get("openid"));
-                String payment_amount = new BigDecimal(respMap.get("payment_amount")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP).toPlainString();
-                shopWallet.setAmount(payment_amount);
+                //分转元
+                shopWallet.setAmount(MoneyUtil.changeF2Y(respMap.get("payment_amount")));
                 shopWallet.setDescRemarks(respMap.get("desc"));
                 shopWallet.setPaymentTime(respMap.get("payment_time"));
                 shopWallet.setTransferTime(respMap.get("transfer_time"));
