@@ -177,6 +177,17 @@ public interface ActivityMapper {
 
 
     /**
+     * 更改/插入活动recordWxcode
+     *
+     * @param recordWxcode
+     * @param recordId
+     * @return
+     */
+    @Update("UPDATE activityrecord SET recordWxcode = #{recordWxcode} WHERE id = #{recordId}")
+    int updateRecordWxcode(@Param("recordId") int recordId, @Param("recordWxcode") String recordWxcode);
+
+
+    /**
      * 定时任务方法 每小时执行一次 查询数据库中结束时间和当前时间一致的则改变状态值为0
      *
      * @param status

@@ -121,6 +121,17 @@ public interface ActivityService {
      */
     List<ActivityRecord> selectActivityRecordByOpenId_ActivityId(String openId, int activityId);
 
+
+    /**
+     * 更改/插入活动recordWxcode
+     *
+     * @param recordWxcode
+     * @param recordId
+     * @return
+     */
+
+    boolean updateRecordWxcode(int recordId, String recordWxcode);
+
     /**
      * 查询活动record根据排名
      *

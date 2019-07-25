@@ -212,6 +212,19 @@ public class ActivityController {
     }
 
     /**
+     * 更改/插入活动recordWxcode
+     *
+     * @param recordWxcode
+     * @param recordId
+     * @return
+     */
+    @RequestMapping("updateRecordWxcode")
+    public ResponseResult updateRecordWxcode(int recordId, String recordWxcode) {
+        boolean result = activityService.updateRecordWxcode(recordId, recordWxcode);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    }
+
+    /**
      * 查询活动record根据排名
      *
      * @param activityId

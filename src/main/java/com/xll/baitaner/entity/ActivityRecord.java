@@ -73,6 +73,12 @@ public class ActivityRecord {
     private int status;
 
     /**
+     * 活动record二维码
+     */
+    @ApiModelProperty(value = "活动record二维码", name = "recordWxcode")
+    private String recordWxcode;
+
+    /**
      * 点赞/砍价数量
      */
 

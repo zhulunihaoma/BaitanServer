@@ -284,6 +284,20 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     /**
+     * 更改/插入活动recordWxcode
+     *
+     * @param recordWxcode
+     * @param recordId
+     * @return
+     */
+
+    @Override
+    public boolean updateRecordWxcode(int recordId, String recordWxcode) {
+        return activityMapper.updateRecordWxcode(recordId, recordWxcode) > 0;
+    }
+
+
+    /**
      * 查询活动record根据排名
      *
      * @param activityId
