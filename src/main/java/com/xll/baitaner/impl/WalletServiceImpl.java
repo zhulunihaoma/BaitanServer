@@ -14,10 +14,7 @@ import com.xll.baitaner.entity.VO.WithdrawVO;
 import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.TemplateService;
 import com.xll.baitaner.service.WalletService;
-import com.xll.baitaner.utils.Constant;
-import com.xll.baitaner.utils.DateUtils;
-import com.xll.baitaner.utils.MoneyUtil;
-import com.xll.baitaner.utils.WXPayConfigImpl;
+import com.xll.baitaner.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -250,9 +247,11 @@ public class WalletServiceImpl implements WalletService {
             //MD5签名
             String sign = WXPayUtil.generateSignature(data, config.getKey());
             data.put("sign", sign);
+            LogUtils.info("提现参数data: ", data.toString());
             String respXml = wxPay.requestWithCert(Constant.TRANSFERS_URL, data, config.getHttpConnectTimeoutMs(),
                     config.getHttpReadTimeoutMs());
             Map<String, String> respMap = WXPayUtil.xmlToMap(respXml);
+            LogUtils.info("提现结果respMap: ", respMap.toString());
             if ("SUCCESS".equals(respMap.get("return_code"))) {
                 if ("SUCCESS".equals(respMap.get("result_code"))) {
                     ShopWallet sw = new ShopWallet();

@@ -5,6 +5,7 @@ import com.xll.baitaner.entity.VO.WithdrawInputVo;
 import com.xll.baitaner.entity.VO.WithdrawResultVO;
 import com.xll.baitaner.entity.VO.WithdrawVO;
 import com.xll.baitaner.service.WalletService;
+import com.xll.baitaner.utils.LogUtils;
 import com.xll.baitaner.utils.ResponseResult;
 import com.xll.baitaner.utils.SerialUtils;
 import io.swagger.annotations.Api;
@@ -113,7 +114,10 @@ public class WalletController {
     public ResponseResult wxpayforper(WithdrawInputVo input) {
         try {
             //提现订单号
-            input.setPartnerTradeNo(SerialUtils.getSerialId());
+            if (StringUtils.isBlank(input.getPartnerTradeNo())) {
+                input.setPartnerTradeNo(SerialUtils.getSerialId());
+            }
+            LogUtils.info("提现订单号：", "openId:" + input.getOpenId() + ";" + "orderId:" + input.getPartnerTradeNo());
             WithdrawVO withdrawVO = walletService.withdrawTransfer(input);
             return ResponseResult.result(0, "查询提现状态成功", withdrawVO);
         } catch (Exception e) {
