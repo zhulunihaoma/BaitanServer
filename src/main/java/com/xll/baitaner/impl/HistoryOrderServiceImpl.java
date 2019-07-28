@@ -96,6 +96,10 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
      *
      * @param shopId
      * @param type   获取历史订单种类
+     *               0： 经营数据中 全部已付款订单
+     *               1： 经营数据中 在线付款订单
+     *               2： 经营数据中 二维码付款订单
+     *               3： 订单管理模块的历史订单  已完成订单
      * @return
      */
     @Transactional
@@ -138,5 +142,48 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
         resultVO.setData(historyOrderVOList);
         resultVO.setCount(page.getTotal());
         return resultVO;
+    }
+
+    /**
+     * 根据日期查找历史订单
+     * @param shopId
+     * @param type  获取历史订单种类
+     *               0： 经营数据中 全部已付款订单
+     *               1： 经营数据中 在线付款订单
+     *               2： 经营数据中 二维码付款订单
+     *               3： 订单管理模块的历史订单  已完成订单
+     * @param date
+     * @return
+     */
+    @Override
+    public HistoryOrderVO getHistoryOrderByDate(int shopId, int type, String date) {
+        //判断shop_order_date是否包含对应的记录
+        ShopOrderDate shopOrderDate = historyOrderMapper.selectShopOrderDate(shopId, date);
+        if (shopOrderDate == null){
+            return null;
+        }
+
+        List<String> orderIdList;
+        if (type == 0) { //经营数据中 全部已付款订单
+            orderIdList = historyOrderMapper.selectDateOrderList(shopOrderDate.getId());
+        } else if (type == 1) { //经营数据中 在线付款订单
+            orderIdList = historyOrderMapper.selectDateOrderListByPayType(shopOrderDate.getId(), 0);
+        } else if (type == 2) { //经营数据中 二维码付款订单
+            orderIdList = historyOrderMapper.selectDateOrderListByPayType(shopOrderDate.getId(), 1);
+        } else { //订单管理模块的历史订单  已完成订单
+            orderIdList = historyOrderMapper.selectDateOrderListByState(shopOrderDate.getId(), 3);
+        }
+
+        List<OrderDetailsVO> orderList = new ArrayList<>();
+        for (String orderId : orderIdList) {
+            OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
+            orderList.add(orderDetailsVO);
+        }
+
+        HistoryOrderVO historyOrderVO = new HistoryOrderVO();
+        historyOrderVO.setShopOrderDate(shopOrderDate);
+        historyOrderVO.setOrderList(orderList);
+
+        return historyOrderVO;
     }
 }

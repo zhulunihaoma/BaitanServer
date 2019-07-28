@@ -1,6 +1,7 @@
 package com.xll.baitaner.controller;
 
 
+import com.xll.baitaner.entity.VO.HistoryOrderVO;
 import com.xll.baitaner.entity.VO.ShopOrderVO;
 import com.xll.baitaner.service.HistoryOrderService;
 import com.xll.baitaner.service.OrderService;
@@ -257,6 +258,25 @@ public class OrderController {
     }
 
     /**
+     * 删除订单
+     *
+     * @param orderId
+     * @return
+     */
+    @ApiOperation(
+            value = "删除订单（二维码订单且未支付的）",
+            httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderId", value = "订单编号", required = true, dataType = "String")})
+    @GetMapping("deleteOrder")
+    public ResponseResult deleteOrder(String orderId) {
+        boolean result = orderService.deleteOrder(orderId);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", result);
+    }
+
+    /*******************历史订单相关********************?
+
+    /**
      * 获取店铺订单管理 历史订单列表
      *
      * @param shopId
@@ -299,19 +319,45 @@ public class OrderController {
     }
 
     /**
-     * 删除订单
+     * 根据日期查找店铺订单管理中历史订单
      *
-     * @param orderId
+     * @param shopId
      * @return
      */
     @ApiOperation(
-            value = "删除订单（二维码订单且未支付的）",
-            httpMethod = "GET")
+            value = "根据日期查找店铺订单管理中历史订单",
+            httpMethod = "GET",
+            notes = "根据日期查找店铺订单管理中历史订单 date日期参数格式：yyyy-MM-dd")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "orderId", value = "订单编号", required = true, dataType = "String")})
-    @GetMapping("deleteOrder")
-    public ResponseResult deleteOrder(String orderId) {
-        boolean result = orderService.deleteOrder(orderId);
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", result);
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "date", value = "日期 yyyy-MM-dd", required = true, dataType = "String")
+    })
+    @GetMapping("gethistoryorderbydate")
+    public ResponseResult getHistoryOrderByDate(int shopId, String date) {
+        HistoryOrderVO result = historyOrderService.getHistoryOrderByDate(shopId, 3, date);
+        return ResponseResult.result(result != null ? 0 : 1, result != null ? "success" : "fail", result);
     }
+
+    /**
+     * 根据日期查找店铺经营数据中各类型的历史订单
+     *
+     * @param shopId
+     * @param type
+     * @return
+     */
+    @ApiOperation(
+            value = "根据日期查找店铺经营数据中各类型的历史订单",
+            httpMethod = "GET",
+            notes = "date日期参数格式：yyyy-MM-dd;  type类型定义 0: 全部已付款订单, 1: 在线付款订单, 2: 二维码付款订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "type", value = "经营数据下订单的type", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "date", value = "日期 yyyy-MM-dd", required = true, dataType = "String")
+    })
+    @GetMapping("getstatisticsorderbydate")
+    public ResponseResult getStatisticsHistoryOrderByDate(int shopId, int type, String date) {
+        HistoryOrderVO result = historyOrderService.getHistoryOrderByDate(shopId, type, date);
+        return ResponseResult.result(result != null ? 0 : 1, result != null ? "success" : "fail", result);
+    }
+
 }
