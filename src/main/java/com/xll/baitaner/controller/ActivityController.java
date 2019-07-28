@@ -256,10 +256,10 @@ public class ActivityController {
      * @return
      */
     @ApiOperation(
-            value = "创建店铺数据提交接口",
+            value = "获客粉丝的插入",
             httpMethod = "POST",
-            notes = "创建店铺数据提交接口")
-    @ApiImplicitParam(name = "shop", value = "店铺信息实体类", required = true, dataType = "Shop")
+            notes = "获客粉丝的插入接口")
+    @ApiImplicitParam(name = "shop", value = "fansphone信息实体类", required = true, dataType = "Shop")
     @PostMapping("insertFans_phone")
     public ResponseResult insertFans_phone(FansPhone fansPhone) {
         int res = activityService.insertFans_phone(fansPhone);
