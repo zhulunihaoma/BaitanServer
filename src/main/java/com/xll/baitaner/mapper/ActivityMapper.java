@@ -1,9 +1,6 @@
 package com.xll.baitaner.mapper;
 
-import com.xll.baitaner.entity.Activity;
-import com.xll.baitaner.entity.ActivityRecord;
-import com.xll.baitaner.entity.ActivityShopCommodity;
-import com.xll.baitaner.entity.SupportRecord;
+import com.xll.baitaner.entity.*;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
@@ -206,6 +203,27 @@ public interface ActivityMapper {
      */
     @Update("UPDATE activityrecord SET currentPrice = #{currentPrice} WHERE id = #{recordId}")
     int UpdateCurrentPrice(@Param("currentPrice") String currentPrice, @Param("recordId") int recordId);
+
+
+
+    /**
+     * 获客粉丝的插入
+     *
+     * @param fansPhone
+     * @return INSERT
+     */
+    @Update("INSERT INTO fans_phone (activityId, activityRecordId, shopId, openId, nickName, avatarUrl, gender) "+
+            "VALUES (#{fansPhone.activityId}, #{fansPhone.activityRecordId}, #{fansPhone.shopId}, #{fansPhone.openId}, #{fansPhone.nickName}, #{fansPhone.avatarUrl}, #{fansPhone.gender},) ")
+    int insertFans_phone(@Param("fansphone") FansPhone fansPhone);
+
+    /**
+     * 查询一个shopId所拥有的获客粉丝
+     *
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT * FROM fans_phone WHERE shopId  = #{shopId}")
+    List<FansPhone> selectFansPhoneByshopId(@Param("shopId") int shopId);
 
 
 }

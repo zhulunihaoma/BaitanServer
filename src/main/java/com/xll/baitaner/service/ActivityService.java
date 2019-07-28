@@ -1,10 +1,9 @@
 package com.xll.baitaner.service;
 
-import com.xll.baitaner.entity.Activity;
-import com.xll.baitaner.entity.ActivityRecord;
-import com.xll.baitaner.entity.ActivityShopCommodity;
-import com.xll.baitaner.entity.SupportRecord;
+import com.xll.baitaner.entity.*;
 import net.sf.json.JSONObject;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -147,4 +146,25 @@ public interface ActivityService {
      * @return
      */
     List<ActivityRecord> selectActivityRecordByOpenId(String openId, Integer offset, Integer size);
+
+
+    /**
+     * 获客粉丝的插入
+     *
+     * @param fansPhone
+     * @return
+     */
+    int insertFans_phone(FansPhone fansPhone);
+
+
+    /**
+     * 查询一个shopId所拥有的获客粉丝
+     *
+     * @param shopId
+     * @return
+     */
+    List<FansPhone> selectFansPhoneByshopId(int shopId, Integer offset, Integer size);
+
+
+
 }

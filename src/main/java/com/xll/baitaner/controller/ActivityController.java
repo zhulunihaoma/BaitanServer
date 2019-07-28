@@ -2,16 +2,13 @@ package com.xll.baitaner.controller;
 
 import com.xll.baitaner.entity.Activity;
 import com.xll.baitaner.entity.ActivityRecord;
+import com.xll.baitaner.entity.FansPhone;
 import com.xll.baitaner.service.ActivityService;
 import com.xll.baitaner.utils.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
@@ -24,7 +21,9 @@ import java.util.Date;
  * @date 2019/1/13
  */
 @Api(value = "活动模块controller")
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+
 public class ActivityController {
 
     @Resource
@@ -248,4 +247,44 @@ public class ActivityController {
         return ResponseResult.result(0, "success", activityService.selectActivityRecordByOpenId(openId, offset, size));
 
     }
+
+
+    /**
+     * 获客粉丝的插入
+     *
+     * @param fansPhone
+     * @return
+     */
+    @ApiOperation(
+            value = "创建店铺数据提交接口",
+            httpMethod = "POST",
+            notes = "创建店铺数据提交接口")
+    @ApiImplicitParam(name = "shop", value = "店铺信息实体类", required = true, dataType = "Shop")
+    @PostMapping("insertFans_phone")
+    public ResponseResult insertFans_phone(FansPhone fansPhone) {
+        int res = activityService.insertFans_phone(fansPhone);
+
+        return ResponseResult.result(res > 0 ? 0 : 1, res > 0 ? "success" : "fail", res);
+
+    }
+
+
+    /**
+     * 查询一个shopId所拥有的获客粉丝
+     *
+     * @param shopId
+     * @return
+     */
+    @ApiOperation(
+            value = "根据shopId获取所拥有的获客粉丝",
+            httpMethod = "GET",
+            notes = "根据shopId获取所拥有的获客粉丝")
+    @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int")
+    @GetMapping("selectFansPhoneByshopId")
+    public ResponseResult selectFansPhoneByshopId(int shopId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", activityService.selectFansPhoneByshopId(shopId, offset, size));
+
+    }
+
+
 }

@@ -2,12 +2,7 @@ package com.xll.baitaner.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.xll.baitaner.entity.Activity;
-import com.xll.baitaner.entity.ActivityRecord;
-import com.xll.baitaner.entity.ActivityShopCommodity;
-import com.xll.baitaner.entity.Commodity;
-import com.xll.baitaner.entity.Shop;
-import com.xll.baitaner.entity.SupportRecord;
+import com.xll.baitaner.entity.*;
 import com.xll.baitaner.mapper.ActivityMapper;
 import com.xll.baitaner.service.ActivityService;
 import com.xll.baitaner.service.CommodityService;
@@ -332,5 +327,38 @@ public class ActivityServiceImpl implements ActivityService {
         return result;
 
     }
+
+
+    /**
+     * 获客粉丝的插入
+     *
+     * @param fansPhone
+     * @return
+     */
+    @Override
+    public int insertFans_phone(FansPhone fansPhone){
+
+        return activityMapper.insertFans_phone(fansPhone);
+
+    }
+
+
+    /**
+     * 查询一个shopId所拥有的获客粉丝
+     *
+     * @param shopId
+     * @return
+     */
+    public List<FansPhone> selectFansPhoneByshopId(int shopId, Integer offset, Integer size){
+        Page<FansPhone> page =
+                PageHelper.startPage(offset, size).doSelectPage(() -> activityMapper.selectFansPhoneByshopId(shopId));
+        List<FansPhone> result = page.getResult();
+        if (result == null) {
+            return new ArrayList<>();
+        }
+        //塞入对应的商品信息
+        return result;
+    }
+
 }
 
