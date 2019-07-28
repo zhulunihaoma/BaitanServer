@@ -334,8 +334,7 @@ public class OrderController {
     })
     @GetMapping("gethistoryorderbydate")
     public ResponseResult getHistoryOrderByDate(int shopId, String date) {
-        HistoryOrderVO result = historyOrderService.getHistoryOrderByDate(shopId, 3, date);
-        return ResponseResult.result(result != null ? 0 : 1, result != null ? "success" : "fail", result);
+        return ResponseResult.result(0, "success", historyOrderService.getHistoryOrderByDate(shopId, 3, date));
     }
 
     /**
@@ -356,8 +355,7 @@ public class OrderController {
     })
     @GetMapping("getstatisticsorderbydate")
     public ResponseResult getStatisticsHistoryOrderByDate(int shopId, int type, String date) {
-        HistoryOrderVO result = historyOrderService.getHistoryOrderByDate(shopId, type, date);
-        return ResponseResult.result(result != null ? 0 : 1, result != null ? "success" : "fail", result);
+        return ResponseResult.result(0, "success", historyOrderService.getHistoryOrderByDate(shopId, type, date));
     }
 
 }
