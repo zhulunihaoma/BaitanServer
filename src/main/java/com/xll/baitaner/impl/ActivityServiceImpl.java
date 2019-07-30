@@ -37,12 +37,12 @@ public class ActivityServiceImpl implements ActivityService {
     /**
      * 查询用户参加所有活动列表
      *
-     * @param openId
+     * @param shopId
      * @return
      */
     @Override
-    public List<Activity> getActivitylist(String openId) {
-        return activityMapper.selectActivityList(openId);
+    public List<Activity> getActivitylist(int shopId) {
+        return activityMapper.selectActivityList(shopId);
     }
 
     /**
@@ -349,6 +349,7 @@ public class ActivityServiceImpl implements ActivityService {
      * @param shopId
      * @return
      */
+    @Override
     public List<FansPhone> selectFansPhoneByshopId(int shopId, Integer offset, Integer size){
         Page<FansPhone> page =
                 PageHelper.startPage(offset, size).doSelectPage(() -> activityMapper.selectFansPhoneByshopId(shopId));

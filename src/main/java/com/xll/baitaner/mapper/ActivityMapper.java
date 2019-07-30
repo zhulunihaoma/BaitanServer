@@ -54,11 +54,11 @@ public interface ActivityMapper {
     /**
      * 查询用户所有参加活动的列表
      *
-     * @param clientId
+     * @param shopId
      * @return
      */
-    @Select("SELECT * FROM activity WHERE openId = #{openId}")
-    List<Activity> selectActivityList(@Param("openId") String clientId);
+    @Select("SELECT * FROM activity WHERE shopId = #{shopId}")
+    List<Activity> selectActivityList(@Param("shopId") int shopId);
 
     /**
      * 根据活动id查询活动详情
@@ -212,9 +212,9 @@ public interface ActivityMapper {
      * @param fansPhone
      * @return INSERT
      */
-    @Update("INSERT INTO fans_phone (activityId, activityRecordId, shopId, openId, nickName, avatarUrl, gender) "+
-            "VALUES (#{fansPhone.activityId}, #{fansPhone.activityRecordId}, #{fansPhone.shopId}, #{fansPhone.openId}, #{fansPhone.nickName}, #{fansPhone.avatarUrl}, #{fansPhone.gender},) ")
-    int insertFans_phone(@Param("fansphone") FansPhone fansPhone);
+    @Insert("INSERT INTO fans_phone (activityId, activityRecordId, shopId, openId, nickName, avatarUrl, gender, phoneNum) "+
+            "VALUES (#{fansPhone.activityId}, #{fansPhone.activityRecordId}, #{fansPhone.shopId}, #{fansPhone.openId}, #{fansPhone.nickName}, #{fansPhone.avatarUrl}, #{fansPhone.gender}, #{fansPhone.phoneNum}) ")
+    int insertFans_phone(@Param("fansPhone") FansPhone fansPhone);
 
     /**
      * 查询一个shopId所拥有的获客粉丝

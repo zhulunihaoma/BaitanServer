@@ -20,7 +20,7 @@ public interface ActivityService {
      * @param openId
      * @return
      */
-    List<Activity> getActivitylist(String openId);
+    List<Activity> getActivitylist(int openId);
 
     /**
      * 删除活动

@@ -76,13 +76,13 @@ public class ActivityController {
     /**
      * 获取用户所有创建的活动列表
      *
-     * @param openId
+     * @param shopId
      * @return
      */
     @GetMapping("getactivitylist")
-    public ResponseResult getActivitylist(String openId) {
+    public ResponseResult getActivitylist(int shopId) {
 
-        return ResponseResult.result(0, "success", activityService.getActivitylist(openId));
+        return ResponseResult.result(0, "success", activityService.getActivitylist(shopId));
     }
 
     /**
@@ -255,13 +255,19 @@ public class ActivityController {
      * @param fansPhone
      * @return
      */
-    @ApiOperation(
-            value = "获客粉丝的插入",
-            httpMethod = "POST",
-            notes = "获客粉丝的插入接口")
-    @ApiImplicitParam(name = "shop", value = "fansphone信息实体类", required = true, dataType = "Shop")
+
     @PostMapping("insertFans_phone")
-    public ResponseResult insertFans_phone(FansPhone fansPhone) {
+    public ResponseResult insertFans_phone(int activityId, int activityRecordId, int shopId, String openId,String nickName,String avatarUrl,String gender,String phoneNum) {
+
+        FansPhone fansPhone  = new FansPhone();
+        fansPhone.setActivityId(activityId);
+        fansPhone.setActivityRecordId(activityRecordId);
+        fansPhone.setShopId(shopId);
+        fansPhone.setOpenId(openId);
+        fansPhone.setNickName(nickName);
+        fansPhone.setAvatarUrl(avatarUrl);
+        fansPhone.setGender(gender);
+        fansPhone.setPhoneNum(phoneNum);
         int res = activityService.insertFans_phone(fansPhone);
 
         return ResponseResult.result(res > 0 ? 0 : 1, res > 0 ? "success" : "fail", res);

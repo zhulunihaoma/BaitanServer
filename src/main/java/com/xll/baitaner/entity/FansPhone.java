@@ -60,5 +60,10 @@ public class FansPhone {
     @ApiModelProperty(value = "用户的性别，值为1时是男性，值为2时是女性，值为0时是未知", name = "gender")
     private String gender;
 
+    /**
+     * 用户的手机号
+     */
+    @ApiModelProperty(value = "用户的手机号", name = "phoneNum")
+    private String phoneNum;
 
 }
