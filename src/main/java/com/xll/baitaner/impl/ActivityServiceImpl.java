@@ -3,6 +3,8 @@ package com.xll.baitaner.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.VO.ActivityResultVO;
+import com.xll.baitaner.entity.VO.ActivityVO;
 import com.xll.baitaner.mapper.ActivityMapper;
 import com.xll.baitaner.service.ActivityService;
 import com.xll.baitaner.service.CommodityService;
@@ -35,14 +37,31 @@ public class ActivityServiceImpl implements ActivityService {
     private CommodityService commodityService;
 
     /**
-     * 查询用户参加所有活动列表
+     * 查询店铺创建的所有活动列表
      *
      * @param shopId
      * @return
      */
     @Override
-    public List<Activity> getActivitylist(int shopId) {
-        return activityMapper.selectActivityList(shopId);
+    public ActivityResultVO getActivitylist(int shopId) {
+        List<Activity> activityList = activityMapper.selectActivityList(shopId);
+        List<ActivityVO> activityVOList = new ArrayList<>();
+        ActivityResultVO activityResultVO = new ActivityResultVO();
+
+
+        for (Activity activity : activityList) {
+            ActivityVO activityVO = new ActivityVO();
+            Commodity commodity = commodityService.getCommodity(activity.getCommodityId());
+
+            activityVO.setActivity(activity);
+            activityVO.setCommodity(commodity);
+            activityVOList.add(activityVO);
+        }
+        activityResultVO.setData(activityVOList);
+        activityResultVO.setCount(activityVOList.size());
+
+
+        return activityResultVO;
     }
 
     /**

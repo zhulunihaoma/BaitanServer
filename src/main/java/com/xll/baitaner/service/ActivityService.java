@@ -1,6 +1,7 @@
 package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.VO.ActivityResultVO;
 import net.sf.json.JSONObject;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -17,10 +18,10 @@ public interface ActivityService {
     /**
      * 查询用户参加所有活动列表
      *
-     * @param openId
+     * @param shopId
      * @return
      */
-    List<Activity> getActivitylist(int openId);
+    ActivityResultVO getActivitylist(int shopId);
 
     /**
      * 删除活动

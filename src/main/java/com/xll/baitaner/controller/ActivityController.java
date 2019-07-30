@@ -74,7 +74,7 @@ public class ActivityController {
     }
 
     /**
-     * 获取用户所有创建的活动列表
+     * 获取店铺所有创建的活动列表
      *
      * @param shopId
      * @return
