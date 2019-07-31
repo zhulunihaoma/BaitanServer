@@ -23,6 +23,10 @@ public class ActivityShopCommodity {
      * 店铺ID
      */
     private int shopId;
+    /**
+     * 商品ID
+     */
+    private int commodityId;
 
     /**
      * 店铺名称

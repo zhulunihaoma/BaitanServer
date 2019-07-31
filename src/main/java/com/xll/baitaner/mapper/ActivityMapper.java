@@ -78,7 +78,7 @@ public interface ActivityMapper {
      * @return
      */
 
-    @Select("SELECT activity.endTime,activity.operateType,activity.operateContent, activity.status, activity.activityType, activity.nickName, activity.avatarUrl, activity.activityPrice,commodity.name As commodityName ,commodity.introduction, commodity.pictUrl, commodity.price, " +
+    @Select("SELECT activity.commodityId, activity.endTime,activity.operateType,activity.operateContent, activity.status, activity.activityType, activity.nickName, activity.avatarUrl, activity.activityPrice,commodity.name As commodityName ,commodity.introduction, commodity.pictUrl, commodity.price, " +
             "shop.shopName ,shop.shopIntroduction ,shop.ownerName ,shop.wxNumber ,shop.contactNumber ,shop.shopAddress ,shop.shopLogoUrl ,shop.id As shopId FROM activity JOIN commodity ON activity.commodityId = commodity.id JOIN shop ON activity.shopId = shop.id   WHERE activity.id = #{id}")
     ActivityShopCommodity selectActivityById2(@Param("id") int id);
 
