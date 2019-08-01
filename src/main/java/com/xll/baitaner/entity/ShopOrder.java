@@ -82,10 +82,10 @@ public class ShopOrder {
     private Integer activityNot;
 
     /**
-     * 活动id  默认无
+     * 活动Recordid  默认无
      */
-    @ApiModelProperty(value = "活动id  默认无", name = "activityId")
-    private String activityId;
+    @ApiModelProperty(value = "活动Recordid  默认无", name = "activityRecordId")
+    private String activityRecordId;
 
     private Integer delFlag;
 

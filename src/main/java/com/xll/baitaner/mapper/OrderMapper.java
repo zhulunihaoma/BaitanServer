@@ -19,8 +19,8 @@ import java.util.List;
 @Repository
 public interface OrderMapper {
 
-    String shopOrder = " `order_id`,`open_id`,`shop_id`,`address_id`,`create_date`,`pay_type`,`remarks`,`total_money`,`postage`,`state`," +
-            "`activity_not`,`activity_id`,`del_flag` ";
+    String shopOrder = " `id`, `order_id`,`open_id`,`shop_id`,`address_id`,`create_date`,`pay_type`,`remarks`,`total_money`,`postage`,`state`," +
+            "`activity_not`,`activity_record_id`,`del_flag` ";
 
     /**
      * 插入订单数据
@@ -29,9 +29,9 @@ public interface OrderMapper {
      * @return
      */
     @Insert("INSERT INTO `shop_order` (order_id,open_id,shop_id,address_id,pay_type,remarks,total_money,postage,state," +
-            "activity_not,activity_id) " +
+            "activity_not,activity_record_id) " +
             "VALUES (#{order.orderId},#{order.openId},#{order.shopId},#{order.addressId},#{order.payType},#{order.remarks}," +
-            "#{order.totalMoney},#{order.postage},#{order.state},#{order.activityNot},#{order.activityId})")
+            "#{order.totalMoney},#{order.postage},#{order.state},#{order.activityNot},#{order.activityRecordId})")
     int insertShopOrder(@Param("order") ShopOrder order);
 
     /**

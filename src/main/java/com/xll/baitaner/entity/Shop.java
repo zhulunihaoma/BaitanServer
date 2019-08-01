@@ -100,4 +100,16 @@ public class Shop {
      */
     @ApiModelProperty(value = "店铺的小程序二维码", name = "shopWxacode")
     private String shopWxacode;
+
+    /**
+     * 店铺地址经度
+     */
+    @ApiModelProperty(value = "店铺地址经度", name = "longitude")
+    private float longitude;
+
+    /**
+     * 店铺地址纬度
+     */
+    @ApiModelProperty(value = "店铺地址纬度", name = "latitude")
+    private float latitude;
 }

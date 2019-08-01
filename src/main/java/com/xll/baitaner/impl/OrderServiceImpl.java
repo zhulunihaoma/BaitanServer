@@ -2,13 +2,7 @@ package com.xll.baitaner.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.xll.baitaner.entity.Commodity;
-import com.xll.baitaner.entity.CommodityOrder;
-import com.xll.baitaner.entity.OrderCommodity;
-import com.xll.baitaner.entity.ReceiverAddress;
-import com.xll.baitaner.entity.Shop;
-import com.xll.baitaner.entity.ShopOrder;
-import com.xll.baitaner.entity.Spec;
+import com.xll.baitaner.entity.*;
 import com.xll.baitaner.entity.VO.OrderDetailsResultVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import com.xll.baitaner.entity.VO.ShopOrderVO;
@@ -19,6 +13,7 @@ import com.xll.baitaner.mapper.OrderMapper;
 import com.xll.baitaner.mapper.ProfileMapper;
 import com.xll.baitaner.mapper.ShopMapper;
 import com.xll.baitaner.service.*;
+import com.xll.baitaner.utils.LogUtils;
 import com.xll.baitaner.utils.SerialUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -70,6 +65,9 @@ public class OrderServiceImpl implements OrderService {
     private TemplateService templateService;
 
     @Resource
+    private ActivityService activityService;
+
+    @Resource
     ProfileMapper profileMapper;
 
     @Resource
@@ -90,22 +88,48 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderId(orderId);
         //计算订单金额
         BigDecimal total = new BigDecimal("0.00");
-        for (OrderCommodity orderCommodity : commodityList) {
-            //获取商品信息
-            Commodity commodity = commodityService.getCommodity(orderCommodity.getCommodityId());
-            BigDecimal money = new BigDecimal("0.00");
-            //有规格
-            if (orderCommodity.getSpecId() > 0) {
-                //获取商品规格
-                Spec spec = specService.getSpec(orderCommodity.getSpecId());
-                if (spec != null && spec.getCommodityId() != orderCommodity.getCommodityId()) {
-                    money = new BigDecimal(spec.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
-                }
-            } else {
-                money = new BigDecimal(commodity.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
+
+        if (order.getActivityNot() == 1){
+            //ActivityRecord活动订单
+            ActivityRecord activityRecord = activityService.getActivityrecordById(Integer.parseInt(order.getActivityRecordId()));
+            if (activityRecord == null){
+                LogUtils.error(TAG, String.format("Activity order id {0} activityRecord id {1} is null!", orderId, order.getActivityRecordId()));
+                return 0L;
             }
+            Activity activity = (Activity) activityService.getActivityById(activityRecord.getActivityId()).get("activity");//后面活动改成不用json
+            if (activity == null){
+                LogUtils.error(TAG, String.format("Activity order id {0} activity id {1} is null!", orderId, activityRecord.getActivityId()));
+                return 0L;
+            }
+            //TODO 判断ActivityRecord状态、Activity商品个数充足
+            if (activityRecord.getRecordStatus() != 1){ //判断活动达标 可购买
+                LogUtils.error(TAG, String.format("Activity order id {0} activityRecord id {1} status is {2}, return!",
+                        orderId, activityRecord.getActivityId(), activityRecord.getRecordStatus()));
+                return 0L;
+            }
+
+            BigDecimal money = new BigDecimal("0.00");
+            money = new BigDecimal(activity.getActivityPrice());
             total = total.add(money);
+        }else {
+            for (OrderCommodity orderCommodity : commodityList) {
+                //获取商品信息
+                Commodity commodity = commodityService.getCommodity(orderCommodity.getCommodityId());
+                BigDecimal money = new BigDecimal("0.00");
+                //有规格
+                if (orderCommodity.getSpecId() > 0) {
+                    //获取商品规格
+                    Spec spec = specService.getSpec(orderCommodity.getSpecId());
+                    if (spec != null && spec.getCommodityId() != orderCommodity.getCommodityId()) {
+                        money = new BigDecimal(spec.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
+                    }
+                } else {
+                    money = new BigDecimal(orderCommodity.getUnitPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
+                }
+                total = total.add(money);
+            }
         }
+
         //运费
         if (StringUtils.isNotBlank(order.getPostage())) {
             total = total.add(new BigDecimal(order.getPostage()));

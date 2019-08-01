@@ -25,9 +25,10 @@ public interface ShopMapper {
      * @return
      */
     @Insert("INSERT INTO shop (openId,shopName,shopIntroduction,ownerName,wxNumber,contactNumber,shopAddress,shopLogoUrl" +
-            ",payPlatform,payQrcode,payQrcodeUrl,shopState,number,shopWxacode) VALUES (#{shop.openId},#{shop.shopName}," +
-            "#{shop.shopIntroduction},#{shop.ownerName},#{shop.wxNumber},#{shop.contactNumber},#{shop.shopAddress}," +
-            "#{shop.shopLogoUrl},#{shop.payPlatform},#{shop.payQrcode},#{shop.payQrcodeUrl},#{shop.shopState},#{shop.number},#{shop.shopWxacode})")
+            ",payPlatform,payQrcode,payQrcodeUrl,shopState,number,shopWxacode,longitude,latitude) " +
+            "VALUES (#{shop.openId},#{shop.shopName},#{shop.shopIntroduction},#{shop.ownerName},#{shop.wxNumber}," +
+            "#{shop.contactNumber},#{shop.shopAddress},#{shop.shopLogoUrl},#{shop.payPlatform},#{shop.payQrcode}," +
+            "#{shop.payQrcodeUrl},#{shop.shopState},#{shop.number},#{shop.shopWxacode},#{shop.longitude},#{shop.latitude})")
     @Options(useGeneratedKeys = true, keyProperty = "shop.id")
     int insertShop(@Param("shop") Shop shop);
 
@@ -87,7 +88,8 @@ public interface ShopMapper {
     int updateShopBanner(@Param("shopBanner") ShopBanner shopBanner);
 
     /**
-     * 更新店铺信息,店铺名、店铺简介、店主微信名、店主微信、联系电话、店铺地址、店铺logo、店铺平台支付开启状态、店铺二维码支付开启状态、店铺支付二维码路径、访问人次
+     * 更新店铺信息,店铺名、店铺简介、店主微信名、店主微信、联系电话、店铺地址、店铺logo、店铺平台支付开启状态、
+     * 店铺二维码支付开启状态、店铺支付二维码路径、访问人次、经纬度
      *
      * @param shop
      * @return
@@ -95,7 +97,8 @@ public interface ShopMapper {
     @Update("UPDATE shop SET shopName = #{shop.shopName}, shopIntroduction = #{shop.shopIntroduction}, " +
             "ownerName = #{shop.ownerName}, wxNumber = #{shop.wxNumber}, contactNumber = #{shop.contactNumber}, " +
             "shopAddress = #{shop.shopAddress}, shopLogoUrl = #{shop.shopLogoUrl},payPlatform = #{shop.payPlatform}," +
-            "payQrcode = #{shop.payQrcode},payQrcodeUrl = #{shop.payQrcodeUrl}, number = #{shop.number}, shopWxacode = #{shop.shopWxacode} " +
+            "payQrcode = #{shop.payQrcode},payQrcodeUrl = #{shop.payQrcodeUrl}, number = #{shop.number}, " +
+            "shopWxacode = #{shop.shopWxacode}, longitude = #{shop.longitude}, latitude = #{shop.latitude}" +
             "WHERE id  = #{shop.id}")
     int updateShopInfo(@Param("shop") Shop shop);
 
