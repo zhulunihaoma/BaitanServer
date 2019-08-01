@@ -177,7 +177,7 @@ public class ActivityServiceImpl implements ActivityService {
      * @return
      */
 
-    private boolean changeRecordstatus(int recordStatus, int recordId) {
+    public boolean changeRecordstatus(int recordStatus, int recordId) {
         return activityMapper.changeRecordStatus(recordStatus, recordId) > 0;
 
 

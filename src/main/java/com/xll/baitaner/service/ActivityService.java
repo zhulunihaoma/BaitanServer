@@ -80,6 +80,18 @@ public interface ActivityService {
      */
     ActivityRecord getActivityrecordById(int activityRecordId);
 
+
+    /**
+     * 根据recordId更改record状态
+     *
+     * @param recordId
+     * @param recordStatus
+     * @return
+     */
+
+     boolean changeRecordstatus(int recordStatus, int recordId);
+
+
     /**
      * 新增supportrecord
      * 提示码  1 请求失败 0 请求成功 2 请求成功，处理失败
