@@ -26,8 +26,8 @@ public interface ActivityMapper {
      * @param activity
      * @return
      */
-    @Insert("INSERT INTO activity (openId,shopId,activityType,activityName,activityIntro,startTime,endTime,originPrice,activityPrice,stock,operateType,operateContent,requirement,sendType,commodityId,commodityName) " +
-            "VALUES (#{activity.openId},#{activity.shopId},#{activity.activityType},#{activity.activityName},#{activity.activityIntro},#{activity.startTime},#{activity.endTime},#{activity.originPrice},#{activity.activityPrice},#{activity.stock},#{activity.operateType},#{activity.operateContent},#{activity.requirement},#{activity.sendType},#{activity.commodityId},#{activity.commodityName})")
+    @Insert("INSERT INTO activity (openId,shopId,activityType,activityName,activityIntro,startTime,endTime,originPrice,activityPrice,stock,operateType,operateContent,requirement,sendType,commodityId) " +
+            "VALUES (#{activity.openId},#{activity.shopId},#{activity.activityType},#{activity.activityName},#{activity.activityIntro},#{activity.startTime},#{activity.endTime},#{activity.originPrice},#{activity.activityPrice},#{activity.stock},#{activity.operateType},#{activity.operateContent},#{activity.requirement},#{activity.sendType},#{activity.commodityId})")
     @Options(useGeneratedKeys = true, keyProperty = "activity.id")
     int insertActivity(@Param("activity") Activity activity);
 
@@ -67,7 +67,7 @@ public interface ActivityMapper {
      * @return
      */
 
-    @Select("SELECT activity.*, commodity.* FROM activity JOIN commodity ON activity.commodityId = commodity.id WHERE activity.id = #{id}")
+    @Select("SELECT * FROM activity  WHERE id = #{id}")
     Activity selectActivityById(@Param("id") int id);
 
 
@@ -88,8 +88,8 @@ public interface ActivityMapper {
      * @param activityRecord
      * @return
      */
-    @Insert("INSERT INTO activityrecord (activityId,openId,nickName,avatarUrl,gender,commodityId,status,currentPrice,activityPrice,endTime,shopName,shopLogoUrl,goodname) " +
-            "VALUES (#{activityRecord.activityId},#{activityRecord.openId},#{activityRecord.nickName},#{activityRecord.avatarUrl},#{activityRecord.gender},#{activityRecord.commodityId},#{activityRecord.status},#{activityRecord.currentPrice},#{activityRecord.activityPrice},#{activityRecord.endTime},#{activityRecord.shopName},#{activityRecord.shopLogoUrl},#{activityRecord.goodname})")
+    @Insert("INSERT INTO activityrecord (activityId,openId,recordStatus,recordWxcode,currentPrice) " +
+            "VALUES (#{activityRecord.activityId},#{activityRecord.openId},#{activityRecord.recordStatus}, #{activityRecord.recordWxcode}, #{activityRecord.currentPrice})")
     @Options(useGeneratedKeys = true, keyProperty = "activityRecord.id")
     int insertActivityRecord(@Param("activityRecord") ActivityRecord activityRecord);
 

@@ -66,4 +66,10 @@ public class WXUserInfo {
      */
     @ApiModelProperty(value = "用户在开放平台的唯一标识符(公众号模板提醒时使用)", name = "unionId")
     private String unionId;
+
+    /**
+     * 用户的手机号
+     */
+    @ApiModelProperty(value = "用户的手机号", name = "phoneNum")
+    private String phoneNum;
 }

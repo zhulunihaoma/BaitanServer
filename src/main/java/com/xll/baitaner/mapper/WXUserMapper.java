@@ -49,9 +49,9 @@ public interface WXUserMapper {
      * @param userInfo
      * @return
      */
-    @Insert("INSERT INTO wxuserinfo (openId,nickName,avatarUrl,gender,city,province,country,language,unionId) " +
+    @Insert("INSERT INTO wxuserinfo (openId,nickName,avatarUrl,gender,city,province,country,language,unionId,phoneNum) " +
             "VALUES (#{userInfo.openId},#{userInfo.nickName},#{userInfo.avatarUrl},#{userInfo.gender},#{userInfo.country}," +
-            "#{userInfo.province},#{userInfo.city},#{userInfo.language},#{userInfo.unionId})")
+            "#{userInfo.province},#{userInfo.city},#{userInfo.language},#{userInfo.unionId},#{userInfo.phoneNum})")
     int insertWXUser(@Param("userInfo") WXUserInfo userInfo);
 
     /**
@@ -62,7 +62,7 @@ public interface WXUserMapper {
      */
     @Update("UPDATE wxuserinfo SET nickName=#{userInfo.nickName}, avatarUrl=#{userInfo.avatarUrl}, " +
             "gender=#{userInfo.gender}, city=#{userInfo.city}, province=#{userInfo.province}, " +
-            "country=#{userInfo.country}, language=#{userInfo.language} WHERE openId = #{userInfo.openId}")
+            "country=#{userInfo.country}, language=#{userInfo.language}, phoneNum=#{userInfo.phoneNum}  WHERE openId = #{userInfo.openId}")
     int updateWXUser(@Param("userInfo") WXUserInfo userInfo);
 
     /**

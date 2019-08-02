@@ -84,9 +84,9 @@ public class Activity {
 
 
     /**
-     * 商品数量
+     * 活动商品数量
      */
-    @ApiModelProperty(value = "商品数量", name = "stock")
+    @ApiModelProperty(value = "活动商品数量", name = "stock")
     private int stock;
 
     /**
@@ -122,28 +122,6 @@ public class Activity {
     @ApiModelProperty(value = "绑定的商品Id", name = "CommodityId")
     private int commodityId;
 
-    /**
-     * 商品名
-     */
-    @ApiModelProperty(value = "商品名", name = "commodityName")
-    private String commodityName;
 
-    /**
-     * 商品描述
-     */
-    @ApiModelProperty(value = "商品描述", name = "introduction")
-    private String introduction;
-
-    /**
-     * 商品单价
-     */
-    @ApiModelProperty(value = "商品单价", name = "price")
-    private String price;
-
-    /**
-     * 商品运费
-     */
-    @ApiModelProperty(value = "商品运费", name = "postage")
-    private String postage;
 
 }

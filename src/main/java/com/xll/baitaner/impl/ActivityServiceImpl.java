@@ -3,12 +3,14 @@ package com.xll.baitaner.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.VO.ActivityRecordVO;
 import com.xll.baitaner.entity.VO.ActivityResultVO;
 import com.xll.baitaner.entity.VO.ActivityVO;
 import com.xll.baitaner.mapper.ActivityMapper;
 import com.xll.baitaner.service.ActivityService;
 import com.xll.baitaner.service.CommodityService;
 import com.xll.baitaner.service.ShopManageService;
+import com.xll.baitaner.service.WXUserService;
 import com.xll.baitaner.utils.DateUtils;
 import net.sf.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,9 @@ public class ActivityServiceImpl implements ActivityService {
     @Resource
     private CommodityService commodityService;
 
+    @Resource
+    private WXUserService wxUserService;
+
     /**
      * 查询店铺创建的所有活动列表
      *
@@ -52,9 +57,10 @@ public class ActivityServiceImpl implements ActivityService {
         for (Activity activity : activityList) {
             ActivityVO activityVO = new ActivityVO();
             Commodity commodity = commodityService.getCommodity(activity.getCommodityId());
-
+            Shop shop = shopManageService.getShopById(activity.getShopId());
             activityVO.setActivity(activity);
             activityVO.setCommodity(commodity);
+            activityVO.setShop(shop);
             activityVOList.add(activityVO);
         }
         activityResultVO.setData(activityVOList);
@@ -110,17 +116,19 @@ public class ActivityServiceImpl implements ActivityService {
      * @return
      */
     @Override
-    public JSONObject getActivityById(int activityId) {
+    public ActivityVO getActivityById(int activityId) {
         Activity activity = activityMapper.selectActivityById(activityId);
-        Shop shopinfo = shopManageService.getShopById(activity.getShopId());//后面改成根据shopId获取，活动和店铺绑定而不是个人
-        Commodity commodity = commodityService.getCommodity(activity.getCommodityId());
-        activity.setEndTimeString(DateUtils.dateTimetoString(activity.getEndTime()));
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("activity", activity);
-        jsonObject.put("shopinfo", shopinfo);
-        jsonObject.put("commodity", commodity);
-        return jsonObject;
+        Shop shopinfo = shopManageService.getShopById(activity.getShopId());
+        Commodity commodity = commodityService.getCommodity(activity.getCommodityId());
+//        activity.setEndTimeString(DateUtils.dateTimetoString(activity.getEndTime()));
+
+        ActivityVO activityVO = new ActivityVO();
+        activityVO.setShop(shopinfo);
+        activityVO.setActivity(activity);
+        activityVO.setCommodity(commodity);
+
+        return activityVO;
 
     }
 
@@ -162,10 +170,26 @@ public class ActivityServiceImpl implements ActivityService {
      * @return
      */
     @Override
-    public ActivityRecord getActivityrecordById(int activityRecordId) {
+    public ActivityRecordVO getActivityrecordById(int activityRecordId) {
         ActivityRecord activityRecord = activityMapper.selectActivityrecordById(activityRecordId);
+        ActivityRecordVO activityRecordVO = new ActivityRecordVO();
 
-        return activityRecord;
+        activityRecordVO.setActivityRecord(activityRecord);
+
+        Activity activity = activityMapper.selectActivityById(activityRecord.getActivityId());
+        activityRecordVO.setActivity(activity);
+
+        Shop shop = shopManageService.getShopById(activityRecord.getActivityId());
+        activityRecordVO.setShop(shop);
+
+        Commodity commodity = commodityService.getCommodity(activity.getCommodityId());
+        activityRecordVO.setCommodity(commodity);
+
+        WXUserInfo wxUserInfo = wxUserService.getWXUserById(activityRecord.getOpenId());
+        activityRecordVO.setWxUserInfo(wxUserInfo);
+
+
+        return activityRecordVO;
 
     }
 

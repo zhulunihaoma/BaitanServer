@@ -1,7 +1,9 @@
 package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.VO.ActivityRecordVO;
 import com.xll.baitaner.entity.VO.ActivityResultVO;
+import com.xll.baitaner.entity.VO.ActivityVO;
 import net.sf.json.JSONObject;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -54,7 +56,7 @@ public interface ActivityService {
      * @param activityId
      * @return
      */
-    JSONObject getActivityById(int activityId);
+    ActivityVO getActivityById(int activityId);
 
     /**
      * 根据活动id获取活动详情
@@ -78,7 +80,7 @@ public interface ActivityService {
      * @param activityRecordId
      * @return
      */
-    ActivityRecord getActivityrecordById(int activityRecordId);
+    ActivityRecordVO getActivityrecordById(int activityRecordId);
 
 
     /**

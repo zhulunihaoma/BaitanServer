@@ -126,16 +126,9 @@ public class ActivityController {
         ActivityRecord activityRecord = new ActivityRecord();
         activityRecord.setActivityId(activityId);
         activityRecord.setOpenId(openId);
-        activityRecord.setNickName(nickName);
-        activityRecord.setAvatarUrl(avatarUrl);
-        activityRecord.setGender(gender);
-        activityRecord.setShopName(shopName);
-        activityRecord.setShopLogoUrl(shopLogoUrl);
-        activityRecord.setGoodname(goodname);
-        activityRecord.setActivityPrice(activityPrice);
+
         activityRecord.setCurrentPrice(currentPrice);
 
-        activityRecord.setEndTime(endTime);
 
         int res = activityService.insertActivityRecord(activityRecord);
         return ResponseResult.result(res > 0 ? 0 : 1, res > 0 ? "success" : "fail", res);
