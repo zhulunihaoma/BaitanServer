@@ -3,6 +3,7 @@ package com.xll.baitaner.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.VO.ActivityRecordVO;
 import com.xll.baitaner.entity.VO.OrderDetailsResultVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import com.xll.baitaner.entity.VO.ShopOrderVO;
@@ -91,12 +92,15 @@ public class OrderServiceImpl implements OrderService {
 
         if (order.getActivityNot() == 1){
             //ActivityRecord活动订单
-            ActivityRecord activityRecord = activityService.getActivityrecordById(Integer.parseInt(order.getActivityRecordId()));
+            ActivityRecordVO activityRecordVO = activityService.getActivityrecordById(Integer.parseInt(order.getActivityRecordId()));
+            if (activityRecordVO == null)   return 0L;
+
+            ActivityRecord activityRecord = activityRecordVO.getActivityRecord();
             if (activityRecord == null){
                 LogUtils.error(TAG, String.format("Activity order id {0} activityRecord id {1} is null!", orderId, order.getActivityRecordId()));
                 return 0L;
             }
-            Activity activity = (Activity) activityService.getActivityById(activityRecord.getActivityId()).get("activity");//后面活动改成不用json
+            Activity activity = activityRecordVO.getActivity();
             if (activity == null){
                 LogUtils.error(TAG, String.format("Activity order id {0} activity id {1} is null!", orderId, activityRecord.getActivityId()));
                 return 0L;
@@ -147,6 +151,11 @@ public class OrderServiceImpl implements OrderService {
                 //向用户发送 订单（二维码支付）待支付模板消息
                 templateService.sendPendingPaymentMessage(String.valueOf(orderId));
             }
+
+            if (order.getActivityNot() == 1){
+                activityService.changeRecordstatus(2, Integer.parseInt(order.getActivityRecordId()));
+            }
+
             return orderId;
         }
         return 0L;
