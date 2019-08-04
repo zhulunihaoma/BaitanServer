@@ -94,14 +94,23 @@ public class PayServiceImpl implements PayService {
                 JSONObject payObj = QfWxPay.QfPayMent(totalFee, outTradeNo, txdtm, openId);
                 LogUtils.info(TAG, "qfwxpay 返回数据中的pay_params: \n" + payObj);
                 LogUtils.info("××××××qf pay end××××××. orderId:{},openId:{},pay_params:{}", orderId + ";" + openId + ";" + payObj);
-                return ResponseResult.result(0, "success", payObj);
+                if (payObj != null){
+                    if (payObj.containsKey("paySign")){
+                        return ResponseResult.result(0, "success", payObj);
+                    }else {
+                        return ResponseResult.result(1, "fail", payObj);
+                    }
+                }else {
+                    return ResponseResult.result(1, "fail", null);
+                }
+
             }
         } catch (Exception e) {
             LogUtils.info("××××××qf pay end error××××××. orderId:{},openId:{},error:{}", orderId + ";" + openId + ";" + e);
             e.printStackTrace();
         }
         LogUtils.info("××××××qf pay end error××××××. orderId:{},openId:{}", orderId + ";" + openId);
-        return null;
+        return ResponseResult.result(1, "fail", null);
     }
 
     /**

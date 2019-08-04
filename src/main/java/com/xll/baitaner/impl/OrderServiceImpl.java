@@ -124,11 +124,14 @@ public class OrderServiceImpl implements OrderService {
                 if (orderCommodity.getSpecId() > 0) {
                     //获取商品规格
                     Spec spec = specService.getSpec(orderCommodity.getSpecId());
-                    if (spec != null && spec.getCommodityId() != orderCommodity.getCommodityId()) {
+                    if (spec != null && spec.getCommodityId() == orderCommodity.getCommodityId()) {
                         money = new BigDecimal(spec.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
                     }
+                    else {
+                        money = new BigDecimal(commodity.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
+                    }
                 } else {
-                    money = new BigDecimal(orderCommodity.getUnitPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
+                    money = new BigDecimal(commodity.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
                 }
                 total = total.add(money);
             }
@@ -186,7 +189,7 @@ public class OrderServiceImpl implements OrderService {
                 oc.setIntroduction(commodity.getIntroduction());
                 oc.setSpecName("");
                 oc.setSpecPrice("0.00");
-                oc.setSpecId(0);
+                //oc.setSpecId(0); //SpecId设成0??  下面逻辑永远不走了
                 //插入商品规格
                 if (oc.getSpecId() > 0) {
                     Spec spec = specService.getSpec(oc.getSpecId());

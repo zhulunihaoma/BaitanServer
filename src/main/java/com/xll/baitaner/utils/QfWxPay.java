@@ -99,6 +99,9 @@ public class QfWxPay {
 
                         return payInfo;
                     }
+                    else {
+                        return resultObject;
+                    }
                 }
             }
         } catch (Exception e) {

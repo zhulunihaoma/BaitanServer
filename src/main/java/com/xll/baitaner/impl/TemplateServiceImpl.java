@@ -166,7 +166,7 @@ public class TemplateServiceImpl implements TemplateService {
             JSONObject value = new JSONObject();
             value.put("value", values[i]);
 
-            String keyword = "keyword" + i + 1;
+            String keyword = "keyword" + String.valueOf(i + 1);
             data.put(keyword, value);
         }
         message.put("data", data);
@@ -323,7 +323,7 @@ public class TemplateServiceImpl implements TemplateService {
      * 商品名称   {{keyword4.DATA}}
      * 数量       {{keyword5.DATA}
      * 支付方式   {{keyword6.DATA}}
-     * 收货地址   {{keyword87.DATA}}
+     * 收货地址   {{keyword7.DATA}}
      *
      * @param orderId
      * @return
