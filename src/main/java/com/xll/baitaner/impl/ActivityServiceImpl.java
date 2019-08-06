@@ -7,6 +7,7 @@ import com.xll.baitaner.entity.VO.ActivityRecordVO;
 import com.xll.baitaner.entity.VO.ActivityResultVO;
 import com.xll.baitaner.entity.VO.ActivityVO;
 import com.xll.baitaner.mapper.ActivityMapper;
+import com.xll.baitaner.mapper.WXUserMapper;
 import com.xll.baitaner.service.ActivityService;
 import com.xll.baitaner.service.CommodityService;
 import com.xll.baitaner.service.ShopManageService;
@@ -41,6 +42,8 @@ public class ActivityServiceImpl implements ActivityService {
     @Resource
     private WXUserService wxUserService;
 
+    @Resource
+    private WXUserMapper wxUserMapper;
     /**
      * 查询店铺创建的所有活动列表
      *
@@ -179,13 +182,13 @@ public class ActivityServiceImpl implements ActivityService {
         Activity activity = activityMapper.selectActivityById(activityRecord.getActivityId());
         activityRecordVO.setActivity(activity);
 
-        Shop shop = shopManageService.getShopById(activityRecord.getActivityId());
+        Shop shop = shopManageService.getShopById(activity.getShopId());
         activityRecordVO.setShop(shop);
 
         Commodity commodity = commodityService.getCommodity(activity.getCommodityId());
         activityRecordVO.setCommodity(commodity);
-
-        WXUserInfo wxUserInfo = wxUserService.getWXUserById(activityRecord.getOpenId());
+        String openId = activityRecord.getOpenId();
+        WXUserInfo wxUserInfo = wxUserService.getWXUserById(openId);
         activityRecordVO.setWxUserInfo(wxUserInfo);
 
 
@@ -234,11 +237,12 @@ public class ActivityServiceImpl implements ActivityService {
             }
         } else if (operateType.equals("kanprice")) {//如果是砍价
             //如果为砍价的话，获取当前record里面的currentprice 然后减去一定的价格然后再判断是否到最后了，是则改变状态
-            ActivityShopCommodity activityCommodity = activityMapper.selectActivityById2(activityId);
+            ActivityVO activityVO = this.getActivityById(activityId);
+
             ActivityRecord activityRecord = activityMapper.selectActivityrecordById(recordId);
             //活动价格和当前价格一致的时候 这时候需要提出提示，而不能再砍价了
-            BigDecimal currentPrice = new BigDecimal("20.00");//activityRecord.getCurrentPrice();
-            BigDecimal ativityPrice = new BigDecimal(activityCommodity.getActivityPrice());
+            BigDecimal currentPrice = new BigDecimal(activityRecord.getCurrentPrice());//activityRecord.getCurrentPrice();
+            BigDecimal ativityPrice = new BigDecimal(activityVO.getActivity().getActivityPrice());
 
             if (currentPrice.compareTo(ativityPrice) == 0) {
                 //给出提示已经砍完价格了
@@ -246,8 +250,8 @@ public class ActivityServiceImpl implements ActivityService {
             } else {
 
                 //  砍价计算
-                BigDecimal originprice =  new BigDecimal(activityCommodity.getPrice());
-                BigDecimal activityprice = new BigDecimal(activityCommodity.getActivityPrice());
+                BigDecimal originprice =  new BigDecimal(activityVO.getCommodity().getPrice());
+                BigDecimal activityprice = new BigDecimal(activityVO.getActivity().getActivityPrice());
 
                 BigDecimal newCurrentPrice;
                 BigDecimal cutPrice;
