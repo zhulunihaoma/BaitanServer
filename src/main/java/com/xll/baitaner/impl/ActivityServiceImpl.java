@@ -3,6 +3,7 @@ package com.xll.baitaner.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.VO.ActivityRecordResultVO;
 import com.xll.baitaner.entity.VO.ActivityRecordVO;
 import com.xll.baitaner.entity.VO.ActivityResultVO;
 import com.xll.baitaner.entity.VO.ActivityVO;
@@ -346,14 +347,26 @@ public class ActivityServiceImpl implements ActivityService {
      * @return
      */
     @Override
-    public List<ActivityRecord> selectActivityRecordByOrder(int activityId, Integer offset, Integer size) {
+    public ActivityRecordResultVO selectActivityRecordByOrder(int activityId, Integer offset, Integer size) {
+
+
         Page<ActivityRecord> page =
                 PageHelper.startPage(offset, size).doSelectPage(() -> activityMapper.selectActivityRecordByOrder(activityId));
-        List<ActivityRecord> result = page.getResult();
-        if (result == null) {
-            return new ArrayList<>();
+        List<ActivityRecord> activityRecordList = page.getResult();
+
+
+        List<ActivityRecordVO> activityRecordVOList = new ArrayList<>();
+        for (ActivityRecord activityRecord : activityRecordList) {
+            ActivityRecordVO activityRecordVO = this.getActivityrecordById(activityRecord.getId());
+            activityRecordVOList.add(activityRecordVO);
         }
-        return result;
+        ActivityRecordResultVO activityRecordResultVO = new ActivityRecordResultVO();
+        activityRecordResultVO.setData(activityRecordVOList);
+        activityRecordResultVO.setCount(page.getTotal());
+        return activityRecordResultVO;
+
+
+
     }
 
     /**
@@ -363,15 +376,22 @@ public class ActivityServiceImpl implements ActivityService {
      * @return
      */
     @Override
-    public List<ActivityRecord> selectActivityRecordByOpenId(String openId, Integer offset, Integer size) {
+    public ActivityRecordResultVO selectActivityRecordByOpenId(String openId, Integer offset, Integer size) {
         Page<ActivityRecord> page =
                 PageHelper.startPage(offset, size).doSelectPage(() -> activityMapper.selectActivityRecordByOpenId(openId));
-        List<ActivityRecord> result = page.getResult();
-        if (result == null) {
-            return new ArrayList<>();
+        List<ActivityRecord> activityRecordList = page.getResult();
+
+
+        List<ActivityRecordVO> activityRecordVOList = new ArrayList<>();
+        for (ActivityRecord activityRecord : activityRecordList) {
+            ActivityRecordVO activityRecordVO = this.getActivityrecordById(activityRecord.getId());
+            activityRecordVOList.add(activityRecordVO);
         }
-        //塞入对应的商品信息
-        return result;
+        ActivityRecordResultVO activityRecordResultVO = new ActivityRecordResultVO();
+        activityRecordResultVO.setData(activityRecordVOList);
+        activityRecordResultVO.setCount(page.getTotal());
+        return activityRecordResultVO;
+
 
     }
 

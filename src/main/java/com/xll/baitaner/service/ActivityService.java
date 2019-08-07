@@ -1,6 +1,7 @@
 package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.*;
+import com.xll.baitaner.entity.VO.ActivityRecordResultVO;
 import com.xll.baitaner.entity.VO.ActivityRecordVO;
 import com.xll.baitaner.entity.VO.ActivityResultVO;
 import com.xll.baitaner.entity.VO.ActivityVO;
@@ -152,7 +153,7 @@ public interface ActivityService {
      * @param activityId
      * @return
      */
-    List<ActivityRecord> selectActivityRecordByOrder(int activityId, Integer offset, Integer size);
+    ActivityRecordResultVO selectActivityRecordByOrder(int activityId, Integer offset, Integer size);
 
     /**
      * 查询一个openId参加过所有活动
@@ -160,7 +161,7 @@ public interface ActivityService {
      * @param openId
      * @return
      */
-    List<ActivityRecord> selectActivityRecordByOpenId(String openId, Integer offset, Integer size);
+    ActivityRecordResultVO selectActivityRecordByOpenId(String openId, Integer offset, Integer size);
 
 
     /**

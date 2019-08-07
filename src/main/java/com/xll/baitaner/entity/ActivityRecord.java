@@ -47,7 +47,11 @@ public class ActivityRecord {
     @ApiModelProperty(value = "活动record二维码", name = "recordWxcode")
     private String recordWxcode;
 
-
+    /**
+     * 活动record点赞/砍价人数
+     */
+    @ApiModelProperty(value = "活动record点赞/砍价人数", name = "supportCount")
+    private int supportCount;
 
 
 
