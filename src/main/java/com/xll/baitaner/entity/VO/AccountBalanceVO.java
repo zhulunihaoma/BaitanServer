@@ -22,4 +22,9 @@ public class AccountBalanceVO {
      * 不用余额
      */
     private BigDecimal unBalance;
+
+    /**
+     * 总手续费
+     */
+    private BigDecimal allFee;
 }

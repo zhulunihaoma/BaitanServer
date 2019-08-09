@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +75,7 @@ public class WalletServiceImpl implements WalletService {
         for (ShopWallet wallet : wallets) {
             WithdrawVO vo = new WithdrawVO();
             vo.setAmount(wallet.getAmount());
+            vo.setFee(wallet.getFee());
             vo.setDate(wallet.getCreateDate());
             vo.setReason(wallet.getReason());
             vo.setStatus(wallet.getStatus());
@@ -119,6 +121,7 @@ public class WalletServiceImpl implements WalletService {
             vo.setReason(wallet.getReason());
             vo.setStatus(wallet.getStatus());
             vo.setOperator("DEC");
+            vo.setFee(wallet.getFee());
             map.computeIfAbsent(DateUtils.dateToString(wallet.getCreateDate()), k -> new ArrayList<>());
             map.get(DateUtils.dateToString(wallet.getCreateDate())).add(vo);
         }
@@ -147,7 +150,7 @@ public class WalletServiceImpl implements WalletService {
         if (CollectionUtils.isEmpty(shopWallets)) {
             return balance;
         }
-        balance.setBalance(calculateAmounts(shopWallets));
+        balance = calculateAmounts(shopWallets);
         //FIXME 暂时只有钱方未到账金额
         balance.setUnBalance(calculateWithoutAccountAmounts(shopWallets));
         return balance;
@@ -159,13 +162,15 @@ public class WalletServiceImpl implements WalletService {
      * @param shopWallets
      * @return
      */
-    private BigDecimal calculateAmounts(List<ShopWallet> shopWallets) {
+    private AccountBalanceVO calculateAmounts(List<ShopWallet> shopWallets) {
         BigDecimal qfAmount = new BigDecimal("0.00");
         BigDecimal wxAmount = new BigDecimal("0.00");
         BigDecimal withdrawamount = new BigDecimal("0.00");
+        BigDecimal fee = new BigDecimal("0.00");
         if (CollectionUtils.isEmpty(shopWallets)) {
-            return qfAmount;
+            return new AccountBalanceVO();
         }
+        AccountBalanceVO account = new AccountBalanceVO();
         for (ShopWallet wallet : shopWallets) {
             //钱方到账
             if (("ADD".equals(wallet.getOperator())) && (wallet.getPayChannel() == 0) &&
@@ -181,9 +186,13 @@ public class WalletServiceImpl implements WalletService {
             if ("DEC".equals(wallet.getOperator()) &&
                     ("SUCCESS".equals(wallet.getStatus()) || "PROCESSING".equals(wallet.getStatus()))) {
                 withdrawamount = withdrawamount.add(new BigDecimal(wallet.getAmount()));
+                //手续费
+                fee = fee.add(new BigDecimal(wallet.getFee()));
             }
         }
-        return qfAmount.add(wxAmount).subtract(withdrawamount);
+        account.setBalance(qfAmount.add(wxAmount).subtract(withdrawamount));
+        account.setAllFee(fee);
+        return account;
     }
 
     /**
@@ -260,6 +269,8 @@ public class WalletServiceImpl implements WalletService {
                     sw.setOpenId(input.getOpenId());
                     sw.setDescRemarks(desc);
                     sw.setOperator("DEC");
+                    //手续费
+                    sw.setFee(calculateFee(input.getFee()));
                     sw.setStatus("SUCCESS");
                     sw.setPaymentTime(respMap.get("payment_time"));
                     upInsertWalletRecord(input.getPartnerTradeNo(), sw);
@@ -400,5 +411,33 @@ public class WalletServiceImpl implements WalletService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 计算手续费
+     * @param amount
+     * @return
+     */
+    private String calculateFee(String amount) {
+        if (StringUtils.isBlank(amount)) {
+            return "0.00";
+        }
+        //四舍五入
+        BigDecimal fee = new BigDecimal(amount).multiply(new BigDecimal(Constant.WITHDRAW_FEE)).setScale(2,
+                RoundingMode.HALF_UP);
+        return fee.toPlainString();
+    }
+
+    private boolean checkAmountByWithdraw(String openId, String amount) {
+        if (StringUtils.isBlank(amount)) {
+            return false;
+        }
+        List<ShopWallet> shopWallets = walletMapper.selectAllByOpenId(openId);
+        if (CollectionUtils.isEmpty(shopWallets)) {
+            return false;
+        }
+        AccountBalanceVO accountVO = calculateAmounts(shopWallets);
+        //TODO 未完待续
+        return true;
     }
 }

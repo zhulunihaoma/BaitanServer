@@ -23,4 +23,9 @@ public class Constant {
     public static final String APPLET_APP_ID = "wxdea72e3ef1d40e45";
 
     public static final String APPLET_APP_SECRET = "381b235396907b0519127e13370918ad";
+
+    /**
+     * 提现手续费
+     */
+    public static final String WITHDRAW_FEE = "0.0035";
 }

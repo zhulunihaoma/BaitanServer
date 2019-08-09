@@ -21,7 +21,15 @@ public class ShopWallet {
 
     private String amount;
 
+    /**
+     * ADD：支付，DEC：提现
+     */
     private String operator;
+
+    /**
+     * 手续费
+     */
+    private String fee;
 
     /**
      * 付款渠道 0:钱方支付 1:微信支付

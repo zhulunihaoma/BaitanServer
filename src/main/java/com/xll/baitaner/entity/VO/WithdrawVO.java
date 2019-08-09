@@ -35,4 +35,9 @@ public class WithdrawVO {
      * "ADD":支付，"DEC":提现
      */
     private String operator;
+
+    /**
+     * 手续费
+     */
+    private String fee;
 }
