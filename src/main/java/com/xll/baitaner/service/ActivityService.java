@@ -88,7 +88,7 @@ public interface ActivityService {
      * 根据recordId更改record状态
      *
      * @param recordId
-     * @param recordStatus
+     * @param recordStatus  0：进行中 1：可购买 2：已下单，未支付 3：已支付
      * @return
      */
 
@@ -126,6 +126,7 @@ public interface ActivityService {
      * @return
      */
     boolean addsupportCount(int recordId);
+
 
     /**
      * 查询一个openId有没有参加过一个活动
@@ -182,5 +183,12 @@ public interface ActivityService {
     List<FansPhone> selectFansPhoneByshopId(int shopId, Integer offset, Integer size);
 
 
+    /**
+     * 更新 activity stock-1
+     *
+     * @param activityId
+     * @return
+     */
+    boolean reduceStock(int activityId);
 
 }

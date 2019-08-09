@@ -28,7 +28,7 @@ public class ActivityRecord {
 
 
     /**
-     * 记录状态（0 未完成，1 可以购买 ，2 已完成）
+     * 记录状态 recordStatus 0：进行中 1：可购买 2：已下单，未支付 3：已支付
      */
 
     @ApiModelProperty(value = "记录状态", name = "recordStatus")

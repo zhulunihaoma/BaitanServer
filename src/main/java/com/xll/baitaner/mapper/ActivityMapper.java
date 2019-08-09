@@ -121,7 +121,7 @@ public interface ActivityMapper {
      * @param recordId
      * @return
      */
-    @Insert("UPDATE activityrecord SET supportCount = supportCount+1 WHERE id = #{recordId}")
+    @Update("UPDATE activityrecord SET supportCount = supportCount+1 WHERE id = #{recordId}")
     int addsupportCount(@Param("recordId") int recordId);
 
     /**
@@ -225,6 +225,14 @@ public interface ActivityMapper {
     @Select("SELECT * FROM fans_phone WHERE shopId  = #{shopId}")
     List<FansPhone> selectFansPhoneByshopId(@Param("shopId") int shopId);
 
+    /**
+     * 更新 activity stock-1
+     *
+     * @param activityId
+     * @return
+     */
+    @Update("UPDATE activity SET stock = stock-1 WHERE id = #{activityId}")
+    int reduceStock(@Param("activityId") int activityId);
 
 }
 

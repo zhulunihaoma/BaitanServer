@@ -201,11 +201,17 @@ public class ActivityServiceImpl implements ActivityService {
      * 根据recordId更改record状态
      *
      * @param recordId
-     * @param recordStatus
+     * @param recordStatus 0：进行中 1：可购买 2：已下单，未支付 3：已支付
      * @return
      */
 
     public boolean changeRecordstatus(int recordStatus, int recordId) {
+
+    // 如果是更改到状态3
+        if(recordStatus == 3){
+            ActivityRecord activityRecord = activityMapper.selectActivityrecordById(recordId);
+            this.reduceStock(activityRecord.getActivityId());
+        }
         return activityMapper.changeRecordStatus(recordStatus, recordId) > 0;
 
 
@@ -263,6 +269,8 @@ public class ActivityServiceImpl implements ActivityService {
 
                     newCurrentPrice = activityprice;
                     cutPrice = new BigDecimal(activityRecord.getCurrentPrice()).subtract(activityprice);
+                    activityMapper.changeRecordStatus(1, recordId);
+
                 }else {
                     cutPrice = (originprice.subtract(activityprice)).divide(new BigDecimal(operateContent));
                     newCurrentPrice = new BigDecimal(activityRecord.getCurrentPrice()).subtract(cutPrice);
@@ -281,6 +289,8 @@ public class ActivityServiceImpl implements ActivityService {
 
 
         } else {//点赞排名
+
+            boolean addsupportCountResult = this.addsupportCount(recordId);
             return activityMapper.insertSupportrecord(activityId, recordId, "0.00", openId, nickName, avatarUrl,
                     gender) > 0 ? 0 : 1;
 
@@ -426,6 +436,17 @@ public class ActivityServiceImpl implements ActivityService {
         }
         //塞入对应的商品信息
         return result;
+    }
+
+    /**
+     * 更新 activity stock-1
+     *
+     * @param activityId
+     * @return
+     */
+    @Override
+    public boolean reduceStock(int activityId) {
+        return activityMapper.reduceStock(activityId) > 0;
     }
 
 }
