@@ -169,12 +169,12 @@ public class WalletServiceImpl implements WalletService {
         for (ShopWallet wallet : shopWallets) {
             //钱方到账
             if (("ADD".equals(wallet.getOperator())) && (wallet.getPayChannel() == 0) &&
-                    (wallet.getCreateDate().compareTo(DateUtils.dayBefore24HoursFromNow()) < 0)) {
+                    (wallet.getCreateDate().compareTo(DateUtils.dayBeforeHoursFromNow(48)) < 0)) {
                 qfAmount = qfAmount.add(new BigDecimal(wallet.getAmount()));
             }
             //微信到账
             if (("ADD".equals(wallet.getOperator())) && (wallet.getPayChannel() == 1) &&
-                    (wallet.getCreateDate().compareTo(DateUtils.dayBefore7WorkDaysFromNow()) < 0)) {
+                    (wallet.getCreateDate().compareTo(DateUtils.dayBeforeWorkDaysFromNow(7)) < 0)) {
                 wxAmount = wxAmount.add(new BigDecimal(wallet.getAmount()));
             }
             //提现总金额
@@ -200,12 +200,12 @@ public class WalletServiceImpl implements WalletService {
         for (ShopWallet wallet : shopWallets) {
             //钱方未到账
             if (("ADD".equals(wallet.getOperator())) && (wallet.getPayChannel() == 0) &&
-                    (wallet.getCreateDate().compareTo(DateUtils.dayBefore24HoursFromNow()) >= 0)) {
+                    (wallet.getCreateDate().compareTo(DateUtils.dayBeforeHoursFromNow(48)) >= 0)) {
                 amount = amount.add(new BigDecimal(wallet.getAmount()));
             }
             //微信未到账
             if (("ADD".equals(wallet.getOperator())) && (wallet.getPayChannel() == 1) &&
-                    (wallet.getCreateDate().compareTo(DateUtils.dayBefore7WorkDaysFromNow()) >= 0)) {
+                    (wallet.getCreateDate().compareTo(DateUtils.dayBeforeWorkDaysFromNow(7)) >= 0)) {
                 amount = amount.add(new BigDecimal(wallet.getAmount()));
             }
         }

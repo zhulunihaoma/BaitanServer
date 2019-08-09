@@ -23,28 +23,28 @@ public class DateUtils {
     private static ThreadLocal<DateFormat> dateLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
 
     /**
-     * 获取当前24小时前时间
+     * 获取当前hour小时前时间
      *
      * @return
      */
-    public static Date dayBefore24HoursFromNow() {
+    public static Date dayBeforeHoursFromNow(int hour) {
         ZoneId zoneId = ZoneId.systemDefault();
         //当前时间的24小时前
-        ZonedDateTime zonedDateTime = LocalDateTime.now().minusHours(24).atZone(zoneId);
+        ZonedDateTime zonedDateTime = LocalDateTime.now().minusHours(hour).atZone(zoneId);
         //转成Date
         return Date.from(zonedDateTime.toInstant());
     }
 
     /**
-     * 当前时间。前7个工作日
+     * 当前时间。前day个工作日
      *
      * @return
      */
-    public static Date dayBefore7WorkDaysFromNow() {
+    public static Date dayBeforeWorkDaysFromNow(int day) {
         LocalDateTime nowTime = LocalDateTime.now();
         int inc = 1;
         int workDay = 0;
-        while (workDay < 7) {
+        while (workDay < day) {
             if (!nowTime.minusDays(inc).getDayOfWeek().equals(DayOfWeek.SUNDAY) &&
                     !nowTime.minusDays(inc).getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
                 workDay++;
