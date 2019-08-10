@@ -105,8 +105,8 @@ public class OrderServiceImpl implements OrderService {
                 LogUtils.error(TAG, String.format("Activity order id {0} activity id {1} is null!", orderId, activityRecord.getActivityId()));
                 return 0L;
             }
-            //TODO 判断ActivityRecord状态、Activity商品个数充足
-            if (activityRecord.getRecordStatus() != 1){ //判断活动达标 可购买
+            // 判断ActivityRecord状态、Activity商品个数充足
+            if (activityRecord.getRecordStatus() != 1 || activity.getStock() <= 0){ //判断活动是否达标以及活动商品数量是否大于0 可购买
                 LogUtils.error(TAG, String.format("Activity order id {0} activityRecord id {1} status is {2}, return!",
                         orderId, activityRecord.getActivityId(), activityRecord.getRecordStatus()));
                 return 0L;
@@ -155,6 +155,7 @@ public class OrderServiceImpl implements OrderService {
                 templateService.sendPendingPaymentMessage(String.valueOf(orderId));
             }
 
+            //活动订单 修改活动记录为已下单
             if (order.getActivityNot() == 1){
                 activityService.changeRecordstatus(2, Integer.parseInt(order.getActivityRecordId()));
             }
@@ -423,6 +424,12 @@ public class OrderServiceImpl implements OrderService {
         boolean result = orderMapper.updateOrderState(Long.valueOf(orderId), state) > 0;
         if (result) {
             if (state == 1) {
+                //活动订单支付成功后 修改活动记录为已支付
+                ShopOrder order = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
+                if (order.getActivityNot() == 1){
+                    activityService.changeRecordstatus(3, Integer.parseInt(order.getActivityRecordId()));
+                }
+
                 //state更新为1：已接单 创建历史订单
                 if (historyOrderService.creatHistoryOrder(orderId)) {
                     return true;
