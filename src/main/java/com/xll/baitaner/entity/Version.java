@@ -26,5 +26,5 @@ public class Version {
      */
     @ApiModelProperty(value = "活动Id", name = "versionId")
 
-    private int versionId;
+    private String  versionId;
 }

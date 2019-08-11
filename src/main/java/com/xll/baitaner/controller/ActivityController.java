@@ -157,6 +157,22 @@ public class ActivityController {
 
     }
 
+
+
+    /**
+     * 根据recordId更改record状态
+     *
+     * @param recordId
+     * @param recordStatus 0：进行中 1：可购买 2：已下单，未支付 3：已支付
+     * @return
+     */
+    @RequestMapping("changeRecordstatus")
+    public ResponseResult changeRecordstatus(int recordId, int recordStatus) {
+        boolean result = activityService.changeRecordstatus(recordStatus, recordId);
+        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+    }
+
+
     /**
      * 新增supportrecord
      *

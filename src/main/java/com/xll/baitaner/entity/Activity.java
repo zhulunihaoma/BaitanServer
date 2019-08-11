@@ -59,7 +59,7 @@ public class Activity {
 
 
     /**
-     * 活动状态1：启用 0：终止
+     * 活动状态1：启用 0：结束  2:店主强制停止
      */
 
     private int status;
