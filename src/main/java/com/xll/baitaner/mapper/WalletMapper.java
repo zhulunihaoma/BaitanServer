@@ -120,6 +120,9 @@ public interface WalletMapper {
                     if (wallet.getOperator() != null) {
                         SET("operator=#{operator}");
                     }
+                    if (wallet.getFee() != null) {
+                        SET("fee=#{fee}");
+                    }
                     if (wallet.getAmount() != null) {
                         SET("amount=#{amount}");
                     }
@@ -175,6 +178,9 @@ public interface WalletMapper {
                 }
                 if (wallet.getOperator() != null) {
                     VALUES("operator", "#{operator}");
+                }
+                if (wallet.getFee() != null) {
+                    VALUES("fee", "#{fee}");
                 }
                 if (wallet.getDescRemarks() != null) {
                     VALUES("desc_remarks", "#{descRemarks}");
