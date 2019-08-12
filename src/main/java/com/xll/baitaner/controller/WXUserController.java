@@ -1,6 +1,5 @@
 package com.xll.baitaner.controller;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import com.xll.baitaner.entity.WXUserInfo;
 import com.xll.baitaner.service.WXUserService;
 import com.xll.baitaner.utils.HttpRequest;
@@ -12,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,13 +25,12 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.AlgorithmParameters;
 import java.security.Security;
-
 import java.util.Arrays;
 
 /**
  * 微信登录
  */
-@Api(value = "微信用户模块controller", description = "微信用户模块操作接口")
+@Api(value = "微信用户模块controller", tags = {"微信用户模块操作接口"})
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class WXUserController {
@@ -85,9 +84,9 @@ public class WXUserController {
                 LogUtils.info(TAG, "微信登录成功，返回openId： " + openId);
 
                 /**设置微信用户的unionid**/
-                if(obj.containsKey("unionid")){
-                    if(wxUserService.isWXUser(openId)){
-                        if(wxUserService.getWXUserById(openId).getUnionId() == null){
+                if (obj.containsKey("unionid")) {
+                    if (wxUserService.isWXUser(openId)) {
+                        if (wxUserService.getWXUserById(openId).getUnionId() == null) {
                             wxUserService.UpdateWXUserUnionid(openId, obj.get("unionid").toString());
                         }
                     }
@@ -139,7 +138,7 @@ public class WXUserController {
     /**
      * 获取微信用户号码
      *
-     * @param openId
+     * @param encryptedData
      * @return
      */
     @ApiOperation(value = "获取微信用户号码", httpMethod = "GET", notes = "获取微信用户号码")
@@ -148,17 +147,17 @@ public class WXUserController {
             @ApiImplicitParam(name = "iv", value = "微信返回加密数据", required = true, dataType = "string"),
     })
     @GetMapping("getwxuserphone")
-    public ResponseResult getWXUserPhone(String encryptedData, String iv){
+    public ResponseResult getWXUserPhone(String encryptedData, String iv) {
 
         // 加密秘钥
-        if (StringUtils.isBlank(session_key)){
+        if (StringUtils.isBlank(session_key)) {
             return ResponseResult.result(1, "fail", "session_key 无效");
         }
         // 被加密的数据
-        byte[] dataByte = Base64.decode(encryptedData);
-        byte[] keyByte = Base64.decode(session_key);
+        byte[] dataByte = Base64.decodeBase64(encryptedData);
+        byte[] keyByte = Base64.decodeBase64(session_key);
         // 偏移量
-        byte[] ivByte = Base64.decode(iv);
+        byte[] ivByte = Base64.decodeBase64(iv);
         try {
             // 如果密钥不足16位，那么就补足.  这个if 中的内容很重要
             int base = 16;
