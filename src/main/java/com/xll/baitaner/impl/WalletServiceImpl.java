@@ -234,6 +234,8 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public WithdrawVO withdrawTransfer(WithdrawInputVo input) {
         WithdrawVO withVo = new WithdrawVO();
+        //格式化金额数据
+        input.setFee(MoneyUtil.formatMoney(input.getFee()));
         //因为有手续费，所以判断一下是否可提现
         if (!checkAmountByWithdraw(input.getOpenId(), input.getFee())) {
             withVo.setReason("提现金额不足(包含手续费)");
