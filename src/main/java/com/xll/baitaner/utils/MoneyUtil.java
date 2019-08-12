@@ -25,10 +25,21 @@ public class MoneyUtil {
 
     /**
      * 分转元
+     *
      * @param num
      * @return
      */
     public static String changeF2Y(String num) {
         return new BigDecimal(num).divide(new BigDecimal(100), 2, RoundingMode.HALF_UP).toPlainString();
+    }
+
+    /**
+     * 格式化金额的格式，小数点后两位
+     *
+     * @param amount
+     * @return
+     */
+    public static String formatMoney(String amount) {
+        return new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP).toPlainString();
     }
 }

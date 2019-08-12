@@ -274,7 +274,7 @@ public class WalletServiceImpl implements WalletService {
                 if ("SUCCESS".equals(respMap.get("result_code"))) {
                     ShopWallet sw = new ShopWallet();
                     sw.setOrderId(Long.valueOf(input.getPartnerTradeNo()));
-                    sw.setAmount(input.getFee());
+                    sw.setAmount(MoneyUtil.formatMoney(input.getFee()));
                     sw.setOpenId(input.getOpenId());
                     sw.setDescRemarks(desc);
                     sw.setOperator("DEC");
