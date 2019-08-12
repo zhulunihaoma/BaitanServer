@@ -155,7 +155,7 @@ public class WalletServiceImpl implements WalletService {
         }
         balance = calculateAmounts(shopWallets);
         //FIXME 暂时只有钱方未到账金额
-        balance.setUnBalance(calculateWithoutAccountAmounts(shopWallets));
+        balance.setUnBalance(calculateWithoutAccountAmounts(shopWallets).toPlainString());
         return balance;
     }
 
@@ -194,8 +194,8 @@ public class WalletServiceImpl implements WalletService {
             }
         }
         //可用余额
-        account.setBalance(qfAmount.add(wxAmount).subtract(withdrawamount).subtract(fee));
-        account.setAllFee(fee);
+        account.setBalance((qfAmount.add(wxAmount).subtract(withdrawamount).subtract(fee)).toPlainString());
+        account.setAllFee(fee.toPlainString());
         return account;
     }
 
@@ -455,6 +455,6 @@ public class WalletServiceImpl implements WalletService {
         }
         //计算余额和总手续费
         AccountBalanceVO accountVO = calculateAmounts(shopWallets);
-        return (new BigDecimal(amount).add(new BigDecimal(calculateFee(amount)))).compareTo(accountVO.getBalance()) <= 0;
+        return (new BigDecimal(amount).add(new BigDecimal(calculateFee(amount)))).compareTo(new BigDecimal(accountVO.getBalance())) <= 0;
     }
 }

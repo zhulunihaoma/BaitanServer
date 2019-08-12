@@ -2,8 +2,6 @@ package com.xll.baitaner.entity.VO;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 /**
  * 账户余额
  *
@@ -16,15 +14,15 @@ public class AccountBalanceVO {
     /**
      * 可用余额
      */
-    private BigDecimal balance;
+    private String balance;
 
     /**
      * 不用余额
      */
-    private BigDecimal unBalance;
+    private String unBalance;
 
     /**
      * 总手续费
      */
-    private BigDecimal allFee;
+    private String allFee;
 }
