@@ -237,10 +237,10 @@ public class WalletServiceImpl implements WalletService {
         //格式化金额数据
         input.setFee(MoneyUtil.formatMoney(input.getFee()));
         //因为有手续费，所以判断一下是否可提现
-        if (!checkAmountByWithdraw(input.getOpenId(), input.getFee())) {
-            withVo.setReason("提现金额不足(包含手续费)");
-            return withVo;
-        }
+//        if (!checkAmountByWithdraw(input.getOpenId(), input.getFee())) {
+//            withVo.setReason("提现金额不足");
+//            return withVo;
+//        }
         try {
             if (config == null) {
                 config = WXPayConfigImpl.getInstance();
@@ -255,8 +255,10 @@ public class WalletServiceImpl implements WalletService {
             data.put("partner_trade_no", input.getPartnerTradeNo());
             data.put("openid", input.getOpenId());
             data.put("check_name", "NO_CHECK");
+            //除去手续费
+            String withdraw = new BigDecimal(input.getFee()).subtract(new BigDecimal(calculateFee(input.getFee()))).toPlainString();
             //换算成分
-            data.put("amount", MoneyUtil.changeY2F(input.getFee()));
+            data.put("amount", MoneyUtil.changeY2F(withdraw));
             //付款备注
             String desc = input.getDesc();
             if (StringUtils.isBlank(desc)) {
@@ -276,7 +278,7 @@ public class WalletServiceImpl implements WalletService {
                 if ("SUCCESS".equals(respMap.get("result_code"))) {
                     ShopWallet sw = new ShopWallet();
                     sw.setOrderId(Long.valueOf(input.getPartnerTradeNo()));
-                    sw.setAmount(MoneyUtil.formatMoney(input.getFee()));
+                    sw.setAmount(MoneyUtil.formatMoney(withdraw));
                     sw.setOpenId(input.getOpenId());
                     sw.setDescRemarks(desc);
                     sw.setOperator("DEC");
