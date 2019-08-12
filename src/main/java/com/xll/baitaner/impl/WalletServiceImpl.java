@@ -14,7 +14,11 @@ import com.xll.baitaner.entity.VO.WithdrawVO;
 import com.xll.baitaner.mapper.WalletMapper;
 import com.xll.baitaner.service.TemplateService;
 import com.xll.baitaner.service.WalletService;
-import com.xll.baitaner.utils.*;
+import com.xll.baitaner.utils.Constant;
+import com.xll.baitaner.utils.DateUtils;
+import com.xll.baitaner.utils.LogUtils;
+import com.xll.baitaner.utils.MoneyUtil;
+import com.xll.baitaner.utils.WXPayConfigImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -138,7 +141,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     /**
-     * 根据shopId查询余额
+     * 根据openId查询余额
      *
      * @param openId
      * @return
@@ -190,7 +193,8 @@ public class WalletServiceImpl implements WalletService {
                 fee = fee.add(new BigDecimal(wallet.getFee()));
             }
         }
-        account.setBalance(qfAmount.add(wxAmount).subtract(withdrawamount));
+        //可用余额
+        account.setBalance(qfAmount.add(wxAmount).subtract(withdrawamount).subtract(fee));
         account.setAllFee(fee);
         return account;
     }
@@ -230,6 +234,11 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public WithdrawVO withdrawTransfer(WithdrawInputVo input) {
         WithdrawVO withVo = new WithdrawVO();
+        //因为有手续费，所以判断一下是否可提现
+        if (!checkAmountByWithdraw(input.getOpenId(), input.getFee())) {
+            withVo.setReason("提现金额不足(包含手续费)");
+            return withVo;
+        }
         try {
             if (config == null) {
                 config = WXPayConfigImpl.getInstance();
@@ -415,6 +424,7 @@ public class WalletServiceImpl implements WalletService {
 
     /**
      * 计算手续费
+     *
      * @param amount
      * @return
      */
@@ -422,12 +432,19 @@ public class WalletServiceImpl implements WalletService {
         if (StringUtils.isBlank(amount)) {
             return "0.00";
         }
-        //四舍五入
+        //手续费去尾
         BigDecimal fee = new BigDecimal(amount).multiply(new BigDecimal(Constant.WITHDRAW_FEE)).setScale(2,
-                RoundingMode.HALF_UP);
+                BigDecimal.ROUND_DOWN);
         return fee.toPlainString();
     }
 
+    /**
+     * 判断是否可提现
+     *
+     * @param openId
+     * @param amount
+     * @return
+     */
     private boolean checkAmountByWithdraw(String openId, String amount) {
         if (StringUtils.isBlank(amount)) {
             return false;
@@ -436,8 +453,8 @@ public class WalletServiceImpl implements WalletService {
         if (CollectionUtils.isEmpty(shopWallets)) {
             return false;
         }
+        //计算余额和总手续费
         AccountBalanceVO accountVO = calculateAmounts(shopWallets);
-        //TODO 未完待续
-        return true;
+        return (new BigDecimal(amount).add(new BigDecimal(calculateFee(amount)))).compareTo(accountVO.getBalance()) <= 0;
     }
 }
