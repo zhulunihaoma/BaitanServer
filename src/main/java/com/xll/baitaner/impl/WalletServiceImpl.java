@@ -237,10 +237,10 @@ public class WalletServiceImpl implements WalletService {
         //格式化金额数据
         input.setFee(MoneyUtil.formatMoney(input.getFee()));
         //因为有手续费，所以判断一下是否可提现
-//        if (!checkAmountByWithdraw(input.getOpenId(), input.getFee())) {
-//            withVo.setReason("提现金额不足");
-//            return withVo;
-//        }
+        if (!checkAmountByWithdraw(input.getOpenId(), input.getFee())) {
+            withVo.setReason("提现金额不足");
+            return withVo;
+        }
         try {
             if (config == null) {
                 config = WXPayConfigImpl.getInstance();
@@ -459,6 +459,6 @@ public class WalletServiceImpl implements WalletService {
         }
         //计算余额和总手续费
         AccountBalanceVO accountVO = calculateAmounts(shopWallets);
-        return (new BigDecimal(amount).add(new BigDecimal(calculateFee(amount)))).compareTo(new BigDecimal(accountVO.getBalance())) <= 0;
+        return new BigDecimal(amount).compareTo(new BigDecimal(accountVO.getBalance())) <= 0;
     }
 }
