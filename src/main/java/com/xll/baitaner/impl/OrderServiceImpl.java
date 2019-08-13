@@ -356,8 +356,8 @@ public class OrderServiceImpl implements OrderService {
     private List<OrderCommodity> getAllOrderCoList(int shopId) {
         List<OrderCommodity> orderCommodityList = orderMapper.selectAllOrderCoList(shopId);
         for (OrderCommodity orderCommodity : orderCommodityList) {
-            OrderDetailsVO order = this.getOrderDetails(orderCommodity.getOrderId().toString());
-            orderCommodity.setOrderDetails(order);
+            ShopOrder order = orderMapper.selectShopOrderByOrderId(orderCommodity.getOrderId());
+            orderCommodity.setShopOrder(order);
         }
         return orderCommodityList;
     }
@@ -396,9 +396,7 @@ public class OrderServiceImpl implements OrderService {
                     commodityOrder.setOrderCommodityList(list);
                     map.put(coId, commodityOrder);
                 } else {
-                    List<OrderCommodity> list = map.get(coId).getOrderCommodityList();
-                    list.add(orderCommodity);
-                    map.get(coId).setOrderCommodityList(list);
+                    map.get(coId).getOrderCommodityList().add(orderCommodity);
                 }
             }
 

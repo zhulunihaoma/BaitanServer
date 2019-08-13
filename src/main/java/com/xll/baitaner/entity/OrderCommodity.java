@@ -105,6 +105,6 @@ public class OrderCommodity {
     /**
      * 订单实体类
      */
-    private OrderDetailsVO orderDetails;
+    private ShopOrder shopOrder;
 
 }
