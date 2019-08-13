@@ -211,8 +211,8 @@ public class CommodityController {
     })
     @GetMapping("updatecoturn")
     public ResponseResult updateCoTurn(Commodity co, int turn) {
-        boolean result = commodityService.updateCoTurn(co, turn);
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+        String result = commodityService.updateCoTurn(co, turn);
+        return ResponseResult.result(result == null ? 0 : 1, result == null ? "success" : "fail", result);
     }
 
     /**
@@ -222,14 +222,14 @@ public class CommodityController {
      * @return
      */
     @ApiOperation(
-            value = "分类下上移商品",
+            value = "分类下 上移商品",
             httpMethod = "GET",
-            notes = "分类下上移商品")
+            notes = "分类下 上移商品")
     @ApiImplicitParam(name = "co", value = "商品实体类", required = true, dataType = "Commodity")
     @GetMapping("moveupcoturn")
     public ResponseResult moveUpCoTurn(Commodity co) {
-        boolean result = commodityService.updateCoTurn(co, co.getTurn() - 1);
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+        String result = commodityService.updateCoTurn(co, co.getTurn() - 1);
+        return ResponseResult.result(result == null ? 0 : 1, result == null ? "success" : "fail", result);
     }
 
     /**
@@ -245,7 +245,7 @@ public class CommodityController {
     @ApiImplicitParam(name = "co", value = "商品实体类", required = true, dataType = "Commodity")
     @GetMapping("toppingcoturn")
     public ResponseResult toppingCoTurn(Commodity co) {
-        boolean result = commodityService.updateCoTurn(co, 0);
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+        String result = commodityService.updateCoTurn(co, 0);
+        return ResponseResult.result(result == null ? 0 : 1, result == null ? "success" : "fail", result);
     }
 }

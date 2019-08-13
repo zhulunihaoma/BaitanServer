@@ -92,5 +92,5 @@ public interface CommodityService {
      * @param turn
      * @return
      */
-    boolean updateCoTurn(Commodity co, int turn);
+    String updateCoTurn(Commodity co, int turn);
 }

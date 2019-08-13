@@ -97,18 +97,18 @@ public class OrderServiceImpl implements OrderService {
 
             ActivityRecord activityRecord = activityRecordVO.getActivityRecord();
             if (activityRecord == null){
-                LogUtils.error(TAG, String.format("Activity order id {0} activityRecord id {1} is null!", orderId, order.getActivityRecordId()));
+                LogUtils.error(TAG, "Activity order id " + orderId +" activityRecord id " + order.getActivityRecordId() + " is null!");
                 return 0L;
             }
             Activity activity = activityRecordVO.getActivity();
             if (activity == null){
-                LogUtils.error(TAG, String.format("Activity order id {0} activity id {1} is null!", orderId, activityRecord.getActivityId()));
+                LogUtils.error(TAG, "Activity order id " + orderId +" activity id " + activityRecord.getActivityId() + " is null!");
                 return 0L;
             }
             // 判断ActivityRecord状态、Activity商品个数充足
             if (activityRecord.getRecordStatus() != 1 || activity.getStock() <= 0){ //判断活动是否达标以及活动商品数量是否大于0 可购买
-                LogUtils.error(TAG, String.format("Activity order id {0} activityRecord id {1} status is {2}, return!",
-                        orderId, activityRecord.getActivityId(), activityRecord.getRecordStatus()));
+                LogUtils.error(TAG, "Activity order id " + orderId + " activityRecord id " + activityRecord.getActivityId() +
+                                " status is " + activityRecord.getRecordStatus()  + ", stock is " + activity.getStock() + " return!");
                 return 0L;
             }
 

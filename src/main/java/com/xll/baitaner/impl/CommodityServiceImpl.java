@@ -249,17 +249,25 @@ public class CommodityServiceImpl implements CommodityService {
      */
     @Transactional
     @Override
-    public boolean updateCoTurn(Commodity co, int turn) {
+    public String updateCoTurn(Commodity co, int turn) {
+        String error = null;
         int coId = co.getId();
         int storId = co.getSortId();
         int coTurn = co.getTurn();
+
+        if (turn < 0){
+            error = "已经置顶商品无法上移";
+            return error;
+        }
+
         boolean res;
         if (coTurn > turn) {
             res = commodityMapper.additionTurn(storId, turn, coTurn) > 0;
             if (res) {
                 if (commodityMapper.updateCoTurn(coId, turn) > 0) {
-                    return true;
+                    error = null;
                 } else {
+                    error = "上移商品失败";
                     throw new RuntimeException();
                 }
             }
@@ -267,12 +275,15 @@ public class CommodityServiceImpl implements CommodityService {
             res = commodityMapper.subtractTurn(storId, turn, coTurn) > 0;
             if (res) {
                 if (commodityMapper.updateCoTurn(coId, turn) > 0) {
-                    return true;
+                    error = null;
                 } else {
+                    error = "下移商品失败";
                     throw new RuntimeException();
                 }
             }
+        }else {
+            error = "商品位置无需移动";
         }
-        return false;
+        return error;
     }
 }
