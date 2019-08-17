@@ -75,7 +75,7 @@ public class TemplateServiceImpl implements TemplateService {
      */
     public static final String PendingPaymentMessageId = "czhVdoQz1X4lwfHETBg0mKyGPpnj8UBYDho12ojJYKA";
     //跳转小程序页面地址
-    public static final String PendingPaymentPage = "pages/order/orderlist/orderlist";
+    public static final String PendingPaymentPage = "pages/order/orderlist/orderlist?orderstate=0";
 
     /**
      * 订单支付成功  发送给用户  线上支付订单
@@ -210,7 +210,7 @@ public class TemplateServiceImpl implements TemplateService {
                     state                           //支付状态   {{keyword7.DATA}}
             };
         } else if (type == 1) {    //订单（二维码支付）待支付提醒
-            String remark = orderDetailsVO.getShopOrder().getRemarks();
+            String remark = "您选择的是二维码支付，请确认扫码付款或转账给店主！";
             values = new String[]{
                     orderId,                        //订单号     {{keyword1.DATA}}
                     totalMoney,                     //订单总价   {{keyword2.DATA}}
@@ -262,8 +262,12 @@ public class TemplateServiceImpl implements TemplateService {
             return false;
         }
 
+        // 0: 待支付(二维码支付)
+        // 1: 已支付
+        String orderstae = "?orderstate=" + orderDetailsVO.getShopOrder().getState().toString();
+
         String[] values = this.getOrderDataValues(orderId, 0);
-        JSONObject message = getTemplateMessage(sendOpenId, NewOrderMessageId, NewOrderGoPage, fromId, values);
+        JSONObject message = getTemplateMessage(sendOpenId, NewOrderMessageId, NewOrderGoPage + orderstae, fromId, values);
         String result = weChatService.sendTemplateMessage(message, 1);
         LogUtils.info(TAG, "sendNewOrderMessage orderId: " + orderId + "  result code " + result);
 
