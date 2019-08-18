@@ -105,11 +105,11 @@ public class Shop {
      * 店铺地址经度
      */
     @ApiModelProperty(value = "店铺地址经度", name = "longitude")
-    private float longitude;
+    private String longitude;
 
     /**
      * 店铺地址纬度
      */
     @ApiModelProperty(value = "店铺地址纬度", name = "latitude")
-    private float latitude;
+    private String latitude;
 }
