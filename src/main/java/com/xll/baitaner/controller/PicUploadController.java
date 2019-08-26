@@ -67,7 +67,7 @@ public class PicUploadController {
             String oldName = oldpath.concat(file.getName());
             String newName = newpath.concat(file.getName());
             try {
-                Thumbnails.of(oldName).scale(1f).outputQuality(0.25f).toFile(newName);
+                Thumbnails.of(oldName).scale(1f).outputQuality(0.25f).outputFormat("jpg").toFile(newName);
             } catch (IOException e) {
                 log.error("图片转换压缩错误,name:{},e:{}", file.getName(), e);
                 e.printStackTrace();
