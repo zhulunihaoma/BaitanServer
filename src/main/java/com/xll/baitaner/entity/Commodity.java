@@ -66,6 +66,9 @@ public class Commodity {
     @ApiModelProperty(value = "商品图片", name = "pictUrl")
     private String pictUrl;
 
+    @ApiModelProperty(value = "商品压缩图片", name = "zipPicUrl")
+    private String zipPicUrl;
+
     /**
      * 上下架状态
      * 上架（true）

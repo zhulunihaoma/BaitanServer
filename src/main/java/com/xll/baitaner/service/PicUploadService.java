@@ -14,4 +14,10 @@ public interface PicUploadService {
      * @return
      */
     String picupload(MultipartHttpServletRequest multReq);
+
+    /**
+     * 压缩图片
+     * @param name
+     */
+    void zipPicLoad(String name);
 }

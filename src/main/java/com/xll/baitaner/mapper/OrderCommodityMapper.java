@@ -23,9 +23,9 @@ public interface OrderCommodityMapper {
      * @return
      */
     @Insert("INSERT INTO `order_commodity` " +
-            "(commodity_id,count,order_id,name,unit_price,pict_url,introduction,spec_id,spec_name,spec_price) " +
-            "VALUES (#{co.commodityId},#{co.count},#{co.orderId},#{co.name},#{co.unitPrice},#{co.pictUrl}," +
-            "#{co.introduction},#{co.specId},#{co.specName},#{co.specPrice})")
+            "(commodity_id,count,order_id,name,unit_price,pict_url,zip_pic_url,introduction,spec_id,spec_name," +
+            "spec_price) VALUES (#{co.commodityId},#{co.count},#{co.orderId},#{co.name},#{co.unitPrice}," +
+            "#{co.pictUrl},#{co.zipPicUrl},#{co.introduction},#{co.specId},#{co.specName},#{co.specPrice})")
     int insertOrderList(@Param("co") OrderCommodity orderCommodity);
 
     /**

@@ -38,8 +38,9 @@ public class PicUploadController {
     )
     @PostMapping("/picupload")
     public ResponseResult uploadPic(MultipartHttpServletRequest multReq) {
-        System.out.print(multReq);
         String res = picUploadService.picupload(multReq);
+        //压缩图片
+        picUploadService.zipPicLoad(res);
         return ResponseResult.result(res != null ? 0 : 1, res != null ? "successs" : "fail", res);
     }
 }

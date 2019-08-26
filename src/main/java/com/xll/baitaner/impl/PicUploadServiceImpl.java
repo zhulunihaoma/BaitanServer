@@ -1,7 +1,11 @@
 package com.xll.baitaner.impl;
 
 import com.xll.baitaner.service.PicUploadService;
+import com.xll.baitaner.utils.Constant;
 import com.xll.baitaner.utils.PathUtil;
+import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -16,6 +20,7 @@ import java.io.IOException;
  * 创建者：xie
  * 日期：2017/9/27
  **/
+@Slf4j
 @Service
 public class PicUploadServiceImpl implements PicUploadService {
 
@@ -39,6 +44,26 @@ public class PicUploadServiceImpl implements PicUploadService {
             return fileName;
         } else {
             return null;
+        }
+    }
+
+    /**
+     * 压缩图片
+     *
+     * @param name
+     */
+    @Override
+    public void zipPicLoad(String name) {
+        if (StringUtils.isBlank(name)) {
+            return;
+        }
+        String oleFliePath = Constant.OLD_ZIP_PICTURE_URL.concat(name);
+        String filePath = Constant.ZIP_PICTURE_URL.concat(name);
+        try {
+            Thumbnails.of(oleFliePath).scale(1f).outputQuality(0.25f).outputFormat("jpg").toFile(filePath);
+        } catch (IOException e) {
+            log.error("压缩图片错误，name:{},e:{}", name, e);
+            e.printStackTrace();
         }
     }
 

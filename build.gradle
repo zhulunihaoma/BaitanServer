@@ -70,4 +70,6 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 
     compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.62'
+
+    compile group: 'net.coobird', name: 'thumbnailator', version: '0.4.8'
 }
