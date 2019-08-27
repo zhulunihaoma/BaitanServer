@@ -24,8 +24,10 @@ public interface CommodityMapper {
      * @param co
      * @return
      */
-    @Insert("INSERT INTO commodity (shopId,sortId,name,price,postage,monthlySales,pictUrl,zipPicUrl,introduction," +
-            "state,turn,stock,datetime) VALUES (#{co.shopId},#{co.sortId},#{co.name},#{co.price},#{co.postage}," +
+    @Insert("INSERT INTO commodity (shopId,sortId,name,price,retail_price,postage,monthlySales,pictUrl,zipPicUrl," +
+            "introduction," +
+            "state,turn,stock,datetime) VALUES (#{co.shopId},#{co.sortId},#{co.name},#{co.price},#{co.retailPrice}," +
+            "#{co.postage}," +
             "#{co.monthlySales},#{co.pictUrl},#{co.zipPicUrl}," +
             "#{co.introduction},#{co.state},#{co.turn},#{co.stock},NOW(0))")
     @Options(useGeneratedKeys = true, keyProperty = "co.id")
@@ -37,7 +39,8 @@ public interface CommodityMapper {
      * @param co
      * @return
      */
-    @Update("UPDATE commodity SET name=#{co.name},price=#{co.price},postage=#{co.postage},monthlySales=#{co.monthlySales}, " +
+    @Update("UPDATE commodity SET name=#{co.name},price=#{co.price},retail_price=#{retailPrice},postage=#{co.postage}," +
+            "monthlySales=#{co.monthlySales}, " +
             "pictUrl = #{co.pictUrl},zipPicUrl=#{co.zipPicUrl},introduction=#{co.introduction},stock=#{co.stock} " +
             "WHERE id  = #{co.id}")
     int updateCommodity(@Param("co") Commodity co);

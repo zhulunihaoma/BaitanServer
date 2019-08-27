@@ -18,7 +18,8 @@ public interface SpecMapper {
      * @param spec
      * @return
      */
-    @Insert("INSERT INTO spec (commodityId, name, price, stock) VALUES (#{spec.commodityId}, #{spec.name}, #{spec.price}, #{spec.stock})")
+    @Insert("INSERT INTO spec (commodityId, name, price, retail_price,stock) VALUES (#{spec.commodityId}, #{spec" +
+            ".name}, #{spec.price}, #{spec.retailPrice},#{spec.stock})")
     @Options(useGeneratedKeys = true, keyProperty = "spec.id")
     int insertSpec(@Param("spec") Spec spec);
 
@@ -32,7 +33,7 @@ public interface SpecMapper {
      * @return
      */
     @Update("UPDATE spec SET commodityId = #{spec.commodityId}, name = #{spec.name} ,price = #{spec.price}, " +
-            "stock = #{spec.stock} WHERE id = #{spec.id}")
+            "retail_price=#{spec.retailPrice},stock = #{spec.stock} WHERE id = #{spec.id}")
     int updateSpec(@Param("spec") Spec spec);
 
     /**

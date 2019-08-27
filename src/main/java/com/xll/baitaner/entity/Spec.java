@@ -32,6 +32,11 @@ public class Spec {
     private String price;
 
     /**
+     * 零售价
+     */
+    private String retailPrice;
+
+    /**
      * 规格库存
      */
     @ApiModelProperty(value = "规格库存", name = "stock")

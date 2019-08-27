@@ -49,6 +49,11 @@ public class Commodity {
     private String price;
 
     /**
+     * 零售价
+     */
+    private String retailPrice;
+
+    /**
      * 商品运费
      */
     @ApiModelProperty(value = "商品运费", name = "postage")
