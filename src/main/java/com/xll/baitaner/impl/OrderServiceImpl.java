@@ -125,12 +125,24 @@ public class OrderServiceImpl implements OrderService {
                     //获取商品规格
                     Spec spec = specService.getSpec(orderCommodity.getSpecId());
                     if (spec != null && spec.getCommodityId() == orderCommodity.getCommodityId()) {
+                        //判断库存
+                        if ((spec.getStock() - orderCommodity.getCount()) < 0){
+                            //库存不足
+                            return 0L;
+                        }
+
                         money = new BigDecimal(spec.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
                     }
                     else {
-                        money = new BigDecimal(commodity.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
+                        //商品规格有误
                     }
                 } else {
+                    //判断库存
+                    if ((commodity.getStock() - orderCommodity.getCount()) < 0){
+                        //库存不足
+                        return 0L;
+                    }
+
                     money = new BigDecimal(commodity.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
                 }
                 total = total.add(money);
@@ -158,6 +170,10 @@ public class OrderServiceImpl implements OrderService {
             //活动订单 修改活动记录为已下单
             if (order.getActivityNot() == 1){
                 activityService.changeRecordstatus(2, Integer.parseInt(order.getActivityRecordId()));
+            }
+            else {
+                //减少订单中商品及规格的库存
+                this.updateOrderCommodityStock(orderId.toString());
             }
 
             return orderId;
@@ -427,6 +443,11 @@ public class OrderServiceImpl implements OrderService {
                 if (order.getActivityNot() == 1){
                     activityService.changeRecordstatus(3, Integer.parseInt(order.getActivityRecordId()));
                 }
+                //已支付的订单中商品增加月销量
+                List<OrderCommodity> orderCommodityList = getOrderCoList(orderId);
+                for (OrderCommodity orderCommodity : orderCommodityList){
+                    commodityService.increaseMonthlySales(orderCommodity.getCommodityId(), orderCommodity.getCount());
+                }
 
                 //state更新为1：已接单 创建历史订单
                 if (historyOrderService.creatHistoryOrder(orderId)) {
@@ -484,4 +505,19 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.deleteOrder(Long.valueOf(orderId)) > 0;
     }
 
+    /**
+     *  减少非活动订单中商品及规格的库存
+     * @param orderId
+     */
+    private void updateOrderCommodityStock(String orderId){
+        List<OrderCommodity> orderCommodityList = getOrderCoList(orderId);
+        for (OrderCommodity orderCommodity : orderCommodityList){
+            if (orderCommodity.getSpecId() > 0){
+                commodityService.reduceCommoditySpecStock(orderCommodity.getCommodityId(), orderCommodity.getSpecId(), orderCommodity.getCount());
+            }
+            else {
+                commodityService.reduceCommodityStock(orderCommodity.getCommodityId(), orderCommodity.getCount());
+            }
+        }
+    }
 }

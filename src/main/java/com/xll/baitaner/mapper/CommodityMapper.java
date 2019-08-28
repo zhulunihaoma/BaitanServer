@@ -171,4 +171,32 @@ public interface CommodityMapper {
      */
     @Update("UPDATE commodity SET turn = turn - 1 WHERE sortId = #{sortId} AND turn >= #{start} AND turn <= #{end}")
     int subtractTurn(@Param("sortId") int sortId, @Param("start") int start, @Param("end") int end);
+
+    /**
+     * 增加商品月销售量
+     * @param commodityId
+     * @param count
+     * @return
+     */
+    @Update("UPDATE commodity SET monthlySales = monthlySales + #{count} WHERE id = #{commodityId}")
+    int increaseMonthlySales(@Param("commodityId") int commodityId, @Param("count") int count);
+
+
+    /**
+     * 减少商品库存
+     * @param commodityId
+     * @param count
+     * @return
+     */
+    @Update("UPDATE commodity SET stock = stock - #{count} WHERE id = #{commodityId}")
+    int reduceCommodityStock(@Param("commodityId") int commodityId, @Param("count") int count);
+
+    /**
+     * 减少商品规格库存
+     * @param commodityId
+     * @param count
+     * @return
+     */
+    @Update("UPDATE spec SET stock = stock - #{count} WHERE id = #{specId} AND commodityId = #{commodityId}")
+    int reduceCommoditySpecStock(@Param("commodityId") int commodityId, @Param("specId") int specId, @Param("count") int count);
 }

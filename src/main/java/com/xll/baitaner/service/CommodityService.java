@@ -93,4 +93,28 @@ public interface CommodityService {
      * @return
      */
     String updateCoTurn(Commodity co, int turn);
+
+    /**
+     * 增加商品月销售量
+     * @param commodityId
+     * @param count
+     * @return
+     */
+    boolean increaseMonthlySales(int commodityId, int count);
+
+    /**
+     * 减少商品库存
+     * @param commodityId
+     * @param count
+     * @return
+     */
+    boolean reduceCommodityStock(int commodityId, int count);
+
+    /**
+     * 减少商品规格库存
+     * @param commodityId
+     * @param count
+     * @return
+     */
+    boolean reduceCommoditySpecStock(int commodityId, int specId, int count);
 }

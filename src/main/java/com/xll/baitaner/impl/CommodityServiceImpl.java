@@ -286,4 +286,38 @@ public class CommodityServiceImpl implements CommodityService {
         }
         return error;
     }
+
+    /**
+     * 增加商品月销售量
+     * @param commodityId
+     * @param count
+     * @return
+     */
+    @Override
+    public boolean increaseMonthlySales(int commodityId, int count) {
+        return commodityMapper.increaseMonthlySales(commodityId, count) > 0;
+    }
+
+    /**
+     * 减少商品库存
+     * @param commodityId
+     * @param count
+     * @return
+     */
+    @Override
+    public boolean reduceCommodityStock(int commodityId, int count) {
+        return commodityMapper.reduceCommodityStock(commodityId, count) > 0;
+    }
+
+    /**
+     * 减少商品规格库存
+     * @param commodityId
+     * @param specId
+     * @param count
+     * @return
+     */
+    @Override
+    public boolean reduceCommoditySpecStock(int commodityId, int specId, int count) {
+        return commodityMapper.reduceCommoditySpecStock(commodityId, specId, count) > 0;
+    }
 }
