@@ -6,6 +6,7 @@ import com.xll.baitaner.entity.ShopOrder;
 import com.xll.baitaner.entity.VO.OrderDetailsResultVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import com.xll.baitaner.entity.VO.ShopOrderVO;
+import com.xll.baitaner.utils.ResponseResult;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public interface OrderService {
      * @param input
      * @return
      */
-    Long submitOrder(ShopOrderVO input);
+    ResponseResult submitOrder(ShopOrderVO input);
 
     /**
      * 下单处理，新增订单及订单商品数据

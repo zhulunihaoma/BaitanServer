@@ -15,6 +15,7 @@ import com.xll.baitaner.mapper.ProfileMapper;
 import com.xll.baitaner.mapper.ShopMapper;
 import com.xll.baitaner.service.*;
 import com.xll.baitaner.utils.LogUtils;
+import com.xll.baitaner.utils.ResponseResult;
 import com.xll.baitaner.utils.SerialUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -81,7 +82,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public Long submitOrder(ShopOrderVO input) {
+    public ResponseResult submitOrder(ShopOrderVO input) {
         ShopOrder order = input.getOrder();
         List<OrderCommodity> commodityList = input.getCommodityList();
         Long orderId = SerialUtils.getSerialOrderId(order.getShopId());
@@ -93,23 +94,25 @@ public class OrderServiceImpl implements OrderService {
         if (order.getActivityNot() == 1){
             //ActivityRecord活动订单
             ActivityRecordVO activityRecordVO = activityService.getActivityrecordById(Integer.parseInt(order.getActivityRecordId()));
-            if (activityRecordVO == null)   return 0L;
+            if (activityRecordVO == null)
+                return ResponseResult.result(1, "fail", "活动订单错误");
 
             ActivityRecord activityRecord = activityRecordVO.getActivityRecord();
             if (activityRecord == null){
                 LogUtils.error(TAG, "Activity order id " + orderId +" activityRecord id " + order.getActivityRecordId() + " is null!");
-                return 0L;
+                return ResponseResult.result(1, "fail", "活动订单错误，无参加活动记录");
             }
             Activity activity = activityRecordVO.getActivity();
             if (activity == null){
                 LogUtils.error(TAG, "Activity order id " + orderId +" activity id " + activityRecord.getActivityId() + " is null!");
-                return 0L;
+                return ResponseResult.result(1, "fail", "活动订单错误，无该活动");
             }
             // 判断ActivityRecord状态、Activity商品个数充足
             if (activityRecord.getRecordStatus() != 1 || activity.getStock() <= 0){ //判断活动是否达标以及活动商品数量是否大于0 可购买
                 LogUtils.error(TAG, "Activity order id " + orderId + " activityRecord id " + activityRecord.getActivityId() +
                                 " status is " + activityRecord.getRecordStatus()  + ", stock is " + activity.getStock() + " return!");
-                return 0L;
+                return ResponseResult.result(1, "fail",
+                        "活动订单状态:"+ activityRecord.getRecordStatus() +"有误或活动商品库存:" + activity.getStock() + "不足");
             }
 
             BigDecimal money = new BigDecimal("0.00");
@@ -128,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
                         //判断库存
                         if ((spec.getStock() - orderCommodity.getCount()) < 0){
                             //库存不足
-                            return 0L;
+                            return ResponseResult.result(1, "fail", "商品该规格库存不足，现有库存:" + spec.getStock());
                         }
 
                         money = new BigDecimal(spec.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
@@ -140,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
                     //判断库存
                     if ((commodity.getStock() - orderCommodity.getCount()) < 0){
                         //库存不足
-                        return 0L;
+                        return ResponseResult.result(1, "fail", "商品库存不足，现有库存:" + commodity.getStock());
                     }
 
                     money = new BigDecimal(commodity.getPrice()).multiply(new BigDecimal(orderCommodity.getCount()));
@@ -176,9 +179,9 @@ public class OrderServiceImpl implements OrderService {
                 this.updateOrderCommodityStock(orderId.toString());
             }
 
-            return orderId;
+            return ResponseResult.result(0, "success", orderId);
         }
-        return 0L;
+        return ResponseResult.result(1, "fail", "下单失败，订单插入商品数据出错");
     }
 
     /**
@@ -203,6 +206,7 @@ public class OrderServiceImpl implements OrderService {
                 oc.setUnitPrice(commodity.getPrice());
                 oc.setName(commodity.getName());
                 oc.setPictUrl(commodity.getPictUrl());
+                oc.setZipPicUrl(commodity.getZipPicUrl());
                 oc.setIntroduction(commodity.getIntroduction());
                 oc.setSpecName("");
                 oc.setSpecPrice("0.00");

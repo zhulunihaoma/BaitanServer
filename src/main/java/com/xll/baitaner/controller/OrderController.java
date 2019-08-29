@@ -115,13 +115,7 @@ public class OrderController {
     })
     @PostMapping("ordersubmit")
     public ResponseResult submitOrder(@RequestBody ShopOrderVO input) {
-        try {
-            Long orderId = orderService.submitOrder(input);
-            return ResponseResult.result(0, "success", orderId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseResult.result(1, "fail", null);
-        }
+            return orderService.submitOrder(input);
     }
 
     /**
