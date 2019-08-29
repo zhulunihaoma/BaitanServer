@@ -5,6 +5,7 @@ import com.xll.baitaner.mapper.ExpressInfoMapper;
 import com.xll.baitaner.service.ExpressInfoService;
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
  * @date 2019/8/27
  */
 @Data
+@Service
 public class ExpressInfoServiceImpl implements ExpressInfoService {
 
     @Resource
