@@ -28,11 +28,4 @@ public class Constant {
      * 提现手续费
      */
     public static final String WITHDRAW_FEE = "0.0035";
-
-
-    /**
-     * 图片地址
-     */
-    public static final String OLD_ZIP_PICTURE_URL = "http://www.eastzebra.cn/servicepicture/";
-    public static final String ZIP_PICTURE_URL = "http://www.eastzebra.cn/zippicture/";
 }

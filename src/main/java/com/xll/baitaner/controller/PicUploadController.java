@@ -40,7 +40,7 @@ public class PicUploadController {
      */
     @ApiOperation(
             value = "图片上传",
-            notes = "返回图片name, 获取图片路径：http://www.eastzebra.cn/servicepicture/ + 图片name"
+            notes = "返回图片name, 获取图片路径：https://www.eastzebra.cn/servicepicture/ + 图片name"
     )
     @PostMapping("/picupload")
     public ResponseResult uploadPic(MultipartHttpServletRequest multReq) {

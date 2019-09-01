@@ -1,13 +1,13 @@
 package com.xll.baitaner.impl;
 
 import com.xll.baitaner.service.PicUploadService;
-import com.xll.baitaner.utils.Constant;
 import com.xll.baitaner.utils.PathUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.File;
@@ -57,8 +57,10 @@ public class PicUploadServiceImpl implements PicUploadService {
         if (StringUtils.isBlank(name)) {
             return;
         }
-        String oleFliePath = Constant.OLD_ZIP_PICTURE_URL.concat(name);
-        String filePath = Constant.ZIP_PICTURE_URL.concat(name);
+        String oleFliePath = ClassUtils.getDefaultClassLoader().getResource("").getPath()
+                + "../../../../webapps/servicepicture/";
+        String filePath = ClassUtils.getDefaultClassLoader().getResource("").getPath()
+                + "../../../../webapps/zippicture/";
         try {
             Thumbnails.of(oleFliePath).scale(1f).outputQuality(0.25f).outputFormat("jpg").toFile(filePath);
         } catch (IOException e) {
