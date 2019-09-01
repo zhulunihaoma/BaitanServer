@@ -175,6 +175,26 @@ public class OrderController {
     }
 
     /**
+     * 获取店铺的已取消订单 （二维码支付的订单）
+     *
+     * @param shopId
+     * @return
+     */
+    @ApiOperation(
+            value = "获取店铺的已取消订单",
+            httpMethod = "GET",
+            notes = "获取店铺的已取消订单 （二维码支付的订单）, 分页显示")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
+    })
+    @GetMapping("getshopcancelledorders")
+    public ResponseResult getCancelledOrderListByShop(int shopId, Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", orderService.getCancelledOrderListByShop(shopId, offset, size));
+    }
+
+    /**
      * 更新订单状态
      *
      * @param orderId
@@ -184,10 +204,10 @@ public class OrderController {
     @ApiOperation(
             value = "更新订单状态",
             httpMethod = "GET",
-            notes = "更新订单状态, 订单状态  0：待支付;  1：已接单;  2：待完成; 3：已完成")
+            notes = "更新订单状态, 订单状态  -1: 已取消;  0：待支付;  1：已接单;  2：待完成; 3：已完成, 只有待支付订单可以取消")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "orderId", value = "订单编号", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "state", value = "订单状态  0：待支付;  1：已接单;  2：待完成; 3：已完成", required = true, dataType = "int")
+            @ApiImplicitParam(name = "state", value = "订单状态  -1: 已取消;  0：待支付;  1：已接单;  2：待完成; 3：已完成", required = true, dataType = "int")
     })
     @GetMapping("updateorderstate")
     public ResponseResult updateOrderState(String orderId, int state) {
@@ -252,17 +272,18 @@ public class OrderController {
     }
 
     /**
-     * 删除订单
+     * 删除订单（限制只能删除已取消订单）
      *
      * @param orderId
      * @return
      */
     @ApiOperation(
-            value = "删除订单（二维码订单且未支付的）",
-            httpMethod = "GET")
+            value = "删除订单（限制只能删除已取消订单）",
+            httpMethod = "GET",
+            notes = "除已取消订单接口 买家卖家通用")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "orderId", value = "订单编号", required = true, dataType = "String")})
-    @GetMapping("deleteOrder")
+    @GetMapping("deleteorder")
     public ResponseResult deleteOrder(String orderId) {
         boolean result = orderService.deleteOrder(orderId);
         return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", result);

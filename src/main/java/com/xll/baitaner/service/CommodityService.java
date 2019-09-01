@@ -103,18 +103,20 @@ public interface CommodityService {
     boolean increaseMonthlySales(int commodityId, int count);
 
     /**
-     * 减少商品库存
+     * 更新商品库存  减少或增加
      * @param commodityId
      * @param count
+     * @param type  0：减少  1：增加
      * @return
      */
-    boolean reduceCommodityStock(int commodityId, int count);
+    boolean updateCommodityStock(int commodityId, int count, int type);
 
     /**
-     * 减少商品规格库存
+     * 更新商品规格库存  减少或增加
      * @param commodityId
      * @param count
+     * @param type  0：减少  1：增加
      * @return
      */
-    boolean reduceCommoditySpecStock(int commodityId, int specId, int count);
+    boolean updateCommoditySpecStock(int commodityId, int specId, int count, int type);
 }

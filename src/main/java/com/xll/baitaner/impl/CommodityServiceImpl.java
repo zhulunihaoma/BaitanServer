@@ -299,25 +299,44 @@ public class CommodityServiceImpl implements CommodityService {
     }
 
     /**
-     * 减少商品库存
+     * 更新商品库存  减少或增加
      * @param commodityId
      * @param count
+     * @param type  0：减少  1：增加
      * @return
      */
     @Override
-    public boolean reduceCommodityStock(int commodityId, int count) {
-        return commodityMapper.reduceCommodityStock(commodityId, count) > 0;
+    public boolean updateCommodityStock(int commodityId, int count, int type) {
+        if (type == 0){
+            //减少商品库存
+            Commodity commodity = this.getCommodity(commodityId);
+            if (commodity == null || (commodity.getStock() - count) < 0)
+                return false;
+            return commodityMapper.reduceCommodityStock(commodityId, count) > 0;
+        }
+        else {
+            return commodityMapper.increaseCommodityStock(commodityId, count) > 0;
+        }
     }
 
     /**
-     * 减少商品规格库存
+     * 更新商品规格库存  减少或增加
      * @param commodityId
      * @param specId
      * @param count
+     * @param type  0：减少  1：增加
      * @return
      */
     @Override
-    public boolean reduceCommoditySpecStock(int commodityId, int specId, int count) {
-        return commodityMapper.reduceCommoditySpecStock(commodityId, specId, count) > 0;
+    public boolean updateCommoditySpecStock(int commodityId, int specId, int count, int type) {
+        if (type == 0){
+            Spec spec = specService.getSpec(specId);
+            if (spec == null || spec.getCommodityId() != commodityId || (spec.getStock() - count) < 0)
+                return false;
+            return commodityMapper.reduceCommoditySpecStock(commodityId, specId, count) > 0;
+        }
+        else {
+            return commodityMapper.increaseCommoditySpecStock(commodityId, specId, count) > 0;
+        }
     }
 }

@@ -64,10 +64,21 @@ public interface OrderMapper {
     List<ShopOrder> selectNoPayOrdersByShopId(@Param("shopId") int shopId);
 
     /**
+     * 获取店铺的已取消订单 （二维码支付的订单）
+     *
+     * @param shopId
+     * @return
+     */
+    @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = 0 AND pay_type = -1 " +
+            "AND pay_type = 1 AND del_flag = 0 " +
+            "ORDER BY create_date DESC")
+    List<ShopOrder> selectCancelledOrdersByShopId(@Param("shopId") int shopId);
+
+    /**
      * 更新订单状态
      *
      * @param orderId
-     * @param state   0：待支付;  1：已接单;  2：待完成; 3：已完成
+     * @param state  -1: 已取消;  0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
     @Update("UPDATE `shop_order` SET state = #{state} WHERE order_id = #{orderId}")
@@ -77,7 +88,7 @@ public interface OrderMapper {
      * 查询店铺对应状态的订单列表
      *
      * @param shopId
-     * @param state  0：待支付;  1：已接单;  2：待完成; 3：已完成
+     * @param state  -1: 已取消;  0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
     @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = #{state} ORDER BY " +
@@ -108,7 +119,7 @@ public interface OrderMapper {
     int sumCoCount(@Param("coId") int coId);
 
     /**
-     * 删除订单（二维码订单且未支付的）
+     * 删除订单（限制只能删除已取消订单）
      *
      * @param orderId
      * @return
