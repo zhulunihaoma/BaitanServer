@@ -5,6 +5,7 @@ import com.xll.baitaner.service.ExpressInfoService;
 import com.xll.baitaner.utils.ResponseResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -21,7 +22,7 @@ public class ExpressController {
     ExpressInfoService expressInfoService;
 
     @PutMapping("express/add")
-    public ResponseResult addOne(ExpressInfo express) {
+    public ResponseResult addOne(@RequestBody ExpressInfo express) {
         try {
             int ex = expressInfoService.addExpress(express);
             return ResponseResult.result(0, "success", ex);
