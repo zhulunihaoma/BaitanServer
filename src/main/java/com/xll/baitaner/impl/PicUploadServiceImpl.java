@@ -58,9 +58,9 @@ public class PicUploadServiceImpl implements PicUploadService {
             return;
         }
         String oleFliePath = ClassUtils.getDefaultClassLoader().getResource("").getPath()
-                + "../../../../webapps/servicepicture/";
+                + "../../../../webapps/servicepicture/".concat(name);
         String filePath = ClassUtils.getDefaultClassLoader().getResource("").getPath()
-                + "../../../../webapps/zippicture/";
+                + "../../../../webapps/zippicture/".concat(name);
         try {
             Thumbnails.of(oleFliePath).scale(1f).outputQuality(0.25f).outputFormat("jpg").toFile(filePath);
         } catch (IOException e) {
