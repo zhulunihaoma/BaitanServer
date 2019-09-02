@@ -83,6 +83,9 @@ public class Shop {
     @ApiModelProperty(value = "店铺的支付二维码图片路径", name = "payQrcodeUrl")
     private String payQrcodeUrl;
 
+    @ApiModelProperty(value = "店铺的支付宝支付二维码图片路径", name = "aliPayQrcodeUrl")
+    private String aliPayQrcodeUrl;
+
     /**
      * 店铺状态 1:营业  0;歇业
      */

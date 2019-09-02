@@ -5,7 +5,6 @@ import com.xll.baitaner.service.ExpressInfoService;
 import com.xll.baitaner.utils.ResponseResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -33,9 +32,9 @@ public class ExpressController {
     }
 
     @GetMapping("express/ids")
-    public ResponseResult getExpressId(Integer shopId, Integer id) {
+    public ResponseResult getExpressId(Integer shopId, Integer orderId) {
         try {
-            List<Integer> ids = expressInfoService.queryExpressIds(shopId, id);
+            List<Integer> ids = expressInfoService.queryExpressIds(shopId, orderId);
             return ResponseResult.result(0, "success", ids);
         } catch (Exception e) {
             e.printStackTrace();
