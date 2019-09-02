@@ -22,7 +22,7 @@ public class ExpressController {
     ExpressInfoService expressInfoService;
 
     @PutMapping("express/add")
-    public ResponseResult addOne(@RequestBody ExpressInfo express) {
+    public ResponseResult addOne(ExpressInfo express) {
         try {
             int ex = expressInfoService.addExpress(express);
             return ResponseResult.result(0, "success", ex);
