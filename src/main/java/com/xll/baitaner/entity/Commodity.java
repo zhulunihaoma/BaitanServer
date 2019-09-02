@@ -43,6 +43,12 @@ public class Commodity {
     private String introduction;
 
     /**
+     * 商品描述图片
+     */
+    @ApiModelProperty(value = "商品描述图片", name = "introductionPics")
+    private String introductionPics;
+
+    /**
      * 商品单价
      */
     @ApiModelProperty(value = "商品单价", name = "price")
