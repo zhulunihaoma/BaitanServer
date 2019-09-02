@@ -22,6 +22,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.rmi.runtime.Log;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -176,7 +177,7 @@ public class OrderServiceImpl implements OrderService {
             }
             else {
                 //减少订单中商品及规格的库存
-                this.updateOrderCommodityStock(orderId.toString());
+                this.updateOrderCommodityStock(orderId.toString(), 0);
             }
 
             return ResponseResult.result(0, "success", orderId);
@@ -322,6 +323,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 获取店铺的已取消订单 （二维码支付的订单）
+     * @param shopId
+     * @param offset
+     * @param size
+     * @return
+     */
+    @Override
+    public OrderDetailsResultVO getCancelledOrderListByShop(int shopId, Integer offset, Integer size) {
+        OrderDetailsResultVO resultVO = new OrderDetailsResultVO();
+        Page<ShopOrder> page = PageHelper.startPage(offset,size).doSelectPage(()->orderMapper.selectCancelledOrdersByShopId(shopId));
+        List<ShopOrder> orderList = page.getResult();
+        List<OrderDetailsVO> details = new ArrayList<>();
+        for (ShopOrder order : orderList) {
+            OrderDetailsVO orderDetails = this.getOrderDetails(order.getOrderId().toString());
+            details.add(orderDetails);
+        }
+        resultVO.setData(details);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
+    }
+
+    /**
      * 获取店铺待完成订单
      *
      * @param shopId
@@ -430,7 +453,7 @@ public class OrderServiceImpl implements OrderService {
      * 更新订单状态
      *
      * @param orderId
-     * @param state   0：待支付;  1：已接单;  2：待完成; 3：已完成
+     * @param state  -1: 已取消;  0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
     @Transactional
@@ -439,9 +462,24 @@ public class OrderServiceImpl implements OrderService {
         if (StringUtils.isBlank(orderId)) {
             return false;
         }
+
+        //取消订单验证
+        if (state == -1){
+            ShopOrder order = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
+            if (order.getState() != 0){ //不是未支付订单 不能取消
+                log.error(orderId + " 不是未支付订单 不能取消");
+                return false;
+            }
+        }
+
         boolean result = orderMapper.updateOrderState(Long.valueOf(orderId), state) > 0;
         if (result) {
-            if (state == 1) {
+            if (state == -1){
+                //已取消的订单  商品库存增加回去
+                this.updateOrderCommodityStock(orderId, 1);
+                return true;
+            }
+            else if (state == 1) {
                 //活动订单支付成功后 修改活动记录为已支付
                 ShopOrder order = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
                 if (order.getActivityNot() == 1){
@@ -496,8 +534,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     /**
-     * 删除订单（二维码订单且未支付的）
-     *
+     * 删除订单（限制只能删除已取消订单） //TODO 区分买家 卖家不同的发起方
      * @param orderId
      * @return
      */
@@ -510,17 +547,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     *  减少非活动订单中商品及规格的库存
+     *  更新非活动订单中商品及规格的库存
      * @param orderId
+     * @param type  0：减少  1：增加
      */
-    private void updateOrderCommodityStock(String orderId){
+    private void updateOrderCommodityStock(String orderId, int type){
         List<OrderCommodity> orderCommodityList = getOrderCoList(orderId);
         for (OrderCommodity orderCommodity : orderCommodityList){
             if (orderCommodity.getSpecId() > 0){
-                commodityService.reduceCommoditySpecStock(orderCommodity.getCommodityId(), orderCommodity.getSpecId(), orderCommodity.getCount());
+                commodityService.updateCommoditySpecStock(orderCommodity.getCommodityId(), orderCommodity.getSpecId(), orderCommodity.getCount(), type);
             }
             else {
-                commodityService.reduceCommodityStock(orderCommodity.getCommodityId(), orderCommodity.getCount());
+                commodityService.updateCommodityStock(orderCommodity.getCommodityId(), orderCommodity.getCount(), type);
             }
         }
     }

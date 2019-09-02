@@ -65,6 +65,14 @@ public interface OrderService {
     OrderDetailsResultVO getNoPayOrderListByShop(int shopId, Integer offset, Integer size);
 
     /**
+     * 获取店铺的已取消订单 （二维码支付的订单）
+     *
+     * @param shopId
+     * @return
+     */
+    OrderDetailsResultVO getCancelledOrderListByShop(int shopId, Integer offset, Integer size);
+
+    /**
      * 获取店铺待完成订单
      *
      * @param shopId
@@ -92,13 +100,13 @@ public interface OrderService {
      * 更新订单状态
      *
      * @param orderId
-     * @param state   0：待支付;  1：已接单;  2：待完成; 3：已完成
+     * @param state   -1: 已取消;  0：待支付;  1：已接单;  2：待完成; 3：已完成
      * @return
      */
     boolean updateOrderState(String orderId, int state);
 
     /**
-     * 删除订单（二维码订单且未支付的）
+     * 删除订单（限制只能删除已取消订单）
      *
      * @param orderId
      * @return

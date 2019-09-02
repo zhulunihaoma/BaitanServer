@@ -192,6 +192,15 @@ public interface CommodityMapper {
     int reduceCommodityStock(@Param("commodityId") int commodityId, @Param("count") int count);
 
     /**
+     * 增加商品库存
+     * @param commodityId
+     * @param count
+     * @return
+     */
+    @Update("UPDATE commodity SET stock = stock + #{count} WHERE id = #{commodityId}")
+    int increaseCommodityStock(@Param("commodityId") int commodityId, @Param("count") int count);
+
+    /**
      * 减少商品规格库存
      * @param commodityId
      * @param count
@@ -199,4 +208,13 @@ public interface CommodityMapper {
      */
     @Update("UPDATE spec SET stock = stock - #{count} WHERE id = #{specId} AND commodityId = #{commodityId}")
     int reduceCommoditySpecStock(@Param("commodityId") int commodityId, @Param("specId") int specId, @Param("count") int count);
+
+    /**
+     * 增加商品规格库存
+     * @param commodityId
+     * @param count
+     * @return
+     */
+    @Update("UPDATE spec SET stock = stock + #{count} WHERE id = #{specId} AND commodityId = #{commodityId}")
+    int increaseCommoditySpecStock(@Param("commodityId") int commodityId, @Param("specId") int specId, @Param("count") int count);
 }
