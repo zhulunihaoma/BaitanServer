@@ -23,5 +23,5 @@ public interface ExpressInfoService {
      * @param orderId
      * @return
      */
-    List<Integer> queryExpressIds(Integer shopId, Integer orderId);
+    List<String> queryExpressIds(Integer shopId, Integer orderId);
 }

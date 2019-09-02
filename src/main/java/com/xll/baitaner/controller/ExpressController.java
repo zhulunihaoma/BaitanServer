@@ -34,7 +34,7 @@ public class ExpressController {
     @GetMapping("express/ids")
     public ResponseResult getExpressId(Integer shopId, Integer orderId) {
         try {
-            List<Integer> ids = expressInfoService.queryExpressIds(shopId, orderId);
+            List<String> ids = expressInfoService.queryExpressIds(shopId, orderId);
             return ResponseResult.result(0, "success", ids);
         } catch (Exception e) {
             e.printStackTrace();

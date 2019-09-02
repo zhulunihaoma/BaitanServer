@@ -32,8 +32,8 @@ public class ExpressInfoServiceImpl implements ExpressInfoService {
     }
 
     @Override
-    public List<Integer> queryExpressIds(Integer shopId, Integer orderId) {
-        List<Integer> integers = expressInfoMapper.selectExpressIdsById(shopId, orderId);
+    public List<String> queryExpressIds(Integer shopId, Integer orderId) {
+        List<String> integers = expressInfoMapper.selectExpressIdsById(shopId, orderId);
         if (CollectionUtils.isEmpty(integers)) {
             return new ArrayList<>();
         }

@@ -20,5 +20,5 @@ public interface ExpressInfoMapper {
     int insertOne(@Param("ex") ExpressInfo ex);
 
     @Select("select express_id from express_info where shop_id=#{shopId} and shop_order_id=#{orderId}")
-    List<Integer> selectExpressIdsById(@Param("shopId") Integer shopId, @Param("orderId") Integer orderId);
+    List<String> selectExpressIdsById(@Param("shopId") Integer shopId, @Param("orderId") Integer orderId);
 }
