@@ -47,7 +47,7 @@ public class CommodityServiceImpl implements CommodityService {
      * @return
      */
     @Override
-    public boolean addCommodity(Commodity commodity) {
+    public int addCommodity(Commodity commodity) {
         int count = commodityMapper.countSortCoList(commodity.getShopId(), commodity.getSortId());
         commodity.setTurn(count);
         boolean res = commodityMapper.insertCommodity(commodity) > 0;
@@ -67,10 +67,10 @@ public class CommodityServiceImpl implements CommodityService {
                     }
                 }
             }
-            return true;
+            return commodity.getId();
         } else {
             LogUtils.warn(TAG, "Add commodity failed");
-            return false;
+            return -1;
         }
     }
 

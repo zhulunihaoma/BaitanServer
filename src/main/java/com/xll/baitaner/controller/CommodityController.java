@@ -44,8 +44,9 @@ public class CommodityController {
     @PostMapping("addcommodity")
     public ResponseResult addCommodity(Commodity commodity) {
         LogUtils.info(TAG, JSONObject.fromObject(commodity).toString());
-        boolean result = commodityService.addCommodity(commodity);
-        return ResponseResult.result(result ? 0 : 1, result ? "success" : "fail", null);
+//        boolean result = commodityService.addCommodity(commodity);
+        int res = commodityService.addCommodity(commodity);
+        return ResponseResult.result(res != -1 ? 0 : 1, res != -1 ? "success" : "fail", res);
     }
 
     /**

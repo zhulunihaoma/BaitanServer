@@ -16,7 +16,7 @@ public interface CommodityService {
      * @param commodity
      * @return
      */
-    boolean addCommodity(Commodity commodity);
+    int addCommodity(Commodity commodity);
 
     /**
      * 修改商品信息
