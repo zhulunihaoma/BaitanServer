@@ -86,6 +86,13 @@ public class TemplateServiceImpl implements TemplateService {
 
 
     /**
+     * 活动结果通知  发送给用户
+     */
+    public static final String ActivityResultMessageId = "wYk0pJrZ-zCaV_MyO8lXMUcB-LIvravSs1Rnur0PR10";
+    //跳转小程序页面地址
+    public static final String ActivityResultPage = "";
+
+    /**
      * 新增formid
      *
      * @param openId

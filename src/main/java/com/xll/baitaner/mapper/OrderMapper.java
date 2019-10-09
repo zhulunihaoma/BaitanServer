@@ -69,9 +69,8 @@ public interface OrderMapper {
      * @param shopId
      * @return
      */
-    @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = -1 AND pay_type = -1 " +
-            "AND pay_type = 1 AND del_flag = 0 " +
-            "ORDER BY create_date DESC")
+    @Select("SELECT" + shopOrder + "FROM `shop_order` WHERE shop_id = #{shopId} AND state = -1 AND pay_type = 1 " +
+            "AND del_flag = 0 ORDER BY create_date DESC")
     List<ShopOrder> selectCancelledOrdersByShopId(@Param("shopId") int shopId);
 
     /**
