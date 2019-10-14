@@ -28,6 +28,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -116,7 +117,7 @@ public class WalletServiceImpl implements WalletService {
             e.printStackTrace();
         }
         //放入map,按照日期归类
-        Map<String, List<WithdrawVO>> map = new HashMap<>();
+        Map<String, List<WithdrawVO>> map = new LinkedHashMap<>();
         for (ShopWallet wallet : wallets) {
             WithdrawVO vo = new WithdrawVO();
             vo.setAmount(wallet.getAmount());
