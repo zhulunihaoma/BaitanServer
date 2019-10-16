@@ -2,6 +2,7 @@ package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.ShopOrder;
 import com.xll.baitaner.entity.ShopWallet;
+import com.xll.baitaner.entity.VO.ActivityRecordVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 
 /**
@@ -68,4 +69,10 @@ public interface TemplateService {
      * @return
      */
     public boolean sendOrderDeliverMessage();
+
+    /**
+     * 活动结果通知  发送给用户
+     * @return
+     */
+    public boolean sendActivityResultMessage(ActivityRecordVO activityRecordVO);
 }

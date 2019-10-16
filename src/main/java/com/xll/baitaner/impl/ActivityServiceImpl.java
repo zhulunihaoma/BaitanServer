@@ -9,10 +9,7 @@ import com.xll.baitaner.entity.VO.ActivityResultVO;
 import com.xll.baitaner.entity.VO.ActivityVO;
 import com.xll.baitaner.mapper.ActivityMapper;
 import com.xll.baitaner.mapper.WXUserMapper;
-import com.xll.baitaner.service.ActivityService;
-import com.xll.baitaner.service.CommodityService;
-import com.xll.baitaner.service.ShopManageService;
-import com.xll.baitaner.service.WXUserService;
+import com.xll.baitaner.service.*;
 import com.xll.baitaner.utils.DateUtils;
 import net.sf.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -44,7 +41,11 @@ public class ActivityServiceImpl implements ActivityService {
     private WXUserService wxUserService;
 
     @Resource
+    private TemplateService templateService;
+
+    @Resource
     private WXUserMapper wxUserMapper;
+
     /**
      * 查询店铺创建的所有活动列表
      *
@@ -207,8 +208,8 @@ public class ActivityServiceImpl implements ActivityService {
 
     public boolean changeRecordstatus(int recordStatus, int recordId) {
 
-    // 如果是更改到状态3
-        if(recordStatus == 3){
+        // 如果是更改到状态3
+        if (recordStatus == 3) {
             ActivityRecord activityRecord = activityMapper.selectActivityrecordById(recordId);
             this.reduceStock(activityRecord.getActivityId());
         }
@@ -229,17 +230,15 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public int insertSupportrecord(int activityId, String operateType, String operateContent, int recordId, String openId, String nickName, String avatarUrl, String gender) {
         //如果supportrecord的数量已经达到要求了这时候要更改状态
-
         if (operateType.equals("maxnum")) {//点赞数量类型  点赞的数量超过也没事
             int result = activityMapper.insertSupportrecord(activityId, recordId, "0.00", openId, nickName, avatarUrl,
                     gender);
             List<SupportRecord> SupportRecordList = activityMapper.selecSupportRecordList(recordId);
             if (SupportRecordList.size() >= Integer.parseInt(operateContent) && result > 0) {
+                templateService.sendActivityResultMessage(this.getActivityrecordById(recordId));
                 // 改变recordstattus的值为1（可购买）
                 return activityMapper.changeRecordStatus(1, recordId) > 0 ? 0 : 1;
-
             } else {
-
                 return 0;
             }
         } else if (operateType.equals("kanprice")) {//如果是砍价
@@ -255,48 +254,38 @@ public class ActivityServiceImpl implements ActivityService {
                 //给出提示已经砍完价格了
                 return 2;
             } else {
-
                 //  砍价计算
-                BigDecimal originprice =  new BigDecimal(activityVO.getCommodity().getPrice());
+                BigDecimal originprice = new BigDecimal(activityVO.getCommodity().getPrice());
                 BigDecimal activityprice = new BigDecimal(activityVO.getActivity().getActivityPrice());
 
                 BigDecimal newCurrentPrice;
                 BigDecimal cutPrice;
                 List<SupportRecord> SupportRecordList = activityMapper.selecSupportRecordList(recordId);
 
-
-                if(SupportRecordList.size() == Integer.parseInt(operateContent) +1){//如果是最后一个砍价者
-
+                if (SupportRecordList.size() == Integer.parseInt(operateContent) + 1) {//如果是最后一个砍价者
                     newCurrentPrice = activityprice;
                     cutPrice = new BigDecimal(activityRecord.getCurrentPrice()).subtract(activityprice);
                     activityMapper.changeRecordStatus(1, recordId);
 
-                }else {
+                } else {
                     cutPrice = (originprice.subtract(activityprice)).divide(new BigDecimal(operateContent));
                     newCurrentPrice = new BigDecimal(activityRecord.getCurrentPrice()).subtract(cutPrice);
-
-
                 }
 
                 int UpdateResult = activityMapper.UpdateCurrentPrice(newCurrentPrice.toString(), recordId) > 0 ? 0 : 1;
 
-
                 int result = activityMapper.insertSupportrecord(activityId, recordId, cutPrice.toString(), openId, nickName,
                         avatarUrl, gender);//可以直接返回价格
+                if (result > 0)
+                    templateService.sendActivityResultMessage(this.getActivityrecordById(recordId));
                 return result > 0 ? 0 : 1;
-
             }
-
-
         } else {//点赞排名
-
             boolean addsupportCountResult = this.addsupportCount(recordId);
+            templateService.sendActivityResultMessage(this.getActivityrecordById(recordId));
             return activityMapper.insertSupportrecord(activityId, recordId, "0.00", openId, nickName, avatarUrl,
                     gender) > 0 ? 0 : 1;
-
         }
-
-
     }
 
 
@@ -376,7 +365,6 @@ public class ActivityServiceImpl implements ActivityService {
         return activityRecordResultVO;
 
 
-
     }
 
     /**
@@ -413,7 +401,7 @@ public class ActivityServiceImpl implements ActivityService {
      * @return
      */
     @Override
-    public int insertFans_phone(FansPhone fansPhone){
+    public int insertFans_phone(FansPhone fansPhone) {
 
         return activityMapper.insertFans_phone(fansPhone);
 
@@ -427,7 +415,7 @@ public class ActivityServiceImpl implements ActivityService {
      * @return
      */
     @Override
-    public List<FansPhone> selectFansPhoneByshopId(int shopId, Integer offset, Integer size){
+    public List<FansPhone> selectFansPhoneByshopId(int shopId, Integer offset, Integer size) {
         Page<FansPhone> page =
                 PageHelper.startPage(offset, size).doSelectPage(() -> activityMapper.selectFansPhoneByshopId(shopId));
         List<FansPhone> result = page.getResult();

@@ -2,6 +2,7 @@ package com.xll.baitaner.impl;
 
 import com.xll.baitaner.entity.OrderCommodity;
 import com.xll.baitaner.entity.ShopWallet;
+import com.xll.baitaner.entity.VO.ActivityRecordVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
 import com.xll.baitaner.mapper.TemplateMapper;
 import com.xll.baitaner.mapper.WalletMapper;
@@ -83,7 +84,6 @@ public class TemplateServiceImpl implements TemplateService {
     public static final String PaySuccessfulMessageId = "upiW0jHo9pfyrYKHAgzqpsfYvi1VFPg3nPWNMwHayl8";
     //跳转小程序页面地址
     public static final String PaySuccessfulPage = "pages/order/orderlist/orderlist";
-
 
     /**
      * 活动结果通知  发送给用户
@@ -407,7 +407,7 @@ public class TemplateServiceImpl implements TemplateService {
             //发送成功后 更新fromid
             this.updateFormidUsed(sendOpenId, fromId);
         }
-        return false;
+        return result.equals("0");
     }
 
     /**
@@ -419,5 +419,39 @@ public class TemplateServiceImpl implements TemplateService {
     public boolean sendOrderDeliverMessage() {
         //TODO 物流模块
         return false;
+    }
+
+    /**
+     * 活动结果通知  发送给用户
+     * 用户昵称  {{keyword1.DATA}}
+     * 助力结果  {{keyword2.DATA}}
+     * @return
+     */
+    @Override
+    public boolean sendActivityResultMessage(ActivityRecordVO activityRecordVO) {
+        String openId = activityRecordVO.getActivityRecord().getOpenId();
+        String fromId = this.getFormId(openId);
+        if (fromId == null) {
+            LogUtils.info(TAG, "sendActivityResultMessage openId: " + openId + "  fromId is null");
+            return false;
+        }
+        String shopName = activityRecordVO.getShop().getShopName();
+
+        String name = activityRecordVO.getWxUserInfo().getNickName();
+        String word = "您参加“" + shopName + "”的活动已被好友助力，点击查看详情。";
+
+        String[] values = new String[]{
+                name,
+                word
+        };
+        JSONObject message = getTemplateMessage(openId, ActivityResultMessageId, ActivityResultPage, fromId, values);
+        String result = weChatService.sendTemplateMessage(message, 1);
+        LogUtils.info(TAG, "sendActivityResultMessage openId: " + openId + "  result code " + result);
+
+        if (result.equals("0")) {
+            //发送成功后 更新fromid
+            this.updateFormidUsed(openId, fromId);
+        }
+        return result.equals("0");
     }
 }
