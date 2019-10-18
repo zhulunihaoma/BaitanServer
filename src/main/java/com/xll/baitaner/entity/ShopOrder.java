@@ -30,12 +30,29 @@ public class ShopOrder {
     @ApiModelProperty(value = "用户Id", name = "openId")
     private String openId;
 
+
+    /**
+     * 用户昵称
+     */
+    @ApiModelProperty(value = "用户昵称（前端不需要传递，后台获取）", name = "nickName")
+    private String nickName;
+
+    /**
+     * 用户头像
+     */
+    @ApiModelProperty(value = "用户头像（前端不需要传递，后台获取）", name = "avatarUrl")
+    private String avatarUrl;
+
     /**
      * 店铺Id
      */
     @ApiModelProperty(value = "店铺ID", name = "shopId")
     private Integer shopId;
 
+    /**
+     * 收货地址id
+     */
+    @ApiModelProperty(value = "收货地址id", name = "addressId")
     private Integer addressId;
 
     /**

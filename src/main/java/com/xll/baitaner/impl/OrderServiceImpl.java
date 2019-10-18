@@ -2,15 +2,7 @@ package com.xll.baitaner.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.xll.baitaner.entity.Activity;
-import com.xll.baitaner.entity.ActivityRecord;
-import com.xll.baitaner.entity.Commodity;
-import com.xll.baitaner.entity.CommodityOrder;
-import com.xll.baitaner.entity.OrderCommodity;
-import com.xll.baitaner.entity.ReceiverAddress;
-import com.xll.baitaner.entity.Shop;
-import com.xll.baitaner.entity.ShopOrder;
-import com.xll.baitaner.entity.Spec;
+import com.xll.baitaner.entity.*;
 import com.xll.baitaner.entity.VO.ActivityRecordVO;
 import com.xll.baitaner.entity.VO.OrderDetailsResultVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
@@ -21,12 +13,7 @@ import com.xll.baitaner.mapper.OrderCommodityMapper;
 import com.xll.baitaner.mapper.OrderMapper;
 import com.xll.baitaner.mapper.ProfileMapper;
 import com.xll.baitaner.mapper.ShopMapper;
-import com.xll.baitaner.service.ActivityService;
-import com.xll.baitaner.service.CommodityService;
-import com.xll.baitaner.service.HistoryOrderService;
-import com.xll.baitaner.service.OrderService;
-import com.xll.baitaner.service.SpecService;
-import com.xll.baitaner.service.TemplateService;
+import com.xll.baitaner.service.*;
 import com.xll.baitaner.utils.LogUtils;
 import com.xll.baitaner.utils.ResponseResult;
 import com.xll.baitaner.utils.SerialUtils;
@@ -81,6 +68,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private ActivityService activityService;
+
+    @Resource
+    private WXUserService wxUserService;
 
     @Resource
     ProfileMapper profileMapper;
@@ -261,6 +251,14 @@ public class OrderServiceImpl implements OrderService {
         if (order == null) {
             return details;
         }
+
+        //增加用户昵称和头像
+        WXUserInfo wxUserInfo = wxUserService.getWXUserById(order.getOpenId());
+        if (wxUserInfo != null){
+            order.setNickName(wxUserInfo.getNickName());
+            order.setAvatarUrl(wxUserInfo.getAvatarUrl());
+        }
+
         details.setShopOrder(order);
         //获取收货地址
         if (order.getAddressId() > 0) {

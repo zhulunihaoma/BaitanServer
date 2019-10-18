@@ -51,7 +51,7 @@ public class HistoryOrderServiceImpl implements HistoryOrderService {
     public boolean creatHistoryOrder(String orderId) {
         ShopOrder order = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
         int shopId = order.getShopId();
-        Date historyDate = order.getCreateDate();
+        Date historyDate = new Date(System.currentTimeMillis()); //当前时间
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String date = formatter.format(historyDate);
