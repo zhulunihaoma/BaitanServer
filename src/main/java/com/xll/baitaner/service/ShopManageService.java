@@ -2,6 +2,7 @@ package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.Shop;
 import com.xll.baitaner.entity.ShopBanner;
+import com.xll.baitaner.utils.ResponseResult;
 import net.sf.json.JSONObject;
 
 import java.util.List;
@@ -152,5 +153,5 @@ public interface ShopManageService {
      * @param page          二维码跳转的页面
      * @return
      */
-    String getWXacodePath(int shopId, String scene, String page);
+    ResponseResult getWXacodePath(Integer shopId, String scene, String page);
 }

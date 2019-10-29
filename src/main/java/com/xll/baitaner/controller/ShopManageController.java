@@ -57,7 +57,8 @@ public class ShopManageController {
     @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int")
     @GetMapping("getshopbyid")
     public ResponseResult getShopById(int shopId) {
-        return ResponseResult.result(0, "success", shopManageService.getShopById(shopId));
+        Shop shop = shopManageService.getShopById(shopId);
+        return ResponseResult.result(shop != null ? 0 : 1, shop != null ? "success" : "fail", shop);
     }
 
     /**
@@ -316,13 +317,13 @@ public class ShopManageController {
             httpMethod = "GET",
             notes = "获取店铺下各类二维码存储路径 根据传参返回二维码地址")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "scene", value = "二维码携带的参数", required = true, dataType = "String"),
             @ApiImplicitParam(name = "page", value = "二维码跳转的页面", required = true, dataType = "String")
     })
     @GetMapping("getwxacode")
-    public ResponseResult getWXacodePath(int shopId, String scene, String page) {
-        String result = shopManageService.getWXacodePath(shopId, scene, page);
+    public ResponseResult getWXacodePath(Integer shopId, String scene, String page) {
+        ResponseResult result = shopManageService.getWXacodePath(shopId, scene, page);
         return ResponseResult.result(result != null ? 0 : 1, result != null ? "success" : "fail", result);
     }
 }
