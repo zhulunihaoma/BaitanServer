@@ -31,7 +31,7 @@ public class ShopManageServiceImpl implements ShopManageService {
 
     /**
      * 创建店铺
-     *
+     * TODO 创建店铺要做数据校验 新增下创建时间
      * @param shop
      * @return
      */

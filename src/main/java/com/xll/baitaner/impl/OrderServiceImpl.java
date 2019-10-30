@@ -198,38 +198,43 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean addOrder(ShopOrder order, List<OrderCommodity> list) {
         //插入订单数据
-        int re = orderMapper.insertShopOrder(order);
         boolean result = false;
-        if (re > 0) {
-            //插入订单商品
-            Long orderId = order.getOrderId();
-            for (OrderCommodity oc : list) {
-                Commodity commodity = commodityMapper.selectCommodity(oc.getCommodityId());
-                oc.setOrderId(orderId);
-                oc.setUnitPrice(commodity.getPrice());
-                oc.setName(commodity.getName());
-                oc.setPictUrl(commodity.getPictUrl());
-                oc.setZipPicUrl(commodity.getZipPicUrl());
-                oc.setIntroduction(commodity.getIntroduction());
-                oc.setSpecName("");
-                oc.setSpecPrice("0.00");
-                //oc.setSpecId(0); //SpecId设成0??  下面逻辑永远不走了
-                //插入商品规格
-                if (oc.getSpecId() > 0) {
-                    Spec spec = specService.getSpec(oc.getSpecId());
-                    if (spec != null && spec.getCommodityId() == oc.getCommodityId()) {
-                        oc.setSpecId(spec.getId());
-                        oc.setSpecName(spec.getName());
-                        oc.setSpecPrice(spec.getPrice());
+        try {
+            int re = orderMapper.insertShopOrder(order);
+
+            if (re > 0) {
+                //插入订单商品
+                Long orderId = order.getOrderId();
+                for (OrderCommodity oc : list) {
+                    Commodity commodity = commodityMapper.selectCommodity(oc.getCommodityId());
+                    oc.setOrderId(orderId);
+                    oc.setUnitPrice(commodity.getPrice());
+                    oc.setName(commodity.getName());
+                    oc.setPictUrl(commodity.getPictUrl());
+                    oc.setZipPicUrl(commodity.getZipPicUrl());
+                    oc.setIntroduction(commodity.getIntroduction());
+                    oc.setSpecName("");
+                    oc.setSpecPrice("0.00");
+
+                    //插入商品规格
+                    if (oc.getSpecId() > 0) {
+                        Spec spec = specService.getSpec(oc.getSpecId());
+                        if (spec != null && spec.getCommodityId() == oc.getCommodityId()) {
+                            oc.setSpecId(spec.getId());
+                            oc.setSpecName(spec.getName());
+                            oc.setSpecPrice(spec.getPrice());
+                        }
+                    }
+                    result = orderCommodityMapper.insertOrderList(oc) > 0;
+                    if (!result) {
+                        LogUtils.error(TAG, "下单失败，订单插入商品数据出错");
+                        throw new RuntimeException();
                     }
                 }
-                result = orderCommodityMapper.insertOrderList(oc) > 0;
-                if (!result) {
-                    log.error("下单存入商品失败");
-                    throw new RuntimeException();
-                }
-            }
-        } else throw new RuntimeException();
+            } else throw new RuntimeException();
+        }catch (Exception e){
+            throw new RuntimeException();
+        }
         return result;
     }
 
@@ -239,7 +244,6 @@ public class OrderServiceImpl implements OrderService {
      * @param orderId
      * @return
      */
-    @Transactional
     @Override
     public OrderDetailsVO getOrderDetails(String orderId) {
         OrderDetailsVO details = new OrderDetailsVO();

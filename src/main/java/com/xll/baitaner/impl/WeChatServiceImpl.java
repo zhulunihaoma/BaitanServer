@@ -47,7 +47,7 @@ public class WeChatServiceImpl implements WeChatService {
     /**
      * 每隔一个半小时获取access_token
      */
-    @Scheduled(fixedRate = 5400 * 1000)
+    @Scheduled(fixedRate = 3600 * 1000)
     private void getAccess_token() {
         LogUtils.info(TAG, "getAccess_token--------");
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + Constant.APPLET_APP_ID +
@@ -178,6 +178,29 @@ public class WeChatServiceImpl implements WeChatService {
 
             //获取返回内容
             InputStream inputStream = httpURLConnection.getInputStream();
+
+            LogUtils.info(TAG,"creatWXacodeUnlimited fail --- inputStream.available()：" + inputStream.available());
+
+            //判断返回的文件流大小，太小说明不是图片文件，是错误信息
+            //打印错误信息并返回
+            if (inputStream.available() < 5120){
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF8));
+                final StringBuffer stringBuffer = new StringBuffer();
+                String line = null;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuffer.append(line);
+                }
+                if (stringBuffer!=null) {
+                    try {
+                        bufferedReader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                String resp = stringBuffer.toString();
+                LogUtils.info(TAG,"creatWXacodeUnlimited fail --- resp：\n" + resp);
+                return "";
+            }
 
             //返回数据流生成二维码图片并保存
             String fileName = java.util.UUID.randomUUID().toString();

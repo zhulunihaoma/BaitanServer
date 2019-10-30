@@ -324,6 +324,6 @@ public class ShopManageController {
     @GetMapping("getwxacode")
     public ResponseResult getWXacodePath(Integer shopId, String scene, String page) {
         ResponseResult result = shopManageService.getWXacodePath(shopId, scene, page);
-        return ResponseResult.result(result != null ? 0 : 1, result != null ? "success" : "fail", result);
+        return result;
     }
 }
