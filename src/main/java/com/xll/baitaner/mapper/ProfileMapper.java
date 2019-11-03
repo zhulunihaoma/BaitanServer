@@ -29,13 +29,22 @@ public interface ProfileMapper {
     List<ReceiverAddress> selectAddressList(@Param("openId") String openId);
 
     /**
-     * 获取单个收货地址数据
+     * 获取单个收货地址数据（有效）
      *
      * @param id
      * @return
      */
     @Select("SELECT * FROM receiver_address WHERE Id = #{id} AND Disable = 1")
     ReceiverAddress selectAddress(@Param("id") int id);
+
+    /**
+     * 获取单个收货地址数据（全部）
+     *
+     * @param id
+     * @return
+     */
+    @Select("SELECT * FROM receiver_address WHERE Id = #{id}")
+    ReceiverAddress selectAddressAll(@Param("id") int id);
 
     /**
      * 新增收货地址
@@ -66,6 +75,16 @@ public interface ProfileMapper {
      */
     @Delete("DELETE FROM receiver_address WHERE Id = #{id}")
     int deleteAddress(@Param("id") int id);
+
+    /**
+     * 收货地址设为无效，代替删除
+     *
+     * @param id
+     * @param openId
+     * @return
+     */
+    @Update("UPDATE receiver_address SET Disable = 0 WHERE id  = #{id}")
+    int updateAddressDisable(@Param("id") int id);
 
     /**
      * 收货地址设为默认地址

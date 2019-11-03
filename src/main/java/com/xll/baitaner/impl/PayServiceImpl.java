@@ -136,7 +136,7 @@ public class PayServiceImpl implements PayService {
             data.put("total_fee", total_fee);//标价金额 单位为分 不能有小数点
             data.put("spbill_create_ip", "192.168.1.1");//终端IP
             data.put("notify_url", notify_url);//异步接收微信支付结果通知的回调地址,外网可访问地址
-            data.put("trade_type", "JSAPI");//交易类型 JSAP:公众号支付
+            data.put("trade_type", "JSAPI");//交易类型 JSAPI:公众号支付
             data.put("openid", openId);//用户标识,微信用户ID 暂时使用我的openid
 
             LogUtils.debug(TAG, "WXPay unifiedOrder data: " + data.toString());

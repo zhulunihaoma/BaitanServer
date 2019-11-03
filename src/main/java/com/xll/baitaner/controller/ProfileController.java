@@ -71,7 +71,7 @@ public class ProfileController {
     @PostMapping("addaddress")
     public ResponseResult addAddress(ReceiverAddress address) {
         int result = profileService.addAddress(address);
-        return ResponseResult.result(result > 0 ? 0 : 1, result > 0 ? "success" : "fail", result);
+        return ResponseResult.result(result > 0 ? 0 : 1, result > 0 ? "success" : "fail", result > 0 ? result : "新增地址失败，请确认有输入值");
     }
 
     /**

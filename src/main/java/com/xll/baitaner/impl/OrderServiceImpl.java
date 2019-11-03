@@ -266,7 +266,7 @@ public class OrderServiceImpl implements OrderService {
         details.setShopOrder(order);
         //获取收货地址
         if (order.getAddressId() > 0) {
-            ReceiverAddress receiverAddress = profileMapper.selectAddress(order.getAddressId());
+            ReceiverAddress receiverAddress = profileMapper.selectAddressAll(order.getAddressId());
             details.setAddress(receiverAddress);
         }
         //店铺信息

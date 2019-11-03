@@ -4,6 +4,7 @@ import com.xll.baitaner.entity.ReceiverAddress;
 import com.xll.baitaner.entity.ShopStatistics;
 import com.xll.baitaner.mapper.ProfileMapper;
 import com.xll.baitaner.service.ProfileService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -47,12 +48,17 @@ public class ProfileServiceImpl implements ProfileService {
 
     /**
      * 新增收货地址
-     *
+     * 地址数据非空校验
      * @param address
      * @return
      */
     @Override
     public Integer addAddress(ReceiverAddress address) {
+        if(StringUtils.isBlank(address.getName()) ||
+           StringUtils.isBlank(address.getAddress()) ||
+           StringUtils.isBlank(address.getPhone()))
+            return 0;
+
         List<ReceiverAddress> list = getAddressList(address.getOpenId());
         if (list.size() == 0) {
             address.setDefaultNot(1);
@@ -93,13 +99,14 @@ public class ProfileServiceImpl implements ProfileService {
 
     /**
      * 删除收货地址
-     *
+     * 收货地址设为无效，代替删除
      * @param addressId
      * @return
      */
     @Override
     public boolean deleteAddress(int addressId) {
-        return profileMapper.deleteAddress(addressId) > 0;
+        //return profileMapper.deleteAddress(addressId) > 0;
+        return profileMapper.updateAddressDisable(addressId) > 0;
     }
 
     /**

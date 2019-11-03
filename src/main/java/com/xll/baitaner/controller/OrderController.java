@@ -146,7 +146,7 @@ public class OrderController {
             notes = "获取用户订单列表接口, 分页显示")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "offset", value = "请求页码，从0开始计数", required = true, dataType = "int"),
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("getuserorders")
@@ -166,7 +166,7 @@ public class OrderController {
             notes = "获取店铺的未付款订单 （二维码支付的订单）, 分页显示")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "offset", value = "请求页码，从0开始计数", required = true, dataType = "int"),
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("getshopnopayorders")
@@ -186,7 +186,7 @@ public class OrderController {
             notes = "获取店铺的已取消订单 （二维码支付的订单）, 分页显示")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "offset", value = "请求页码，从0开始计数", required = true, dataType = "int"),
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("getshopcancelledorders")
@@ -227,7 +227,7 @@ public class OrderController {
             notes = "获取店铺的已接单列表（按订单分类）, 分页显示")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
+            @ApiImplicitParam(name = "offset", value = "请求页码，从0开始计数", required = true, dataType = "int"),
             @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
     })
     @GetMapping("getshoptakenorders")
@@ -263,8 +263,8 @@ public class OrderController {
             notes = "获取店铺待完成订单, 分页显示")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
+            @ApiImplicitParam(name = "offset", value = "请求页码，从0开始计数", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "Integer")
     })
     @GetMapping("getshopreadyorders")
     public ResponseResult getReadyOrderLisetShop(int shopId, Integer offset, Integer size) {
@@ -303,8 +303,8 @@ public class OrderController {
             notes = "获取店铺历史订单列表 (已完成), 分页显示")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
+            @ApiImplicitParam(name = "offset", value = "请求页码，从0开始计数", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "Integer")
     })
     @GetMapping("gethistoryorders")
     public ResponseResult getHistoryOrderList(int shopId, Integer offset, Integer size) {
@@ -324,9 +324,9 @@ public class OrderController {
             notes = "type类型定义 0: 全部已付款订单, 1: 在线付款订单, 2: 二维码付款订单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "shopId", value = "店铺shopId", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "type", value = "经营数据下订单的type", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "page", value = "请求页码，从0开始计数", required = true, dataType = "int"),
-            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "int")
+            @ApiImplicitParam(name = "type", value = "经营数据下订单的type", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "offset", value = "请求页码，从0开始计数", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "size", value = "请求每页数据的个数", required = true, dataType = "Integer")
     })
     @GetMapping("getstatisticsorders")
     public ResponseResult getStatisticsHistoryOrderList(int shopId, int type, Integer offset, Integer size) {

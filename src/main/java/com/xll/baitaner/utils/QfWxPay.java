@@ -85,7 +85,7 @@ public class QfWxPay {
                             .unescapeJava(EntityUtils.toString(response.getEntity(),
                                     "utf-8")));
                     //System.out.println(resultObject.toString());
-                    LogUtils.info(TAG, "QfPayMent result: " + resultObject.toString());
+                    LogUtils.info(TAG, "QfPayMent result: \n" + resultObject.toString());
                     if (resultObject.getString("respcd").equals("0000")) {
                         JSONObject payInfo = (JSONObject) resultObject.get("pay_params");
 
