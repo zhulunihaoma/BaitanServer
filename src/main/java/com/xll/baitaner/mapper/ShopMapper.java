@@ -210,4 +210,15 @@ public interface ShopMapper {
     @Insert("INSERT INTO shop_wxacode (shop_id, wxacode_scene, wxacode_page, wxacode_path) VALUES(#{shopid}, #{scene}, #{page}, #{path})")
     int insertShapWXacode(@Param("shopid") int shopid, @Param("scene") String scene, @Param("page") String page, @Param("path") String path);
 
+    /**
+     * 更新wxacode_path 二维码路径数据
+     * @param shopid
+     * @param scene
+     * @param page
+     * @param path
+     * @return
+     */
+    @Update("UPDATE shop_wxacode SET wxacode_path = #{path} WHERE shop_id = #{shopid} AND wxacode_scene = #{scene} AND wxacode_page = #{page}")
+    int updateShapWXacode(@Param("shopid") int shopid, @Param("scene") String scene, @Param("page") String page, @Param("path") String path);
+
 }

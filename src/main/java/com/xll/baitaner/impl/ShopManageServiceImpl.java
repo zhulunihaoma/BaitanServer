@@ -260,19 +260,34 @@ public class ShopManageServiceImpl implements ShopManageService {
         if (StringUtils.isBlank(scene) || StringUtils.isBlank(page))
             return ResponseResult.result(1, "fail", "scene或page不合规");
 
-        //判断数据库中是否存储该参数生成额二维码  防止重复生成
-        String path = shopMapper.selectShapWXacodePath(shopId, scene, page);
-        if (StringUtils.isBlank(path)){
-            //生成二维码
-            path = weChatService.creatWXacodeUnlimited(scene, page);
+        try {
+            //判断数据库中是否存储该参数生成额二维码  防止重复生成
+            String path = shopMapper.selectShapWXacodePath(shopId, scene, page);
             if (StringUtils.isBlank(path)){
-                LogUtils.info(TAG, "生成二维码  scene： " + scene + " page: " + page + "  失败!");
-                return ResponseResult.result(1, "fail", "生成二维码失败!");
+                //生成二维码
+                String acodePath = weChatService.creatWXacodeUnlimited(scene, page);
+                if (StringUtils.isBlank(acodePath)){
+                    LogUtils.info(TAG, "生成二维码  scene： " + scene + " page: " + page + "  失败!");
+                    return ResponseResult.result(1, "fail", "生成二维码失败!");
+                }
+
+                //新二维码
+                if (path == null){
+                    path = acodePath;
+                    if (shopMapper.insertShapWXacode(shopId, scene, page, path) <= 0){
+                        LogUtils.info(TAG, "新增二维码路径  scene： " + scene + " page: " + page + "  失败!");
+                    }
+                }
+                else if (path == ""){
+                    path = acodePath;
+                    if (shopMapper.updateShapWXacode(shopId, scene, page, path) <= 0){
+                        LogUtils.info(TAG, "更新二维码路径  scene： " + scene + " page: " + page + "  失败!");
+                    }
+                }
             }
-            if (shopMapper.insertShapWXacode(shopId, scene, page, path) <= 0){
-                LogUtils.info(TAG, "储存二维码  scene： " + scene + " page: " + page + "  失败!");
-            }
+            return ResponseResult.result(0, "success", path);
+        }catch (Exception e){
+            return ResponseResult.result(1, "fail", "生成二维码失败!");
         }
-        return ResponseResult.result(0, "success", path);
     }
 }

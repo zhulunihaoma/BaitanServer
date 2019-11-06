@@ -130,7 +130,7 @@ public class PayServiceImpl implements PayService {
             }
 
             HashMap<String, String> data = new HashMap<>();
-            data.put("body", "小仙女烘焙-支付" + total_fee);//商品描述
+            data.put("body", "摆摊吧-支付 " + MoneyUtil.changeF2Y(total_fee));//商品描述
             data.put("out_trade_no", out_trade_no);//商户订单号
             data.put("fee_type", "CNY");//货币
             data.put("total_fee", total_fee);//标价金额 单位为分 不能有小数点
@@ -139,11 +139,11 @@ public class PayServiceImpl implements PayService {
             data.put("trade_type", "JSAPI");//交易类型 JSAPI:公众号支付
             data.put("openid", openId);//用户标识,微信用户ID 暂时使用我的openid
 
-            LogUtils.debug(TAG, "WXPay unifiedOrder data: " + data.toString());
+            LogUtils.info(TAG, "WXPay unifiedOrder data: " + data.toString());
 
             //返回预支付订单信息，发送给前端
             Map<String, String> result = wxPay.unifiedOrder(data);
-            LogUtils.debug(TAG, "WXPay unifiedOrder result: " + result.toString());
+            LogUtils.info(TAG, "WXPay unifiedOrder result: " + result.toString());
             if (result.get("return_code").equals("FAIL")) {
                 return ResponseResult.result(1, result.get("return_msg"), null);
             }
@@ -198,12 +198,12 @@ public class PayServiceImpl implements PayService {
 
         ShopOrder shopOrder = orderMapper.selectShopOrderByOrderId(Long.valueOf(orderId));
         if (shopOrder.getState() == 1) {
-            LogUtils.debug(TAG, "\nout_trade_no: " + orderId + " 状态已经是支付成功");
+            LogUtils.info(TAG, "\nout_trade_no: " + orderId + " 状态已经是支付成功");
             return;
         }
         //元转分
         String money = MoneyUtil.changeY2F(shopOrder.getTotalMoney());
-        LogUtils.debug(TAG, "\nout_trade_no: " + orderId + "\ntotal_fee : " + totalFee + "\nMoney: "
+        LogUtils.info(TAG, "\nout_trade_no: " + orderId + "\ntotal_fee : " + totalFee + "\nMoney: "
                 + money);
 //        money = "1"; //todo 测试用1分钱
         if (money.equals(totalFee)) {
@@ -234,7 +234,7 @@ public class PayServiceImpl implements PayService {
             //向用户发送 订单支付成功模板消息
             templateService.sendPaySuccessfulMessage(orderId);
 
-            LogUtils.debug(TAG, "updateOrderState: " + res);
+            LogUtils.info(TAG, "updateOrderState: " + res);
         }
     }
 }

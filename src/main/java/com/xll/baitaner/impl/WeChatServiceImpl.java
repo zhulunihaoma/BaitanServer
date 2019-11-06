@@ -229,7 +229,7 @@ public class WeChatServiceImpl implements WeChatService {
 
         }catch (Exception e){
             e.printStackTrace();
-            return e.getMessage();
+            return null;
         }
     }
 }

@@ -77,9 +77,7 @@ public class PayController {
     @PostMapping("/wxpay/notify")
     public void getwxpaynotify(HttpServletRequest request, HttpServletResponse response) {
         String tt = "WXPay--Notify:  ";
-        LogUtils.debug(TAG, tt + "++++++++++++++++++++++++\n" +
-                "------------------------\n" +
-                "fuckWXfuckWXfuckWXfuckWX\n");
+        LogUtils.info(TAG, tt + "++++++++++++++++++++++++接收到钱微信支付结果通知回调");
         String UTF8 = "UTF-8";
 
         try {
@@ -96,7 +94,7 @@ public class PayController {
                 stringBuffer.append(line);
             }
             String resp = stringBuffer.toString();
-            LogUtils.debug(TAG, tt + "回调xml:  \n" + resp);
+            LogUtils.info(TAG, tt + "回调xml:  \n" + resp);
 
             resultMap = WXPayUtil.xmlToMap(resp);
             if (resultMap.get("return_code").equals("SUCCESS")) {
@@ -106,16 +104,16 @@ public class PayController {
                             "<return_code><![CDATA[SUCCESS]]></return_code>" +
                             "<return_msg><![CDATA[OK]]></return_msg>" +
                             "</xml>";
-                    LogUtils.debug(TAG, tt + "签名对比: true");
+                    LogUtils.info(TAG, tt + "签名对比: true");
                     response.getWriter().write(responseXml);
 
                     if (resultMap.get("result_code").equals("SUCCESS")) {
-                        LogUtils.debug(TAG, tt + "支付结果: SUCCESS");
+                        LogUtils.info(TAG, tt + "支付结果: SUCCESS");
                         String out_trade_no = resultMap.get("out_trade_no");// 订单号
                         String total_fee = resultMap.get("total_fee"); //支付金额
                         payService.PayResuleCheck(out_trade_no, total_fee, 1);
                     } else {
-                        LogUtils.debug(TAG, tt + "支付结果: FAIL");
+                        LogUtils.info(TAG, tt + "支付结果: FAIL");
                     }
                 }
             } else {
@@ -145,9 +143,7 @@ public class PayController {
     @PostMapping("/qfpay/notify")
     public void getqfpaynotify(HttpServletRequest request, HttpServletResponse response) {
         String tt = "QFPay--Notify:  ";
-        LogUtils.debug(TAG, tt + "++++++++++++++++++++++++\n" +
-                "------------------------\n" +
-                "fuckWXfuckWXfuckWXfuckWX\n");
+        LogUtils.info(TAG, tt + "++++++++++++++++++++++++接收到钱方平台支付结果通知回调");
         String UTF8 = "UTF-8";
 
         try {
@@ -165,12 +161,12 @@ public class PayController {
             //签名对比 应答钱方服务器
             if (QfWxPay.isPayResultNotifySignatureValid(resp, sign)) {
                 String responseStr = "SUCCESS";
-                LogUtils.debug(TAG, tt + "签名对比: true");
+                LogUtils.info(TAG, tt + "签名对比: true");
                 response.getWriter().write(responseStr);
 
                 JSONObject res = JSONObject.fromObject(resp);
                 if (res.get("status").equals("1")) {
-                    LogUtils.debug(TAG, tt + "支付结果: SUCCESS");
+                    LogUtils.info(TAG, tt + "支付结果: SUCCESS");
                     String out_trade_no = res.getString("out_trade_no");// 订单号
                     String total_fee = res.getString("txamt"); //支付金额
                     payService.PayResuleCheck(out_trade_no, total_fee, 0);
