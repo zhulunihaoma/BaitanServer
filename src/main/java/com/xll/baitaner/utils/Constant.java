@@ -25,6 +25,15 @@ public class Constant {
     public static final String APPLET_APP_SECRET = "381b235396907b0519127e13370918ad";
 
     /**
+     * 亿优服务号
+     *
+     * @return
+     */
+    public static final String PUBLIC_APP_ID = "wx504a8df23205531f";
+
+    public static final String PUBLIC_APP_SECRET = "36217d95539c466908cdf65555c2a317";
+
+    /**
      * 提现手续费
      */
     public static final String WITHDRAW_FEE = "0.0035";

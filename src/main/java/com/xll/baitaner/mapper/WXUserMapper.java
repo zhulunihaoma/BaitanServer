@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * 微信用户数据操作类
+ * 微信用户数据操作类 （小程序）
  */
 @Repository
 public interface WXUserMapper {

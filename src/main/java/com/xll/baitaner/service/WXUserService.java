@@ -3,6 +3,7 @@ package com.xll.baitaner.service;
 import com.xll.baitaner.entity.WXUserInfo;
 
 /**
+ * 微信用户数据服务类 （小程序）
  * @author denghuohuo 2019/6/25
  */
 public interface WXUserService {

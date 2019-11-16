@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 
 /**
- * 微信用户数据服务类
+ * 微信用户数据服务类 （小程序）
  */
 @Service
 public class WXUserServiceImpl implements WXUserService {

@@ -40,8 +40,18 @@ public class WeChatServiceImpl implements WeChatService {
      * 获取微信小程序access_token
      * @return
      */
+    @Override
     public String getAppletAccessToken(){
         return access_token_applet;
+    }
+
+    /**
+     * 获取微信服务号access_token
+     * @return
+     */
+    @Override
+    public String getPublicAccessToken(){
+        return access_token_public;
     }
 
     /**
@@ -50,19 +60,30 @@ public class WeChatServiceImpl implements WeChatService {
     @Scheduled(fixedRate = 3600 * 1000)
     private void getAccess_token() {
         LogUtils.info(TAG, "getAccess_token--------");
-        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + Constant.APPLET_APP_ID +
+        String url_applet = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + Constant.APPLET_APP_ID +
                 "&secret=" + Constant.APPLET_APP_SECRET;
-        LogUtils.info(TAG, "获取小程序access_token，请求url：" + url);
+        String url_public = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + Constant.PUBLIC_APP_ID +
+                "&secret=" + Constant.PUBLIC_APP_SECRET;
+        LogUtils.info(TAG, "\n获取小程序access_token------------" + "\n获取服务号access_token------------");
 
         try {
-            String res = HttpRequest.sendRequest(url, "GET", null);
-            LogUtils.info(TAG, "获取小程序access_token,返回res：" + res);
+            String res_applet = HttpRequest.sendRequest(url_applet, "GET", null);
+            String res_public = HttpRequest.sendRequest(url_public, "GET", null);
+            LogUtils.info(TAG, "\n获取小程序access_token,返回res：" + res_applet + "\n获取服务号access_token,返回res：" + res_public);
 
-            if (res != null && !"".equals(res)) {
-                JSONObject obj = JSONObject.fromObject(res);
+            if (res_applet != null && !"".equals(res_applet)) {
+                JSONObject obj = JSONObject.fromObject(res_applet);
                 if(obj.containsKey("access_token")){
                     access_token_applet = obj.get("access_token").toString();
                     LogUtils.info(TAG, "小程序access_token生成：" + access_token_applet);
+                }
+            }
+
+            if (res_public != null && !"".equals(res_public)) {
+                JSONObject obj = JSONObject.fromObject(res_public);
+                if(obj.containsKey("access_token")){
+                    access_token_public = obj.get("access_token").toString();
+                    LogUtils.info(TAG, "服务号access_token生成：" + access_token_public);
                 }
             }
         }catch (Exception e){

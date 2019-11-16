@@ -17,6 +17,12 @@ public interface WeChatService {
     public String getAppletAccessToken();
 
     /**
+     * 获取微信服务号access_token
+     * @return
+     */
+    public String getPublicAccessToken();
+
+    /**
      * 公众号、小程序发送消息
      * @param jsonObject
      * @param type 0：公众号发送模板消息 1：小程序发送模板消息 2：小程序发送客服消息
