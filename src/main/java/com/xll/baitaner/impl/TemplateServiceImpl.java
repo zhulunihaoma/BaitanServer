@@ -4,16 +4,15 @@ import com.xll.baitaner.entity.OrderCommodity;
 import com.xll.baitaner.entity.ShopWallet;
 import com.xll.baitaner.entity.VO.ActivityRecordVO;
 import com.xll.baitaner.entity.VO.OrderDetailsVO;
+import com.xll.baitaner.entity.WXPublicUserInfo;
 import com.xll.baitaner.mapper.TemplateMapper;
 import com.xll.baitaner.mapper.WalletMapper;
-import com.xll.baitaner.service.OrderService;
-import com.xll.baitaner.service.ShopManageService;
-import com.xll.baitaner.service.TemplateService;
-import com.xll.baitaner.service.WXUserService;
-import com.xll.baitaner.service.WeChatService;
+import com.xll.baitaner.service.*;
+import com.xll.baitaner.utils.Constant;
 import com.xll.baitaner.utils.DateUtils;
 import com.xll.baitaner.utils.LogUtils;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -49,52 +48,12 @@ public class TemplateServiceImpl implements TemplateService {
     @Resource
     private WalletMapper walletMapper;
 
-    /**
-     * 新订单通知  发送给商户
-     * 线上支付成功 以及二维码支付订单
-     */
-    public static final String NewOrderMessageId = "ujyjqlbkEYqhA2GXaMEfYEMdczf8TAzF3NJ0kV7-Ciw";
-    //跳转小程序页面地址
-    public static final String NewOrderGoPage = "pages/mycenter/ordermanager/ordermanager";
-
-    /**
-     * 提现申请通知 发送给商户 提现详情
-     */
-    public static final String WithdrawMessageId = "dSs2OuJBcrNWmHx09U-3hedr-SjZviB6KbJkgcbkSe8";
-    //跳转小程序页面地址
-    public static final String WithdrawGoPage = "pages/mycenter/wallet/wallet";
-
-    /**
-     * 订单发货提醒 发送给用户
-     */
-    public static final String OrderDeliverMessageId = "7AyFmVh0LnaiaFZ55HWtvg7UazkwrXYUC2CZUGp3TLY";
-    //跳转小程序页面地址
-    public static final String OrderDeliverPage = "pages/order/orderlist/orderlist";
-
-    /**
-     * 订单（二维码支付）待支付提醒 发送给用户  二维码支付订单
-     */
-    public static final String PendingPaymentMessageId = "czhVdoQz1X4lwfHETBg0mKyGPpnj8UBYDho12ojJYKA";
-    //跳转小程序页面地址
-    public static final String PendingPaymentPage = "pages/order/orderlist/orderlist?orderstate=0";
-
-    /**
-     * 订单支付成功  发送给用户  线上支付订单
-     */
-    public static final String PaySuccessfulMessageId = "upiW0jHo9pfyrYKHAgzqpsfYvi1VFPg3nPWNMwHayl8";
-    //跳转小程序页面地址
-    public static final String PaySuccessfulPage = "pages/order/orderlist/orderlist";
-
-    /**
-     * 活动结果通知  发送给用户
-     */
-    public static final String ActivityResultMessageId = "wYk0pJrZ-zCaV_MyO8lXMUcB-LIvravSs1Rnur0PR10";
-    //跳转小程序页面地址
-    public static final String ActivityResultPage = "";
+    @Resource
+    private WXPublicUserService wxPublicUserService;
 
     /**
      * 新增formid
-     *
+     * 用于发送小程序模板消息
      * @param openId
      * @param formId
      * @return
@@ -112,7 +71,7 @@ public class TemplateServiceImpl implements TemplateService {
 
     /**
      * 获取用户的fromId用于发送模板消息
-     *
+     * 用于发送小程序模板消息
      * @param openId
      * @return
      */
@@ -129,7 +88,7 @@ public class TemplateServiceImpl implements TemplateService {
 
     /**
      * 将已用过的formid状态更新为不可用
-     *
+     * 用于发送小程序模板消息
      * @param formId
      * @return
      */
@@ -139,7 +98,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     /**
-     * 定时任务，每天清除7天过期formid,过期fromid 无法用于发送模板消息
+     * 定时任务，每天清除7天过期formid,过期fromid 无法用于发送小程序模板消息
      */
     @Scheduled(cron = "0 0 2 * * ?")
     private void deleteOverdueFormId() {
@@ -152,8 +111,8 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     /**
+     * 小程序模板消息
      * 封装模板消息的请求json
-     *
      * @param touser
      * @param template_id
      * @param page
@@ -161,7 +120,7 @@ public class TemplateServiceImpl implements TemplateService {
      * @param values
      * @return
      */
-    private JSONObject getTemplateMessage(String touser, String template_id, String page, String form_id, String[] values) {
+    private JSONObject getAppletTemplateMessage(String touser, String template_id, String page, String form_id, String[] values) {
         JSONObject message = new JSONObject();
         message.put("touser", touser);
         message.put("template_id", template_id);
@@ -182,9 +141,45 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     /**
+     * 公众号模板消息
+     * 封装公众号模板消息的请求json
+     * @param touser
+     * @param template_id
+     * @param pagepath
+     * @param firstValue
+     * @param remarkValue
+     * @param values
+     * @return
+     */
+    private JSONObject getPublicTemplateMessage(String touser, String template_id, String pagepath, String firstValue,
+                                                String remarkValue, String[] values){
+        JSONObject message = new JSONObject();
+        message.put("touser", touser);
+        message.put("template_id", template_id);
+
+        JSONObject miniprogram = new JSONObject();
+        miniprogram.put("appid", Constant.APPLET_APP_ID);
+        miniprogram.put("pagepath", pagepath);
+        message.put("miniprogram", miniprogram);
+
+        JSONObject data = new JSONObject();
+        data.put("first", firstValue);
+        for (int i = 0; i < values.length; i++) {
+            JSONObject value = new JSONObject();
+            value.put("value", values[i]);
+
+            String keyword = "keyword" + String.valueOf(i + 1);
+            data.put(keyword, value);
+        }
+        data.put("remark", remarkValue);
+        message.put("data", data);
+        return message;
+    }
+
+    /**
+     * 小程序模板消息
      * 封装订单相关模板消息 values数组数据
-     * 防止重复实现
-     *
+     * 避免重复逻辑代码
      * @param orderId
      * @param type    0: 新订单通知 1: 订单（二维码支付）待支付 2: 订单支付成功
      * @return
@@ -244,65 +239,108 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     /**
+     * 根据小程序openId用户公众号openId
+     * 返回null 表示用户未关注公众号
+     * @param appletOpenId
+     * @return
+     */
+    private String getWXPublicOpenId(String appletOpenId){
+        String unionid = wxUserService.getWXUserById(appletOpenId).getUnionId();
+        if (StringUtils.isNotBlank(unionid)){
+            WXPublicUserInfo wxPublicUserInfo = wxPublicUserService.getWXPublicUserInfoByUnionid(unionid);
+            if ( wxPublicUserInfo != null){
+                return wxPublicUserInfo.getOpenId();
+            }else {
+                LogUtils.info(TAG, "appletOpenId: " + appletOpenId + "\n 用户未关注公众号,无法发送公众号模板消息");
+            }
+        }else {
+            LogUtils.info(TAG, "appletOpenId: " + appletOpenId + "\n unionid is null, 无法发送公众号模板消息");
+        }
+        return null;
+    }
+
+    /**
      * 新订单通知  发送给商户
      * 线上支付成功 以及二维码支付订单
-     * <p>
-     * 订单号     {{keyword1.DATA}}
-     * 订单总价   {{keyword2.DATA}}
-     * 支付时间   {{keyword3.DATA}}
-     * 商品名称   {{keyword4.DATA}}
-     * 数量       {{keyword5.DATA}}
-     * 收货地址   {{keyword6.DATA}}
-     * 支付状态   {{keyword7.DATA}}
-     *
      * @param orderId
      * @return
      */
     @Override
     public boolean sendNewOrderMessage(String orderId) {
-        OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
+        LogUtils.info(TAG, "sendNewOrderMessage 新订单通知 orderId: " + orderId);
 
+        OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
         String sendOpenId = orderDetailsVO.getShop().getOpenId(); //商户
-        String fromId = this.getFormId(sendOpenId);
-        if (fromId == null) {
-            LogUtils.info(TAG, "sendNewOrderMessage orderId: " + orderId + "  fromId is null");
-            return false;
+
+        //判断发送的用户是否关注公众号
+        boolean isPublic = false;
+        String publicOpenId = this.getWXPublicOpenId(sendOpenId);
+        if (StringUtils.isNotBlank(publicOpenId)){
+            isPublic = true;
+            sendOpenId = publicOpenId;
         }
 
         // 0: 待支付(二维码支付)
         // 1: 已支付
         String orderstae = "?orderstate=" + orderDetailsVO.getShopOrder().getState().toString();
 
-        String[] values = this.getOrderDataValues(orderId, 0);
-        JSONObject message = getTemplateMessage(sendOpenId, NewOrderMessageId, NewOrderGoPage + orderstae, fromId, values);
-        String result = weChatService.sendTemplateMessage(message, 1);
-        LogUtils.info(TAG, "sendNewOrderMessage orderId: " + orderId + "  result code " + result);
+        String result = "";
+        if (isPublic){
+            LogUtils.info(TAG, "sendNewOrderMessage 新订单通知 发送公众号模板消息");
+            String name = wxPublicUserService.getWXPublicUserInfoByOpenid(sendOpenId).getNickname(); //客户昵称
+            String totalMoney = orderDetailsVO.getShopOrder().getTotalMoney(); //订单价格
 
-        if (result.equals("0")) {
-            //发送成功后 更新fromid
-            this.updateFormidUsed(sendOpenId, fromId);
+            List<OrderCommodity> orderCommodityList = orderDetailsVO.getCommoditys();
+            int count = 0;
+            for (OrderCommodity oc : orderCommodityList) {
+                count += oc.getCount();
+            }
+            String commodityName = orderCommodityList.get(0).getName() + (orderCommodityList.size() > 1 ? "等" : ""); //订单标题
+
+            String[] values = new String[]{
+                    orderId,
+                    name,
+                    totalMoney,
+                    commodityName,
+                    " "
+            };
+            String firstValue = "您好，您收到了一个新订单，请尽快接单处理";
+            String remarkValue = "点击查看订单详情";
+            JSONObject message = getPublicTemplateMessage(sendOpenId, NewOrderMessageId_PIBLIC, NewOrderGoPage + orderstae,
+                    firstValue, remarkValue, values);
+            result = weChatService.sendTemplateMessage(message, 0);
         }
+        else {
+            LogUtils.info(TAG, "sendNewOrderMessage 新订单通知 发送小程序模板消息");
+            String fromId = this.getFormId(sendOpenId);
+            if (fromId == null) {
+                LogUtils.info(TAG, "sendNewOrderMessage 新订单通知 fromId is null, 发送小程序模板消息fail");
+                return false;
+            }
+
+            String[] values = this.getOrderDataValues(orderId, 0);
+            JSONObject message = getAppletTemplateMessage(sendOpenId, NewOrderMessageId_APPLET, NewOrderGoPage + orderstae, fromId, values);
+            result = weChatService.sendTemplateMessage(message, 1);
+
+            if (result.equals("0")) {
+                //发送成功后 更新fromid
+                this.updateFormidUsed(sendOpenId, fromId);
+            }
+        }
+
+        LogUtils.info(TAG, "sendNewOrderMessage 新订单通知 result code " + result);
         return result.equals("0");
     }
 
     /**
      * 订单（二维码支付）待支付提醒 发送给用户  二维码支付订单
      * 二维码支付订单
-     * <p>
-     * 订单号     {{keyword1.DATA}}
-     * 订单总价   {{keyword2.DATA}}
-     * 下单时间   {{keyword3.DATA}}
-     * 商品详情   {{keyword4.DATA}}
-     * 付款类型   {{keyword4.DATA}}
-     * 待付金额   {{keyword6.DATA}}
-     * 备注       {{keyword7.DATA}}
-     * 收货地址   {{keyword8.DATA}}
-     *
      * @param orderId
      * @return
      */
     @Override
     public boolean sendPendingPaymentMessage(String orderId) {
+        LogUtils.info(TAG, "sendPendingPaymentMessage 订单待支付提醒 orderId: " + orderId);
         OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
 
         String sendOpenId = orderDetailsVO.getShopOrder().getOpenId(); //用户
@@ -313,7 +351,7 @@ public class TemplateServiceImpl implements TemplateService {
         }
 
         String[] values = this.getOrderDataValues(orderId, 1);
-        JSONObject message = getTemplateMessage(sendOpenId, PendingPaymentMessageId, PendingPaymentPage, fromId, values);
+        JSONObject message = getAppletTemplateMessage(sendOpenId, PendingPaymentMessageId_APPLET, PendingPaymentPage, fromId, values);
         String result = weChatService.sendTemplateMessage(message, 1);
         LogUtils.info(TAG, "senPendingPaymentMessage orderId: " + orderId + "  result code " + result);
 
@@ -327,15 +365,6 @@ public class TemplateServiceImpl implements TemplateService {
     /**
      * 订单支付成功  发送给用户  线上支付订单
      * 线上支付订单
-     * <p>
-     * 订单号     {{keyword1.DATA}}
-     * 支付时间   {{keyword2.DATA}}
-     * 订单金额   {{keyword3.DATA}}
-     * 商品名称   {{keyword4.DATA}}
-     * 数量       {{keyword5.DATA}
-     * 支付方式   {{keyword6.DATA}}
-     * 收货地址   {{keyword7.DATA}}
-     *
      * @param orderId
      * @return
      */
@@ -351,7 +380,7 @@ public class TemplateServiceImpl implements TemplateService {
         }
 
         String[] values = this.getOrderDataValues(orderId, 2);
-        JSONObject message = getTemplateMessage(sendOpenId, PaySuccessfulMessageId, PaySuccessfulPage, fromId, values);
+        JSONObject message = getAppletTemplateMessage(sendOpenId, PaySuccessfulMessageId_APPLET, PaySuccessfulPage, fromId, values);
         String result = weChatService.sendTemplateMessage(message, 1);
         LogUtils.info(TAG, "sendPaySuccessfulMessage orderId: " + orderId + "  result code " + result);
 
@@ -364,14 +393,6 @@ public class TemplateServiceImpl implements TemplateService {
 
     /**
      * 提现申请通知 发送给商户 提现详情
-     * <p>
-     * 提现金额   {{keyword1.DATA}}
-     * 提现时间   {{keyword2.DATA}}
-     * 姓名       {{keyword3.DATA}}
-     * 帐号       {{keyword4.DATA}}
-     * 到账类型   {{keyword5.DATA}}
-     * 备注       {{keyword6.DATA}}
-     *
      * @param wallet
      * @return
      */
@@ -399,7 +420,7 @@ public class TemplateServiceImpl implements TemplateService {
                 remark,
         };
 
-        JSONObject message = getTemplateMessage(sendOpenId, WithdrawMessageId, WithdrawGoPage, fromId, values);
+        JSONObject message = getAppletTemplateMessage(sendOpenId, WithdrawMessageId_APPLET, WithdrawGoPage, fromId, values);
         String result = weChatService.sendTemplateMessage(message, 1);
         LogUtils.info(TAG, "sendWithdrawMessage walletId: " + wallet.getOrderId() + "  result code " + result);
 
@@ -412,7 +433,6 @@ public class TemplateServiceImpl implements TemplateService {
 
     /**
      * 订单发货提醒 发送给用户
-     *
      * @return
      */
     @Override
@@ -423,8 +443,6 @@ public class TemplateServiceImpl implements TemplateService {
 
     /**
      * 活动结果通知  发送给用户
-     * 用户昵称  {{keyword1.DATA}}
-     * 助力结果  {{keyword2.DATA}}
      * @return
      */
     @Override
@@ -444,7 +462,7 @@ public class TemplateServiceImpl implements TemplateService {
                 name,
                 word
         };
-        JSONObject message = getTemplateMessage(openId, ActivityResultMessageId, ActivityResultPage, fromId, values);
+        JSONObject message = getAppletTemplateMessage(openId, ActivityResultMessageId_APPLET, ActivityResultPage, fromId, values);
         String result = weChatService.sendTemplateMessage(message, 1);
         LogUtils.info(TAG, "sendActivityResultMessage openId: " + openId + "  result code " + result);
 

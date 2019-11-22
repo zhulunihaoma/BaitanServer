@@ -33,7 +33,7 @@ public interface WXPublicUserMapper {
      * @param openId
      * @return
      */
-    @Delete("DELETE FROM wxpublicuserinfo WHERE openId = #{openId}")
+    @Delete("DELETE FROM wx_public_user_info WHERE openId = #{openId}")
     int deleteWXPublicUser(@Param("openId") String openId);
 
     /**
@@ -41,7 +41,7 @@ public interface WXPublicUserMapper {
      * @param openId
      * @return
      */
-    @Select("SELECT COUNT(*) FROM wxpublicuserinfo WHERE openId = #{openId}")
+    @Select("SELECT COUNT(*) FROM wx_public_user_info WHERE openId = #{openId}")
     int slelctCountWXPublicUser(@Param("openId") String openId);
 
     /**
@@ -49,6 +49,6 @@ public interface WXPublicUserMapper {
      * @param unionid
      * @return
      */
-    @Select("SELECT * FROM wxpublicuserinfo WHERE unionid = #{unionid}")
+    @Select("SELECT * FROM wx_public_user_info WHERE unionid = #{unionid}")
     WXPublicUserInfo selectPublicUser(@Param("unionid") String unionid);
 }

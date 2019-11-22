@@ -28,7 +28,7 @@ public interface WeChatService {
      * @param type 0：公众号发送模板消息 1：小程序发送模板消息 2：小程序发送客服消息
      * @return
      */
-    public String sendTemplateMessage(JSONObject jsonObject, int  type);
+    public String sendTemplateMessage(JSONObject jsonObject, int type);
 
     /**
      * 获取小程序码 使用微信wxacode.getUnlimited接口

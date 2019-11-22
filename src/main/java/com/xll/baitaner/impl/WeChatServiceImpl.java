@@ -200,7 +200,7 @@ public class WeChatServiceImpl implements WeChatService {
             //获取返回内容
             InputStream inputStream = httpURLConnection.getInputStream();
 
-            LogUtils.info(TAG,"creatWXacodeUnlimited fail --- inputStream.available()：" + inputStream.available());
+            LogUtils.info(TAG,"creatWXacodeUnlimited --- inputStream.available()：" + inputStream.available());
 
             //判断返回的文件流大小，太小说明不是图片文件，是错误信息
             //打印错误信息并返回

@@ -182,9 +182,10 @@ public class WXPublicUserServiceImpl implements WXPublicUserService {
     }
 
     /**
-     * 获取公众号用户信息并插入数据库 定时任务（每天两点）
+     * 获取公众号用户信息并插入数据库 定时任务
      */
-    @Scheduled(cron = "0 0 2 * * ?")
+    //@Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(fixedRate = 10800 * 1000)
     private void SetWXPublicUserToDataBase(){
         //获取公众号关注着列表
         List<String> userList = getWXPublicUserList(null);
