@@ -407,8 +407,9 @@ public class WalletServiceImpl implements WalletService {
                 walletMapper.updateShopWalletWithdraw(shopWallet);
             }
 
+            wallet = walletMapper.selectOneByOrderId(Long.valueOf(orderId), "DEC");
             //提现申请通知 发送给商户
-            templateService.sendWithdrawMessage(shopWallet);
+            templateService.sendWithdrawMessage(wallet);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }

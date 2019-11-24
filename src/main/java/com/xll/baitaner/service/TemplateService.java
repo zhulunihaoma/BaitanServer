@@ -34,13 +34,12 @@ public interface TemplateService {
      * <p>
      * {{first.DATA}}
      * 订单编号：{{keyword1.DATA}}
-     * 客户昵称：{{keyword2.DATA}}
-     * 订单价格：{{keyword3.DATA}}
-     * 订单标题：{{keyword4.DATA}}
-     * 订单截止时间：{{keyword5.DATA}}
+     * 下单时间：{{keyword2.DATA}}
+     * 下单用户：{{keyword3.DATA}}
+     * 收货地址：{{keyword4.DATA}}
      * {{remark.DATA}}
      */
-    public static final String NewOrderMessageId_PIBLIC = "itFb7D_HBWK7DzAhPxVHX7VstFyYFD1xg-Jf2-EkyBw";
+    public static final String NewOrderMessageId_PIBLIC = "NjfuYdxr5LCGQMfqBtVxNN6VuM75ZPkKrdtVw_zdnr0";
     //跳转小程序页面地址
     public static final String NewOrderGoPage = "pages/mycenter/ordermanager/ordermanager";
 
@@ -64,12 +63,13 @@ public interface TemplateService {
      * 公众号模板消息
      * <p>
      * {{first.DATA}}
-     * 商品名称：{{keyword1.DATA}}
+     * 商品信息：{{keyword1.DATA}}
      * 商品价格：{{keyword2.DATA}}
-     * 商品数量：{{keyword3.DATA}}
+     * 订单编号：{{keyword3.DATA}}
+     * 购买时间：{{keyword4.DATA}}
      * {{remark.DATA}}
      */
-    public static final String PendingPaymentMessageId_PIBLIC = "8xrqFUTi4E6O7qm7iBFEK7PSI82GQ1BTGg027-ORYOI";
+    public static final String PendingPaymentMessageId_PIBLIC = "tGsZ92dli1XxDDVVszTfN40qK12GQL8QXan55GnvhWw";
     //跳转小程序页面地址
     public static final String PendingPaymentPage = "pages/order/orderlist/orderlist?orderstate=0";
 
@@ -93,11 +93,14 @@ public interface TemplateService {
      * 公众号模板消息
      * <p>
      * {{first.DATA}}
-     * 支付金额：{{orderMoneySum.DATA}}
-     * 商品信息：{{orderProductName.DATA}}
-     * {{Remark.DATA}}
+     * 订单编号：{{keyword1.DATA}}
+     * 商品名称：{{keyword2.DATA}}
+     * 订单总价：{{keyword3.DATA}}
+     * 订单状态：{{keyword4.DATA}}
+     * 下单时间：{{keyword5.DATA}}
+     * {{remark.DATA}}
      */
-    public static final String PaySuccessfulMessageId_PIBLIC = "0OiBUsjbwVCY-pDBemZwJrAhpYCB0OUPjPfCAhwdoEo";
+    public static final String PaySuccessfulMessageId_PIBLIC = "Vajde-TmUx-yIGILTaUFCRVD1o77e5Ub3TvImLII6sk";
     //跳转小程序页面地址
     public static final String PaySuccessfulPage = "pages/order/orderlist/orderlist";
 

@@ -253,4 +253,69 @@ public class WeChatServiceImpl implements WeChatService {
             return null;
         }
     }
+
+    /**
+     * 微信公众号创建自定义菜单
+     * @param jsonObject post请求 按钮json
+     * @return 回调结果
+     */
+    @Override
+    public String creatWXPublicMenu(JSONObject menu_json) {
+        String strUrl = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + access_token_public;
+        try {
+            //POST请求
+            String UTF8 = "UTF-8";
+            URL httpUrl = new URL(strUrl);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) httpUrl.openConnection();
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setUseCaches(false);
+            httpURLConnection.connect();
+
+            LogUtils.info(TAG, "creatWXPublicMenu 创建自定义菜单 reqBody：\n" + menu_json.toString());
+
+            OutputStream outputStream = httpURLConnection.getOutputStream();
+            // 注意编码格式
+            outputStream.write(menu_json.toString().getBytes(UTF8));
+            outputStream.close();
+
+            //获取内容
+            InputStream inputStream = httpURLConnection.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF8));
+            final StringBuffer stringBuffer = new StringBuffer();
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuffer.append(line);
+            }
+            if (stringBuffer!=null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (inputStream!=null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            String resp = stringBuffer.toString();
+            LogUtils.info(TAG,"creatWXPublicMenu 创建自定义菜单 resp--：\n" + resp);
+
+            JSONObject resq_json = JSONObject.fromObject(resp);
+            if(resq_json.getInt("errcode") == 0){
+                LogUtils.info(TAG,"creatWXPublicMenu 创建自定义菜单 success");
+                return "0";
+            }else {
+                LogUtils.warn(TAG,"creatWXPublicMenu 创建自定义菜单 fail: " + resq_json.get("errcode") + "__" + resq_json.get("errmsg"));
+                return resq_json.get("errcode").toString();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
 }

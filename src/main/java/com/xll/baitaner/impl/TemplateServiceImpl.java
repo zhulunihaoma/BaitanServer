@@ -163,7 +163,11 @@ public class TemplateServiceImpl implements TemplateService {
         message.put("miniprogram", miniprogram);
 
         JSONObject data = new JSONObject();
-        data.put("first", firstValue);
+
+        JSONObject first_value = new JSONObject();
+        first_value.put("value", firstValue);
+        data.put("first", first_value);
+
         for (int i = 0; i < values.length; i++) {
             JSONObject value = new JSONObject();
             value.put("value", values[i]);
@@ -171,7 +175,11 @@ public class TemplateServiceImpl implements TemplateService {
             String keyword = "keyword" + String.valueOf(i + 1);
             data.put(keyword, value);
         }
+
+        JSONObject remark_value = new JSONObject();
+        remark_value.put("value", firstValue);
         data.put("remark", remarkValue);
+
         message.put("data", data);
         return message;
     }
@@ -285,26 +293,19 @@ public class TemplateServiceImpl implements TemplateService {
         String orderstae = "?orderstate=" + orderDetailsVO.getShopOrder().getState().toString();
 
         String result = "";
+        //发送模板消息
         if (isPublic){
             LogUtils.info(TAG, "sendNewOrderMessage 新订单通知 发送公众号模板消息");
-            String name = wxPublicUserService.getWXPublicUserInfoByOpenid(sendOpenId).getNickname(); //客户昵称
-            String totalMoney = orderDetailsVO.getShopOrder().getTotalMoney(); //订单价格
-
-            List<OrderCommodity> orderCommodityList = orderDetailsVO.getCommoditys();
-            int count = 0;
-            for (OrderCommodity oc : orderCommodityList) {
-                count += oc.getCount();
-            }
-            String commodityName = orderCommodityList.get(0).getName() + (orderCommodityList.size() > 1 ? "等" : ""); //订单标题
-
+            String creatDate = DateUtils.dateTimetoString(orderDetailsVO.getShopOrder().getCreateDate()); //下单时间
+            String name = wxPublicUserService.getWXPublicUserInfoByOpenid(sendOpenId).getNickname(); //下单用户
+            String address = orderDetailsVO.getAddress().getAddress(); //收货地址
             String[] values = new String[]{
                     orderId,
+                    creatDate,
                     name,
-                    totalMoney,
-                    commodityName,
-                    " "
+                    address
             };
-            String firstValue = "您好，您收到了一个新订单，请尽快接单处理";
+            String firstValue = "您收到了一个新订单，请尽快接单处理";
             String remarkValue = "点击查看订单详情";
             JSONObject message = getPublicTemplateMessage(sendOpenId, NewOrderMessageId_PIBLIC, NewOrderGoPage + orderstae,
                     firstValue, remarkValue, values);
@@ -342,23 +343,55 @@ public class TemplateServiceImpl implements TemplateService {
     public boolean sendPendingPaymentMessage(String orderId) {
         LogUtils.info(TAG, "sendPendingPaymentMessage 订单待支付提醒 orderId: " + orderId);
         OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
-
         String sendOpenId = orderDetailsVO.getShopOrder().getOpenId(); //用户
-        String fromId = this.getFormId(sendOpenId);
-        if (fromId == null) {
-            LogUtils.info(TAG, "senPendingPaymentMessage orderId: " + orderId + "  fromId is null");
-            return false;
+
+        //判断发送的用户是否关注公众号
+        boolean isPublic = false;
+        String publicOpenId = this.getWXPublicOpenId(sendOpenId);
+        if (StringUtils.isNotBlank(publicOpenId)){
+            isPublic = true;
+            sendOpenId = publicOpenId;
         }
 
-        String[] values = this.getOrderDataValues(orderId, 1);
-        JSONObject message = getAppletTemplateMessage(sendOpenId, PendingPaymentMessageId_APPLET, PendingPaymentPage, fromId, values);
-        String result = weChatService.sendTemplateMessage(message, 1);
-        LogUtils.info(TAG, "senPendingPaymentMessage orderId: " + orderId + "  result code " + result);
-
-        if (result.equals("0")) {
-            //发送成功后 更新fromid
-            this.updateFormidUsed(sendOpenId, fromId);
+        String result = "";
+        //发送模板消息
+        if (isPublic){
+            LogUtils.info(TAG, "senPendingPaymentMessage 订单待支付提醒 发送公众号模板消息");
+            String totalMoney = orderDetailsVO.getShopOrder().getTotalMoney(); //商品价格
+            String creatDate = DateUtils.dateTimetoString(orderDetailsVO.getShopOrder().getCreateDate()); //购买时间
+            List<OrderCommodity> orderCommodityList = orderDetailsVO.getCommoditys();
+            String commodityName = orderCommodityList.get(0).getName() + (orderCommodityList.size() > 1 ? "等" : ""); //商品信息
+            String[] values = new String[]{
+                    commodityName,
+                    totalMoney,
+                    orderId,
+                    creatDate
+            };
+            String firstValue = "您收到了一个新订单，支付方式为二维码支付";
+            String remarkValue = "请确认扫码付款或转账给店主";
+            JSONObject message = getPublicTemplateMessage(sendOpenId, PendingPaymentMessageId_PIBLIC, PendingPaymentPage,
+                    firstValue, remarkValue, values);
+            result = weChatService.sendTemplateMessage(message, 0);
         }
+        else{
+            LogUtils.info(TAG, "senPendingPaymentMessage 订单待支付提醒 发送小程序模板消息");
+            String fromId = this.getFormId(sendOpenId);
+            if (fromId == null) {
+                LogUtils.info(TAG, "senPendingPaymentMessage 订单待支付提醒 fromId is null, 发送小程序模板消息fail");
+                return false;
+            }
+
+            String[] values = this.getOrderDataValues(orderId, 1);
+            JSONObject message = getAppletTemplateMessage(sendOpenId, PendingPaymentMessageId_APPLET, PendingPaymentPage, fromId, values);
+            result = weChatService.sendTemplateMessage(message, 1);
+
+            if (result.equals("0")) {
+                //发送成功后 更新fromid
+                this.updateFormidUsed(sendOpenId, fromId);
+            }
+        }
+
+        LogUtils.info(TAG, "senPendingPaymentMessage 订单待支付提醒 result code " + result);
         return result.equals("0");
     }
 
@@ -370,24 +403,58 @@ public class TemplateServiceImpl implements TemplateService {
      */
     @Override
     public boolean sendPaySuccessfulMessage(String orderId) {
+        LogUtils.info(TAG, "sendPaySuccessfulMessage 订单支付成功提醒 orderId: " + orderId);
         OrderDetailsVO orderDetailsVO = orderService.getOrderDetails(orderId);
-
         String sendOpenId = orderDetailsVO.getShopOrder().getOpenId(); //用户
-        String fromId = this.getFormId(sendOpenId);
-        if (fromId == null) {
-            LogUtils.info(TAG, "sendPaySuccessfulMessage orderId: " + orderId + "  fromId is null");
-            return false;
+
+        //判断发送的用户是否关注公众号
+        boolean isPublic = false;
+        String publicOpenId = this.getWXPublicOpenId(sendOpenId);
+        if (StringUtils.isNotBlank(publicOpenId)){
+            isPublic = true;
+            sendOpenId = publicOpenId;
         }
 
-        String[] values = this.getOrderDataValues(orderId, 2);
-        JSONObject message = getAppletTemplateMessage(sendOpenId, PaySuccessfulMessageId_APPLET, PaySuccessfulPage, fromId, values);
-        String result = weChatService.sendTemplateMessage(message, 1);
-        LogUtils.info(TAG, "sendPaySuccessfulMessage orderId: " + orderId + "  result code " + result);
-
-        if (result.equals("0")) {
-            //发送成功后 更新fromid
-            this.updateFormidUsed(sendOpenId, fromId);
+        String result = "";
+        //发送模板消息
+        if (isPublic){
+            LogUtils.info(TAG, "sendPaySuccessfulMessage 订单支付成功提醒 发送公众号模板消息");
+            String totalMoney = orderDetailsVO.getShopOrder().getTotalMoney(); //商品价格
+            String creatDate = DateUtils.dateTimetoString(orderDetailsVO.getShopOrder().getCreateDate()); //购买时间
+            List<OrderCommodity> orderCommodityList = orderDetailsVO.getCommoditys();
+            String commodityName = orderCommodityList.get(0).getName() + (orderCommodityList.size() > 1 ? "等" : ""); //商品信息
+            String[] values = new String[]{
+                    orderId,
+                    commodityName,
+                    totalMoney,
+                    "线上已支付",
+                    creatDate
+            };
+            String firstValue = "您购买的商品已支付成功";
+            String remarkValue = "点击查看订单详情";
+            JSONObject message = getPublicTemplateMessage(sendOpenId, PaySuccessfulMessageId_PIBLIC, PaySuccessfulPage,
+                    firstValue, remarkValue, values);
+            result = weChatService.sendTemplateMessage(message, 0);
         }
+        else {
+            LogUtils.info(TAG, "sendPaySuccessfulMessage 订单支付成功提醒 发送小程序模板消息");
+            String fromId = this.getFormId(sendOpenId);
+            if (fromId == null) {
+                LogUtils.info(TAG, "sendPaySuccessfulMessage 订单支付成功提醒 fromId is null, 发送小程序模板消息fail");
+                return false;
+            }
+
+            String[] values = this.getOrderDataValues(orderId, 2);
+            JSONObject message = getAppletTemplateMessage(sendOpenId, PaySuccessfulMessageId_APPLET, PaySuccessfulPage, fromId, values);
+            result = weChatService.sendTemplateMessage(message, 1);
+
+            if (result.equals("0")) {
+                //发送成功后 更新fromid
+                this.updateFormidUsed(sendOpenId, fromId);
+            }
+        }
+
+        LogUtils.info(TAG, "sendPaySuccessfulMessage 订单支付成功提醒  result code " + result);
         return result.equals("0");
     }
 
@@ -398,36 +465,65 @@ public class TemplateServiceImpl implements TemplateService {
      */
     @Override
     public boolean sendWithdrawMessage(ShopWallet wallet) {
+        LogUtils.info(TAG, "sendWithdrawMessage 提现申请通知 walletId: " + wallet.getId() + " openId: " + wallet.getOpenId());
         String sendOpenId = wallet.getOpenId();
-        String fromId = this.getFormId(sendOpenId);
-        if (fromId == null) {
-            LogUtils.info(TAG, "sendWithdrawMessage walletId: " + wallet.getOrderId() + "  fromId is null");
-            return false;
+
+        //判断发送的用户是否关注公众号
+        boolean isPublic = false;
+        String publicOpenId = this.getWXPublicOpenId(sendOpenId);
+        if (StringUtils.isNotBlank(publicOpenId)){
+            isPublic = true;
+            sendOpenId = publicOpenId;
         }
 
+        String result = "";
+        //发送模板消息
         String amount = wallet.getAmount();
         String date = DateUtils.dateTimetoString(wallet.getCreateDate());
         String name = wxUserService.getWXUserById(sendOpenId).getNickName();
-        String shopName = shopManageService.getShopByUser(sendOpenId).getShopName();
-        String type = "零钱";
-        String remark = "如有疑问请查阅【更多】-【个人中心】-【使用帮助】";
-        String[] values = new String[]{
-                amount,
-                date,
-                name,
-                shopName,
-                type,
-                remark,
-        };
-
-        JSONObject message = getAppletTemplateMessage(sendOpenId, WithdrawMessageId_APPLET, WithdrawGoPage, fromId, values);
-        String result = weChatService.sendTemplateMessage(message, 1);
-        LogUtils.info(TAG, "sendWithdrawMessage walletId: " + wallet.getOrderId() + "  result code " + result);
-
-        if (result.equals("0")) {
-            //发送成功后 更新fromid
-            this.updateFormidUsed(sendOpenId, fromId);
+        String type = "微信零钱";
+        if (isPublic){
+            LogUtils.info(TAG, "sendWithdrawMessage 提现申请通知 发送公众号模板消息");
+            String[] values = new String[]{
+                    name,
+                    date,
+                    amount,
+                    type
+            };
+            String firstValue = "您的提现申请已收到 ";
+            String remarkValue = "点击查看详情";
+            JSONObject message = getPublicTemplateMessage(sendOpenId, WithdrawMessageId_PIBLIC, WithdrawGoPage,
+                    firstValue, remarkValue, values);
+            result = weChatService.sendTemplateMessage(message, 0);
         }
+        else {
+            LogUtils.info(TAG, "sendWithdrawMessage 提现申请通知 发送小程序模板消息");
+            String fromId = this.getFormId(sendOpenId);
+            if (fromId == null) {
+                LogUtils.info(TAG, "sendWithdrawMessage 提现申请通知 fromId is null, 发送小程序模板消息fail");
+                return false;
+            }
+
+            String shopName = shopManageService.getShopByUser(sendOpenId).getShopName();
+            String remark = "如有疑问请查阅【更多】-【个人中心】-【使用帮助】";
+            String[] values = new String[]{
+                    amount,
+                    date,
+                    name,
+                    shopName,
+                    type,
+                    remark,
+            };
+            JSONObject message = getAppletTemplateMessage(sendOpenId, WithdrawMessageId_APPLET, WithdrawGoPage, fromId, values);
+            result = weChatService.sendTemplateMessage(message, 1);
+
+            if (result.equals("0")) {
+                //发送成功后 更新fromid
+                this.updateFormidUsed(sendOpenId, fromId);
+            }
+        }
+
+        LogUtils.info(TAG, "sendWithdrawMessage 提现申请通知  result code " + result);
         return result.equals("0");
     }
 

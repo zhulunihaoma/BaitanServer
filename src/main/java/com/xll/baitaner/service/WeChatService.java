@@ -37,4 +37,11 @@ public interface WeChatService {
      * @return
      */
     public String creatWXacodeUnlimited(String sceneStr, String page);
+
+    /**
+     * 微信公众号创建自定义菜单
+     * @param jsonObject post请求 按钮json
+     * @return 回调结果
+     */
+    public String creatWXPublicMenu(JSONObject menu_json);
 }

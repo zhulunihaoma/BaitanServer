@@ -1,12 +1,12 @@
 package com.xll.baitaner.service;
 
 /**
- * 接口名：WXPublicMessageService
+ * 接口名：WXMessageService
  * 描述：微信公众号消息处理接口类
  * 创建者：xie
  * 日期：2019/11/16/016
  **/
-public interface WXPublicMessageService {
+public interface WXMessageService {
 
     /**
      * 消息类型：文本消息
@@ -43,6 +43,11 @@ public interface WXPublicMessageService {
      */
     public static final String MESSAGE_TYPE_LOCATION = "location";
 
+    /**
+     * 消息类型：小程序卡片消息
+     */
+    public static final String MESSAGE_TYPE_MINIPROGRAMPAGE = "miniprogrampage";
+
 
     /**
      * 消息类型：推送事件
@@ -74,6 +79,11 @@ public interface WXPublicMessageService {
      */
     public static final String EVENT_TYPE_TEMPLATESENDJOBFINISH = "TEMPLATESENDJOBFINISH";
 
+    /**
+     * 事件类型：小程序进入会话事件
+     */
+    public static final String EVENT_TYPE_USERENTERTEMPSESSION = "user_enter_tempsession";
+
 
     /**
      * 响应微信公众号消息
@@ -81,4 +91,11 @@ public interface WXPublicMessageService {
      * @return
      */
     public String wxPublicMessageManager(String requestMsg);
+
+    /**
+     * 响应小程序客服消息
+     * @param requestMsg 返回响应消息
+     * @return
+     */
+    public String wxAppletMessageManager(String requestMsg);
 }

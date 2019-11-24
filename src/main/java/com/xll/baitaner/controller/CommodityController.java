@@ -43,7 +43,7 @@ public class CommodityController {
     @ApiImplicitParam(name = "commodity", value = "商品实体类", required = true, dataType = "Commodity")
     @PostMapping("addcommodity")
     public ResponseResult addCommodity(Commodity commodity) {
-        LogUtils.info(TAG, JSONObject.fromObject(commodity).toString());
+        LogUtils.info(TAG, "CommodityController--addCommodity:\n" + JSONObject.fromObject(commodity).toString());
 //        boolean result = commodityService.addCommodity(commodity);
         int res = commodityService.addCommodity(commodity);
         return ResponseResult.result(res != -1 ? 0 : 1, res != -1 ? "success" : "fail", res);
