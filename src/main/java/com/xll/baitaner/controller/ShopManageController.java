@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * 描述：店铺模块controller
@@ -37,6 +38,8 @@ public class ShopManageController {
     @ApiImplicitParam(name = "shop", value = "店铺信息实体类", required = true, dataType = "Shop")
     @PostMapping("addshop")
     public ResponseResult addShop(Shop shop) {
+        shop.setCreateTime(new Date(System.currentTimeMillis()));
+
         String result = shopManageService.addShop(shop);
         if (result == null) {
             return ResponseResult.result(0, "success", result);
@@ -302,6 +305,7 @@ public class ShopManageController {
     @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String")
     @GetMapping("geshophome")
     public ResponseResult getShopHomeData(String openId) {
+
         return ResponseResult.result(0, "success", shopManageService.getShopHomeData(openId));
     }
 
@@ -326,4 +330,20 @@ public class ShopManageController {
         ResponseResult result = shopManageService.getWXacodePath(shopId, scene, page);
         return result;
     }
+
+    /**
+     * 获取系统内所有的店铺
+     *
+     * @return
+     */
+    @ApiOperation(
+            value = "获取系统内所有的店铺",
+            httpMethod = "GET",
+            notes = "获取系统内所有的店铺，用于管理台展示")
+    @ApiImplicitParam(name = "openId", value = "用户openId", required = true, dataType = "String")
+    @GetMapping("selectAllShopList")
+    public ResponseResult selectAllShopList(Integer offset, Integer size) {
+        return ResponseResult.result(0, "success", shopManageService.selectAllShopList(offset, size));
+    }
+
 }

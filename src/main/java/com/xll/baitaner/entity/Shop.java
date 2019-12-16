@@ -1,8 +1,11 @@
 package com.xll.baitaner.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Date;
 
 
 /**
@@ -115,4 +118,11 @@ public class Shop {
      */
     @ApiModelProperty(value = "店铺地址纬度", name = "latitude")
     private String latitude;
+
+    /**
+     * 店铺申请时间
+     */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
+
+    private Date createTime;
 }

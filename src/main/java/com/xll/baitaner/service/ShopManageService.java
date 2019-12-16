@@ -2,6 +2,7 @@ package com.xll.baitaner.service;
 
 import com.xll.baitaner.entity.Shop;
 import com.xll.baitaner.entity.ShopBanner;
+import com.xll.baitaner.entity.VO.ShopListResultVO;
 import com.xll.baitaner.utils.ResponseResult;
 import net.sf.json.JSONObject;
 
@@ -154,4 +155,14 @@ public interface ShopManageService {
      * @return
      */
     ResponseResult getWXacodePath(Integer shopId, String scene, String page);
+
+
+    /**
+     * 查询系统内所有店铺
+     *
+     * @return
+     */
+    ShopListResultVO selectAllShopList(Integer offset, Integer size);
+
+
 }

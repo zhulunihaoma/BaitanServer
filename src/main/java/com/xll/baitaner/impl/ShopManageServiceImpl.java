@@ -1,8 +1,10 @@
 package com.xll.baitaner.impl;
 
-import com.github.pagehelper.util.StringUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.xll.baitaner.entity.Shop;
 import com.xll.baitaner.entity.ShopBanner;
+import com.xll.baitaner.entity.VO.ShopListResultVO;
 import com.xll.baitaner.mapper.ShopMapper;
 import com.xll.baitaner.service.ShopManageService;
 import com.xll.baitaner.service.WeChatService;
@@ -13,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -290,4 +293,29 @@ public class ShopManageServiceImpl implements ShopManageService {
             return ResponseResult.result(1, "fail", "生成二维码失败!");
         }
     }
+
+    /**
+     * 获取系统所有的店铺
+     *
+     * @return
+     */
+    @Override
+    public ShopListResultVO selectAllShopList(Integer offset, Integer size) {
+        ShopListResultVO resultVO = new ShopListResultVO();
+        Page<Shop> page =
+                PageHelper.startPage(offset, size).doSelectPage(() -> shopMapper.selectAllShopList());
+        List<Shop> shopist = page.getResult();
+        if (shopist == null) {
+
+            resultVO.setData(new ArrayList<>());
+            resultVO.setCount(0);
+            return resultVO;
+        }
+
+        resultVO.setData(shopist);
+        resultVO.setCount(page.getTotal());
+        return resultVO;
+    }
+
+
 }

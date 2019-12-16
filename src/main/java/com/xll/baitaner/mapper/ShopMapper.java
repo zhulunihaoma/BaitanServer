@@ -221,4 +221,11 @@ public interface ShopMapper {
     @Update("UPDATE shop_wxacode SET wxacode_path = #{path} WHERE shop_id = #{shopid} AND wxacode_scene = #{scene} AND wxacode_page = #{page}")
     int updateShapWXacode(@Param("shopid") int shopid, @Param("scene") String scene, @Param("page") String page, @Param("path") String path);
 
+    /**
+     * 查询系统内所有店铺
+     *
+     * @return
+     */
+    @Select("SELECT * FROM shop ORDER BY createTime DESC")
+    List<Shop> selectAllShopList();
 }

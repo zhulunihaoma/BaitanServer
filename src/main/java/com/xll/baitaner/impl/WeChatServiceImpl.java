@@ -57,7 +57,7 @@ public class WeChatServiceImpl implements WeChatService {
     /**
      * 每隔一个半小时获取access_token
      */
-    @Scheduled(fixedRate = 3600 * 1000)
+    //@Scheduled(fixedRate = 3600 * 1000)
     private void getAccess_token() {
         LogUtils.info(TAG, "getAccess_token--------");
         String url_applet = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + Constant.APPLET_APP_ID +
