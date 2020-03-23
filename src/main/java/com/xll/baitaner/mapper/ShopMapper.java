@@ -25,11 +25,11 @@ public interface ShopMapper {
      * @return
      */
     @Insert("INSERT INTO shop (openId,shopName,shopIntroduction,ownerName,wxNumber,contactNumber,shopAddress,shopLogoUrl" +
-            ",payPlatform,payQrcode,payQrcodeUrl,aliPayQrcodeUrl,shopState,number,shopWxacode,longitude,latitude) " +
+            ",payPlatform,payQrcode,payQrcodeUrl,aliPayQrcodeUrl,shopState,number,shopWxacode,longitude,latitude,createTime) " +
             "VALUES (#{shop.openId},#{shop.shopName},#{shop.shopIntroduction},#{shop.ownerName},#{shop.wxNumber}," +
             "#{shop.contactNumber},#{shop.shopAddress},#{shop.shopLogoUrl},#{shop.payPlatform},#{shop.payQrcode}," +
             "#{shop.payQrcodeUrl},#{shop.aliPayQrcodeUrl},#{shop.shopState},#{shop.number},#{shop.shopWxacode},#{shop" +
-            ".longitude},#{shop.latitude})")
+            ".longitude},#{shop.latitude},#{shop.createTime})")
     @Options(useGeneratedKeys = true, keyProperty = "shop.id")
     int insertShop(@Param("shop") Shop shop);
 
